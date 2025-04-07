@@ -14,8 +14,9 @@ import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
-import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextFieldDefaults
+import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -28,7 +29,11 @@ import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.example.taskyapplication.R
+import com.example.taskyapplication.ui.theme.OnPrimary
+import com.example.taskyapplication.ui.theme.OnSurfaceVariant
+import com.example.taskyapplication.ui.theme.Primary
 import com.example.taskyapplication.ui.theme.SurfaceHigher
+import com.example.taskyapplication.ui.theme.TaskyTypography
 
 @Composable
 fun PasswordTextField(
@@ -47,7 +52,7 @@ fun PasswordTextField(
             modifier = modifier
                 .padding(end = 16.dp)
                 .align(Alignment.CenterEnd)
-                .clickable {  },
+                .clickable { },
             painter = painterResource(R.drawable.eye_closed),
             tint = Color.Green,
             contentDescription = "hide password"
@@ -64,7 +69,7 @@ fun UserInfoTextField(
     keyboardType: KeyboardType = KeyboardType.Text,
 ) {
     val focusManager = LocalFocusManager.current
-
+    
     OutlinedTextField(
         modifier = modifier
             .width(328.dp)
@@ -74,8 +79,19 @@ fun UserInfoTextField(
         value = userInput,
         onValueChange = onUserInputChange,
         singleLine = true,
+        textStyle = TaskyTypography.BODY_MEDIUM.value,
+        colors = TextFieldDefaults.colors(
+            focusedTextColor = OnSurfaceVariant,
+            unfocusedTextColor = OnSurfaceVariant,
+            disabledTextColor = OnSurfaceVariant,
+            errorTextColor = MaterialTheme.colorScheme.error,
+        ),
         placeholder = {
-            Text(text = placeholderText)
+            Text(
+                text = placeholderText,
+                color = OnSurfaceVariant,
+                style = TaskyTypography.BODY_MEDIUM.value,
+            )
         },
         keyboardOptions = KeyboardOptions.Default.copy(
             keyboardType = keyboardType,
@@ -97,14 +113,18 @@ fun AuthorizationCtaButton(
         modifier = modifier
             .width(328.dp)
             .height(56.dp)
-            .clip(RoundedCornerShape(25.dp)
-            ),
+            .clip(RoundedCornerShape(25.dp)),
         onClick = { },
-        colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.primary)
+        colors = ButtonDefaults.buttonColors(containerColor = Primary)
     ) {
-        Text(text = stringResource(R.string.register_button_cta))
+        Text(
+            text = stringResource(R.string.register_button_cta),
+            color = OnPrimary,
+            style = TaskyTypography.LABEL_MEDIUM.value
+        )
     }
 }
+
 
 @Preview(showBackground = true, backgroundColor = 0xFF00FF00)
 @Composable
