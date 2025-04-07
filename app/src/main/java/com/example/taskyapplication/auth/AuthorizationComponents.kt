@@ -31,12 +31,6 @@ import com.example.taskyapplication.R
 import com.example.taskyapplication.ui.theme.SurfaceHigher
 
 @Composable
-fun UserAuthorizationScreen() {
-
-}
-
-
-@Composable
 fun PasswordTextField(
     userInput: String,
     onUserInputChange: (String) -> Unit,
