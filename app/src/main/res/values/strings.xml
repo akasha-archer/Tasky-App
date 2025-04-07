@@ -1,3 +1,14 @@
 <resources>
     <string name="app_name">TaskyApplication</string>
+    <string name="register_headline">Create your account</string>
+    <string name="register_name_placeholder">Name</string>
+    <string name="account_email_placeholder">Email</string>
+    <string name="account_password_placeholder">Password</string>
+    <string name="login_prompt">ALREADY HAVE AN ACCOUNT?</string>
+    <string name="login_cta">LOG IN</string>
+    <string name="signup_cta">SIGN UP</string>
+    <string name="register_button_cta">GET STARTED</string>
+    <string name="login_button_cta">LOG IN</string>
+    <string name="login_headline">Welcome Back!</string>
+    <string name="account_signup_prompt">DON\'T HAVE AN ACCOUNT?</string>
 </resources>
