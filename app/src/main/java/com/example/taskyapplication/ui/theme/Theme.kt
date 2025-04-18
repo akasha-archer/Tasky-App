@@ -11,30 +11,27 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.platform.LocalContext
 
 private val DarkColorScheme = darkColorScheme(
-    primary = Primary_Dark,
-    secondary = Secondary,
-    tertiary = Tertiary,
-//    background = Color(0xFFFFFBFE),
-    surface = Surface_Dark,
-    onPrimary = OnPrimary_Dark,
-//    onSecondary = Color.White,
-//    onTertiary = Color.White,
-//    onBackground = Color(0xFF1C1B1F),
-    onSurface = OnSurface,
+    primary = PrimaryBackground_Dark,
+    onPrimary = TextOnPrimary_Dark,
+    surface = SecondaryBackground_Dark,
+    onSurface = InputText_Dark,
+    onSurfaceVariant = InputHintGray_Dark,
+    surfaceContainerHigh = InputFieldGray_Dark,
+    surfaceBright = Link_Dark,
+    error = Error_Dark,
+    outline = Outline_Dark,
 )
 
 private val LightColorScheme = lightColorScheme(
-    primary = OnPrimary,
-    secondary = Secondary,
-    tertiary = Tertiary,
-//    background = Color(0xFFFFFBFE),
-    surface = Surface,
-    onPrimary = OnPrimary,
-//    onSecondary = Color.White,
-//    onTertiary = Color.White,
-//    onBackground = Color(0xFF1C1B1F),
-    onSurface = OnSurface,
-
+    primary = PrimaryBackground,
+    onPrimary = TextOnPrimary,
+    surface = SecondaryBackground,
+    surfaceContainerHigh = InputFieldGray,
+    onSurface = InputText,
+    onSurfaceVariant = InputHintGray,
+    surfaceBright = Link_Light,
+    error = Error_Light,
+    outline = Outline_Light
 )
 
 @Composable

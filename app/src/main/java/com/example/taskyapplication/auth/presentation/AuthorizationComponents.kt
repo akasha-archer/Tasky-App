@@ -1,17 +1,17 @@
-package com.example.taskyapplication.auth
+package com.example.taskyapplication.auth.presentation
 
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
-import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
@@ -21,7 +21,6 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
@@ -29,17 +28,14 @@ import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.example.taskyapplication.R
-import com.example.taskyapplication.ui.theme.OnPrimary
-import com.example.taskyapplication.ui.theme.OnSurfaceVariant
-import com.example.taskyapplication.ui.theme.Primary
-import com.example.taskyapplication.ui.theme.SurfaceHigher
+import com.example.taskyapplication.ui.theme.InputFieldGray
+import com.example.taskyapplication.ui.theme.InputText
 import com.example.taskyapplication.ui.theme.TaskyTypography
 
 @Composable
 fun PasswordTextField(
     userInput: String,
     onUserInputChange: (String) -> Unit,
-    modifier: Modifier = Modifier
 ) {
     Box {
         UserInfoTextField(
@@ -48,13 +44,12 @@ fun PasswordTextField(
             keyboardType = KeyboardType.Password,
             placeholderText = stringResource(R.string.account_password_placeholder)
         )
-        Icon(
-            modifier = modifier
+        Image(
+            modifier = Modifier
                 .padding(end = 16.dp)
                 .align(Alignment.CenterEnd)
-                .clickable { },
+                .clickable { TODO("Not yet implemented") },
             painter = painterResource(R.drawable.eye_closed),
-            tint = Color.Green,
             contentDescription = "hide password"
         )
     }
@@ -72,24 +67,24 @@ fun UserInfoTextField(
     
     OutlinedTextField(
         modifier = modifier
-            .width(328.dp)
-            .height(56.dp)
+            .fillMaxWidth()
+            .padding(start = 20.dp, end = 20.dp, top = 16.dp, bottom = 16.dp)
             .clip(shape = RoundedCornerShape(10.dp))
-            .background(color = SurfaceHigher),
+            .background(color = InputFieldGray),
         value = userInput,
         onValueChange = onUserInputChange,
         singleLine = true,
         textStyle = TaskyTypography.BODY_MEDIUM.value,
         colors = TextFieldDefaults.colors(
-            focusedTextColor = OnSurfaceVariant,
-            unfocusedTextColor = OnSurfaceVariant,
-            disabledTextColor = OnSurfaceVariant,
+            focusedTextColor = InputText,
+            unfocusedTextColor = InputText,
+            disabledTextColor = InputText,
             errorTextColor = MaterialTheme.colorScheme.error,
         ),
         placeholder = {
             Text(
                 text = placeholderText,
-                color = OnSurfaceVariant,
+                color = InputText,
                 style = TaskyTypography.BODY_MEDIUM.value,
             )
         },
@@ -111,15 +106,16 @@ fun AuthorizationCtaButton(
 ) {
     Button(
         modifier = modifier
-            .width(328.dp)
-            .height(56.dp)
+            .fillMaxWidth()
+            .height(96.dp)
+            .padding(start = 20.dp, end = 20.dp, top = 16.dp, bottom = 16.dp)
             .clip(RoundedCornerShape(25.dp)),
         onClick = { },
-        colors = ButtonDefaults.buttonColors(containerColor = Primary)
+        colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.primary)
     ) {
         Text(
             text = stringResource(R.string.register_button_cta),
-            color = OnPrimary,
+            color = MaterialTheme.colorScheme.onPrimary,
             style = TaskyTypography.LABEL_MEDIUM.value
         )
     }

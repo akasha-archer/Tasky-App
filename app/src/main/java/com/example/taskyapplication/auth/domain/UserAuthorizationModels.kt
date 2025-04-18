@@ -1,4 +1,4 @@
-package com.example.taskyapplication.auth
+package com.example.taskyapplication.auth.domain
 
 data class User(
     val name: String,
@@ -37,6 +37,3 @@ data class UserAccessTokenResponse(
     val accessToken: String,
     val expirationTimestamp: Long
 )
-
-// GET request to check authentication. Returns a 200 or 401
-// GET request to log out
