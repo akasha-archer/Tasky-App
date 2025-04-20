@@ -58,6 +58,9 @@ android {
         buildConfig = true
         resValues = true
     }
+    hilt {
+        enableAggregatingTask = false
+    }
 }
 
 dependencies {
@@ -76,6 +79,8 @@ dependencies {
     implementation(libs.squareup.okhttp.interceptor)
     implementation(libs.retrofit.gson)
     implementation(libs.hilt.android)
+    implementation(platform(libs.okhttp.bom))
+
     ksp(libs.hilt.compiler)
 
     testImplementation(libs.junit)
