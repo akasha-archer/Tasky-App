@@ -1,3 +1,5 @@
+import java.util.Properties
+
 plugins {
     alias(libs.plugins.android.application)
     alias(libs.plugins.kotlin.android)
@@ -18,6 +20,17 @@ android {
         versionName = "1.0"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
+        vectorDrawables {
+            useSupportLibrary = true
+        }
+    }
+
+    val properties = Properties()
+    val propertiesFile = File(rootDir, "secrets.properties")
+    if(propertiesFile.exists() && propertiesFile.isFile) {
+        propertiesFile.inputStream().use { stream ->
+            properties.load(stream  )
+        }
     }
 
     buildTypes {
@@ -27,6 +40,10 @@ android {
                 getDefaultProguardFile("proguard-android-optimize.txt"),
                 "proguard-rules.pro"
             )
+            buildConfigField("String", "API_KEY",properties.getProperty("API_KEY"))
+        }
+        debug {
+            buildConfigField("String", "API_KEY",properties.getProperty("API_KEY"))
         }
     }
     compileOptions {
@@ -38,6 +55,8 @@ android {
     }
     buildFeatures {
         compose = true
+        buildConfig = true
+        resValues = true
     }
 }
 
@@ -51,7 +70,11 @@ dependencies {
     implementation(libs.androidx.ui.graphics)
     implementation(libs.androidx.ui.tooling.preview)
     implementation(libs.androidx.material3)
+    implementation(libs.androidx.datastore)
     implementation(libs.squareup.retrofit2)
+    implementation(libs.squareup.okhttp)
+    implementation(libs.squareup.okhttp.interceptor)
+    implementation(libs.retrofit.gson)
     implementation(libs.hilt.android)
     ksp(libs.hilt.compiler)
 

@@ -1,14 +1,13 @@
 package com.example.taskyapplication.remote
 
-import com.example.taskyapplication.auth.LoggedInUserResponse
-import com.example.taskyapplication.auth.UserAccessTokenResponse
+import com.example.taskyapplication.auth.domain.LoggedInUserResponse
+import com.example.taskyapplication.auth.domain.UserAccessTokenResponse
 import retrofit2.http.Body
 import retrofit2.http.GET
 import retrofit2.http.Header
 import retrofit2.http.POST
 
-interface TaskyApiService {
-
+interface AuthApiService {
     @POST("/register")
     suspend fun registerUser(
         @Header("x-api-key") apiKey: String,

@@ -37,3 +37,7 @@ data class UserAccessTokenResponse(
     val accessToken: String,
     val expirationTimestamp: Long
 )
+
+data class ErrorResponse(
+    val message: String
+)
