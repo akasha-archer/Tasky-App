@@ -1,4 +1,4 @@
-package com.example.taskyapplication
+package com.example.taskyapplication.auth.data
 
 import android.content.Context
 import androidx.datastore.preferences.core.edit
