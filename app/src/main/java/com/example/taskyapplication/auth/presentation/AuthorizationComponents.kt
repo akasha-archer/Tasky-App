@@ -1,8 +1,6 @@
 package com.example.taskyapplication.auth.presentation
 
-import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -18,11 +16,9 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.runtime.*
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.platform.LocalFocusManager
-import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.tooling.preview.Preview
@@ -44,14 +40,14 @@ fun PasswordTextField(
             keyboardType = KeyboardType.Password,
             placeholderText = stringResource(R.string.account_password_placeholder)
         )
-        Image(
-            modifier = Modifier
-                .padding(end = 16.dp)
-                .align(Alignment.CenterEnd)
-                .clickable { TODO("Not yet implemented") },
-            painter = painterResource(R.drawable.eye_closed),
-            contentDescription = "hide password"
-        )
+//        Image(
+//            modifier = Modifier
+//                .padding(end = 16.dp)
+//                .align(Alignment.CenterEnd)
+//                .clickable { TODO("Not yet implemented") },
+//            painter = painterResource(R.drawable.eye_closed),
+//            contentDescription = "hide password"
+//        )
     }
 }
 
@@ -102,7 +98,9 @@ fun UserInfoTextField(
 
 @Composable
 fun AuthorizationCtaButton(
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
+    buttonText: String,
+    onButtonClick: () -> Unit = { },
 ) {
     Button(
         modifier = modifier
@@ -110,11 +108,11 @@ fun AuthorizationCtaButton(
             .height(96.dp)
             .padding(start = 20.dp, end = 20.dp, top = 16.dp, bottom = 16.dp)
             .clip(RoundedCornerShape(25.dp)),
-        onClick = { },
+        onClick = onButtonClick,
         colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.primary)
     ) {
         Text(
-            text = stringResource(R.string.register_button_cta),
+            text = buttonText.uppercase(),
             color = MaterialTheme.colorScheme.onPrimary,
             style = TaskyTypography.LABEL_MEDIUM.value
         )
@@ -144,5 +142,7 @@ fun PasswordInputPreview() {
 @Preview(showBackground = true, backgroundColor = 0xFF00FF00)
 @Composable
 fun CtaButtonPreview() {
-    AuthorizationCtaButton()
+    AuthorizationCtaButton(
+        buttonText = "Sign In"
+    )
 }
