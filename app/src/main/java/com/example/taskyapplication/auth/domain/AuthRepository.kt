@@ -11,6 +11,27 @@ class AuthRepository @Inject constructor(
     suspend fun registerNewUser(
         userRegistrationData: NewUserRegistrationData
     ) {
-
+        taskyApiService.registerUser(userRegistrationData)
     }
+
+    suspend fun loginUser(
+        userLoginData: UserLoginData
+    ): LoggedInUserResponse? {
+        return taskyApiService.loginUser(userLoginData).body()
+    }
+
+    suspend fun requestAccessToken(
+        userRefreshTokenData: UserRefreshTokenData
+    ): UserAccessTokenResponse? {
+        return taskyApiService.getNewAccessToken(userRefreshTokenData).body()
+    }
+
+    suspend fun checkAuthentication(): String {
+        return taskyApiService.authenticateUser().message()
+    }
+
+    suspend fun logoutUser() {
+        taskyApiService.logoutUser()
+    }
+
 }

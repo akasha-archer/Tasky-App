@@ -28,7 +28,7 @@ data class LoggedInUserResponse(
     val accessTokenExpirationTimestamp: Long
 )
 
-data class UserAccessTokenRequest(
+data class UserRefreshTokenData(
     val refreshToken: String,
     val userId: String
 )
