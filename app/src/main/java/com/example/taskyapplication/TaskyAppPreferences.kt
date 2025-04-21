@@ -18,7 +18,8 @@ class TaskyAppPreferences @Inject constructor(
     suspend fun saveAuthToken(newToken: String) {
         context.dataStore.edit { preferences ->
             preferences[AUTH_TOKEN] = newToken
-            cachedToken = newToken  // Update cache when token is set
+            // Update cache when token is set
+            cachedToken = newToken
         }
     }
 
