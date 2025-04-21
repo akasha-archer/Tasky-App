@@ -11,4 +11,5 @@
     <string name="login_button_cta">LOG IN</string>
     <string name="login_headline">Welcome Back!</string>
     <string name="account_signup_prompt">DON\'T HAVE AN ACCOUNT?</string>
+    <string name="api_base_url">https://tasky.pl-coding.com/</string>
 </resources>
