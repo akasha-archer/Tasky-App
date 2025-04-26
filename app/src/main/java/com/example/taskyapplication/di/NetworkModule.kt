@@ -1,13 +1,11 @@
 package com.example.taskyapplication.di
 
 import android.content.Context
-import android.content.res.Resources
 import android.util.Log
 import androidx.datastore.core.DataStore
 import androidx.datastore.preferences.core.Preferences
 import androidx.datastore.preferences.preferencesDataStore
 import com.example.taskyapplication.BuildConfig
-import com.example.taskyapplication.R
 import com.example.taskyapplication.auth.data.TaskyAppPreferences
 import com.example.taskyapplication.remote.TaskyApiService
 import com.jakewharton.retrofit2.converter.kotlinx.serialization.asConverterFactory
