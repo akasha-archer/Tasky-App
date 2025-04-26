@@ -42,9 +42,11 @@ android {
                 "proguard-rules.pro"
             )
             buildConfigField("String", "API_KEY",properties.getProperty("API_KEY"))
+            buildConfigField("String", "BASE_URL",properties.getProperty("BASE_URL"))
         }
         debug {
             buildConfigField("String", "API_KEY",properties.getProperty("API_KEY"))
+            buildConfigField("String", "BASE_URL",properties.getProperty("BASE_URL"))
         }
     }
     compileOptions {

@@ -30,7 +30,6 @@ private val json = Json {
     coerceInputValues = true
 }
 
-private val API_BASE_URL = Resources.getSystem().getString(R.string.api_base_url)
 val Context.dataStore: DataStore<Preferences> by preferencesDataStore(name = "tasky_preferences")
 
 @InstallIn(SingletonComponent::class)
@@ -53,7 +52,7 @@ object NetworkModule {
     @Provides
     fun provideTaskyApi(appPreferences: TaskyAppPreferences): TaskyApiService {
         return Retrofit.Builder()
-            .baseUrl(API_BASE_URL)
+            .baseUrl(BuildConfig.BASE_URL)
             .client(provideOkHttpClient(appPreferences))
             .addConverterFactory(
                 json.asConverterFactory(
@@ -78,17 +77,8 @@ class AuthInterceptor(private val taskyAppPreferences: TaskyAppPreferences) : In
             200 -> {
                 Log.d("Tasky API 200 response", "$response")
             }
-            400 -> {
-                Log.e("Tasky API 400 error", "$response")
-            }
-            401 -> {
-                Log.e("Tasky API 401 error", "$response")
-            }
-            403 -> {
-                Log.e("Tasky API 403 error", "$response")
-            }
-            404 -> {
-                Log.e("Tasky API 404 error", "$response")
+            400, 401, 403, 404 -> {
+                Log.e("Tasky API ${response.code} error", "$response")
             }
         }
         return response

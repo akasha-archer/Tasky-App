@@ -14,11 +14,6 @@ class AuthViewModel @Inject constructor(
     private val appPreferences: TaskyAppPreferences
 ) : ViewModel() {
 
-    private val _refreshToken = MutableStateFlow<String?>(null)
-    val refreshToken = _refreshToken.asStateFlow()
-
-    private val _accessToken = MutableStateFlow<String?>(null)
-    val accessToken = _accessToken.asStateFlow()
 
 
 }
