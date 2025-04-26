@@ -27,7 +27,7 @@ android {
     }
 
     val properties = Properties()
-    val propertiesFile = File(rootDir, "secrets.properties")
+    val propertiesFile = File(rootDir, "local.properties")
     if(propertiesFile.exists() && propertiesFile.isFile) {
         propertiesFile.inputStream().use { stream ->
             properties.load(stream  )
@@ -42,9 +42,11 @@ android {
                 "proguard-rules.pro"
             )
             buildConfigField("String", "API_KEY",properties.getProperty("API_KEY"))
+            buildConfigField("String", "BASE_URL",properties.getProperty("BASE_URL"))
         }
         debug {
             buildConfigField("String", "API_KEY",properties.getProperty("API_KEY"))
+            buildConfigField("String", "BASE_URL",properties.getProperty("BASE_URL"))
         }
     }
     compileOptions {

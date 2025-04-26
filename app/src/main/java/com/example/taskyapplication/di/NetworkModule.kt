@@ -78,18 +78,18 @@ class AuthInterceptor(private val taskyAppPreferences: TaskyAppPreferences) : In
             200 -> {
                 Log.d("Tasky API 200 response", "$response")
             }
-            400 -> {
-                Log.e("Tasky API 400 error", "$response")
+            in 400..404 -> {
+                Log.e("Tasky API ${response.code} error", "$response")
             }
-            401 -> {
-                Log.e("Tasky API 401 error", "$response")
-            }
-            403 -> {
-                Log.e("Tasky API 403 error", "$response")
-            }
-            404 -> {
-                Log.e("Tasky API 404 error", "$response")
-            }
+//            401 -> {
+//                Log.e("Tasky API 401 error", "$response")
+//            }
+//            403 -> {
+//                Log.e("Tasky API 403 error", "$response")
+//            }
+//            404 -> {
+//                Log.e("Tasky API 404 error", "$response")
+//            }
         }
         return response
     }

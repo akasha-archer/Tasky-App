@@ -14,10 +14,12 @@ class TaskyAppPreferences @Inject constructor(
     // Cache for the token
     private var cachedToken: String = ""
 
+    // functions
+
     //write token to store
     suspend fun saveAuthToken(newToken: String) {
         context.dataStore.edit { preferences ->
-            preferences[AUTH_TOKEN] = newToken
+            preferences[ACCESS_TOKEN] = newToken
             // Update cache when token is set
             cachedToken = newToken
         }
@@ -26,14 +28,14 @@ class TaskyAppPreferences @Inject constructor(
     // Suspend function to update the cache from DataStore
     suspend fun refreshAuthToken() {
         context.dataStore.data.collect { preferences ->
-            cachedToken = preferences[AUTH_TOKEN] ?: "no value found for token"
+            cachedToken = preferences[ACCESS_TOKEN] ?: "no value found for token"
         }
     }
 
     // Suspend function to read and write to DataStore
     suspend fun readAuthToken(): String {
         return context.dataStore.data.map { preferences ->
-            preferences[AUTH_TOKEN] ?: "no value found for token"
+            preferences[ACCESS_TOKEN] ?: "no value found for token"
         }.first()
     }
 
@@ -41,6 +43,7 @@ class TaskyAppPreferences @Inject constructor(
     fun getCachedAuthToken(): String = cachedToken
 
     companion object {
-        private val AUTH_TOKEN = stringPreferencesKey("auth_token")
+        private val ACCESS_TOKEN = stringPreferencesKey("access_token")
+        private val REFRESH_TOKEN = stringPreferencesKey("refresh_token")
     }
 }

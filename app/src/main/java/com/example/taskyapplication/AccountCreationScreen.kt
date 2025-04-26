@@ -5,11 +5,17 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.saveable.rememberSaveable
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import com.example.taskyapplication.auth.domain.NewUserRegistrationData
+import com.example.taskyapplication.auth.domain.UserLoginData
 import com.example.taskyapplication.auth.presentation.AuthorizationCtaButton
 import com.example.taskyapplication.auth.presentation.PasswordTextField
 import com.example.taskyapplication.auth.presentation.UserInfoTextField
@@ -17,9 +23,29 @@ import com.example.taskyapplication.auth.presentation.UserInfoTextField
 @Composable
 fun AccountCreationScreen(
     modifier: Modifier = Modifier,
-    onLoginClick: () -> Unit = {},
-    onRegisterClick: () -> Unit = {}
+    onRegisterClick: (NewUserRegistrationData) -> Unit
 ) {
+    var registrationName by rememberSaveable {
+        mutableStateOf("fullName")
+    }
+
+    var registrationEmail by rememberSaveable {
+        mutableStateOf("email")
+    }
+
+    var registrationPassword by rememberSaveable {
+        mutableStateOf("password")
+    }
+
+    var newUserData by rememberSaveable {
+        mutableStateOf(
+            NewUserRegistrationData(
+                fullName = registrationName,
+                email = registrationEmail,
+                password = registrationPassword
+            )
+        )
+    }
     Column(
         modifier = modifier
             .fillMaxSize()
@@ -29,45 +55,62 @@ fun AccountCreationScreen(
     ) {
 // Handle user input change: NewUserRegistration object
         UserInfoTextField(
-            userInput = "",
+            userInput = registrationName,
             onUserInputChange = {
-                // Update name field to send request
+                registrationName = it
             },
             placeholderText = "Name",
             keyboardType = KeyboardType.Email
         )
         UserInfoTextField(
-            userInput = "",
+            userInput = registrationEmail,
             onUserInputChange = {
-                // Update email field to send request
+                registrationEmail = it
             },
             placeholderText = "Enter your email",
             keyboardType = KeyboardType.Email
         )
         PasswordTextField(
-            userInput = "",
+            userInput = registrationPassword,
             onUserInputChange = {
-                // Update password field to send request
+                registrationPassword = it
             },
         )
 
         AuthorizationCtaButton(
             modifier = Modifier.padding(top = 16.dp),
             buttonText = "Register",
-            onButtonClick = onRegisterClick
-            // register endpoint
+            onButtonClick = {
+                onRegisterClick(newUserData)
+                // call register endpoint
+            }
         )
-
     }
 }
 
 
 @Composable
-fun RegisteredUserScreen(
+fun LoginUserScreen(
     modifier: Modifier = Modifier,
-    onLoginClick: () -> Unit = {},
-    onRegisterClick: () -> Unit = {}
+    onLoginClick: (UserLoginData) -> Unit,
 ) {
+    var emailInput by rememberSaveable {
+        mutableStateOf("email")
+    }
+
+    var passwordInput by rememberSaveable {
+        mutableStateOf("password")
+    }
+
+    var newUserData by rememberSaveable {
+        mutableStateOf(
+            UserLoginData(
+                email = emailInput,
+                password = passwordInput
+            )
+        )
+    }
+
     Column(
         modifier = modifier
             .fillMaxSize()
@@ -94,8 +137,10 @@ fun RegisteredUserScreen(
         AuthorizationCtaButton(
             modifier = Modifier.padding(top = 16.dp),
             buttonText = "LOG IN",
-            onButtonClick = onRegisterClick
-            // call login endpoint
+            onButtonClick = {
+                onLoginClick(newUserData)
+                // call login endpoint
+            }
         )
     }
 }
@@ -103,11 +148,15 @@ fun RegisteredUserScreen(
 @Preview(showBackground = true)
 @Composable
 fun AuthenticationScreenPreview() {
-    AccountCreationScreen()
+    AccountCreationScreen(
+        onRegisterClick = {}
+    )
 }
 
 @Preview(showBackground = true)
 @Composable
 fun RegisteredUserScreenPreview() {
-    RegisteredUserScreen()
+    LoginUserScreen(
+        onLoginClick = {}
+    )
 }
