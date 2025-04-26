@@ -1,13 +1,11 @@
 package com.example.taskyapplication.di
 
 import android.content.Context
-import android.content.res.Resources
 import android.util.Log
 import androidx.datastore.core.DataStore
 import androidx.datastore.preferences.core.Preferences
 import androidx.datastore.preferences.preferencesDataStore
 import com.example.taskyapplication.BuildConfig
-import com.example.taskyapplication.R
 import com.example.taskyapplication.auth.data.TaskyAppPreferences
 import com.example.taskyapplication.remote.TaskyApiService
 import com.jakewharton.retrofit2.converter.kotlinx.serialization.asConverterFactory
@@ -30,7 +28,6 @@ private val json = Json {
     coerceInputValues = true
 }
 
-private val API_BASE_URL = Resources.getSystem().getString(R.string.api_base_url)
 val Context.dataStore: DataStore<Preferences> by preferencesDataStore(name = "tasky_preferences")
 
 @InstallIn(SingletonComponent::class)
@@ -53,7 +50,7 @@ object NetworkModule {
     @Provides
     fun provideTaskyApi(appPreferences: TaskyAppPreferences): TaskyApiService {
         return Retrofit.Builder()
-            .baseUrl(API_BASE_URL)
+            .baseUrl(BuildConfig.BASE_URL)
             .client(provideOkHttpClient(appPreferences))
             .addConverterFactory(
                 json.asConverterFactory(
@@ -90,6 +87,9 @@ class AuthInterceptor(private val taskyAppPreferences: TaskyAppPreferences) : In
 //            404 -> {
 //                Log.e("Tasky API 404 error", "$response")
 //            }
+            400, 401, 403, 404 -> {
+                Log.e("Tasky API ${response.code} error", "$response")
+            }
         }
         return response
     }
