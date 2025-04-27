@@ -7,6 +7,7 @@ import androidx.datastore.preferences.core.Preferences
 import androidx.datastore.preferences.preferencesDataStore
 import com.example.taskyapplication.BuildConfig
 import com.example.taskyapplication.auth.data.TaskyAppPreferences
+import com.example.taskyapplication.auth.data.TokenAuthenticator
 import com.example.taskyapplication.remote.TaskyApiService
 import com.jakewharton.retrofit2.converter.kotlinx.serialization.asConverterFactory
 import dagger.Module
@@ -17,6 +18,7 @@ import dagger.hilt.components.SingletonComponent
 import okhttp3.OkHttpClient
 import retrofit2.Retrofit
 import kotlinx.serialization.json.Json
+import okhttp3.Authenticator
 import okhttp3.Interceptor
 import okhttp3.MediaType.Companion.toMediaType
 import okhttp3.Request
@@ -36,22 +38,27 @@ object NetworkModule {
 
     @Singleton
     @Provides
+    fun provideAuthenticator(appPreferences: TaskyAppPreferences): Authenticator = TokenAuthenticator(appPreferences)
+
+    @Singleton
+    @Provides
     fun provideTaskyAppPreferences(@ApplicationContext context: Context): TaskyAppPreferences = TaskyAppPreferences(context)
 
     @Provides
     @Singleton
-    fun provideOkHttpClient(appPreferences: TaskyAppPreferences): OkHttpClient {
+    fun provideOkHttpClient(appPreferences: TaskyAppPreferences, authenticator: TokenAuthenticator): OkHttpClient {
         return OkHttpClient.Builder()
+            .authenticator(authenticator)
             .addInterceptor(AuthInterceptor(appPreferences))
             .build()
     }
 
     @Singleton
     @Provides
-    fun provideTaskyApi(appPreferences: TaskyAppPreferences): TaskyApiService {
+    fun provideTaskyApi(appPreferences: TaskyAppPreferences, authenticator: TokenAuthenticator): TaskyApiService {
         return Retrofit.Builder()
             .baseUrl(BuildConfig.BASE_URL)
-            .client(provideOkHttpClient(appPreferences))
+            .client(provideOkHttpClient(appPreferences, authenticator))
             .addConverterFactory(
                 json.asConverterFactory(
                     "application/json".toMediaType()
@@ -75,18 +82,6 @@ class AuthInterceptor(private val taskyAppPreferences: TaskyAppPreferences) : In
             200 -> {
                 Log.d("Tasky API 200 response", "$response")
             }
-            in 400..404 -> {
-                Log.e("Tasky API ${response.code} error", "$response")
-            }
-//            401 -> {
-//                Log.e("Tasky API 401 error", "$response")
-//            }
-//            403 -> {
-//                Log.e("Tasky API 403 error", "$response")
-//            }
-//            404 -> {
-//                Log.e("Tasky API 404 error", "$response")
-//            }
             400, 401, 403, 404 -> {
                 Log.e("Tasky API ${response.code} error", "$response")
             }

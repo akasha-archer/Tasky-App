@@ -2,6 +2,7 @@ package com.example.taskyapplication.auth.domain
 
 import kotlinx.serialization.Serializable
 
+// use AuthState class
 data class User(
     val name: String,
     val initials: String,

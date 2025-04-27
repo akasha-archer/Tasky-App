@@ -16,11 +16,6 @@ class AuthRepository @Inject constructor(
         taskyApiService.registerUser(userRegistrationData)
     }
 
-    // Log in user:
-    // attempt login with access token
-    // if 401, request a new token -- /accessToken endpoint
-    // write new token
-    // log in again?
     suspend fun loginUser(
         userLoginData: UserLoginData
     ): LoggedInUserResponse? {
@@ -39,14 +34,12 @@ class AuthRepository @Inject constructor(
 
     suspend fun logoutUser() {
         taskyApiService.logoutUser()
+        // delete refresh token
     }
 
     suspend fun saveRefreshToken(tokenResponse: LoggedInUserResponse) {
         appPreferences.saveAuthToken(tokenResponse.refreshToken)
     }
 
-    suspend fun saveAccessToken(tokenResponse: LoggedInUserResponse) {
-        appPreferences.saveAuthToken(tokenResponse.accessToken)
-    }
 
 }

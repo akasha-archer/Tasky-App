@@ -23,14 +23,6 @@ interface TaskyApiService {
         @Body userLoginData: UserLoginData
     ): Response<LoggedInUserResponse>
 
-    @POST("/accessToken")
-    suspend fun getNewAccessToken(
-        @Body userAccessTokenRequest: UserRefreshTokenData,
-    ): Response<UserAccessTokenResponse>
-
-    @GET("/authenticate")
-    suspend fun authenticateUser(): Response<String>
-
     @GET("/logout")
     suspend fun logoutUser()
 }

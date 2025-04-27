@@ -1,6 +1,7 @@
 package com.example.taskyapplication.auth.data
 
 import android.content.Context
+import androidx.datastore.preferences.core.booleanPreferencesKey
 import androidx.datastore.preferences.core.edit
 import androidx.datastore.preferences.core.stringPreferencesKey
 import com.example.taskyapplication.di.dataStore
@@ -15,6 +16,25 @@ class TaskyAppPreferences @Inject constructor(
     private var cachedToken: String = ""
 
     // functions
+
+    // Saving and retrieving user's registration status
+    suspend fun writeRegisteredUserState(isRegistered: Boolean) {
+        context.dataStore.edit { preferences ->
+            preferences[REGISTERED_USER_STATE] = isRegistered
+        }
+    }
+
+    suspend fun fetchUserRegisteredState() {
+        context.dataStore.edit { preferences ->
+            preferences[REGISTERED_USER_STATE] ?: false
+        }
+    }
+
+    suspend fun deleteRefreshToken() {
+        context.dataStore.edit { preferences ->
+            preferences.remove(REFRESH_TOKEN)
+        }
+    }
 
     //write token to store
     suspend fun saveAuthToken(newToken: String) {
@@ -45,5 +65,6 @@ class TaskyAppPreferences @Inject constructor(
     companion object {
         private val ACCESS_TOKEN = stringPreferencesKey("access_token")
         private val REFRESH_TOKEN = stringPreferencesKey("refresh_token")
+        private val REGISTERED_USER_STATE = booleanPreferencesKey("user_registered_state")
     }
 }
