@@ -2,9 +2,7 @@ package com.example.taskyapplication.remote
 
 import com.example.taskyapplication.auth.domain.LoggedInUserResponse
 import com.example.taskyapplication.auth.domain.NewUserRegistrationData
-import com.example.taskyapplication.auth.domain.UserAccessTokenResponse
 import com.example.taskyapplication.auth.domain.UserLoginData
-import com.example.taskyapplication.auth.domain.UserRefreshTokenData
 import retrofit2.Response
 import retrofit2.http.Body
 import retrofit2.http.GET
