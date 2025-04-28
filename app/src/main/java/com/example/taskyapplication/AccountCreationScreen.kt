@@ -37,7 +37,7 @@ fun AccountCreationScreen(
         mutableStateOf("password")
     }
 
-    var newUserData by rememberSaveable {
+    val newUserData by rememberSaveable {
         mutableStateOf(
             NewUserRegistrationData(
                 fullName = registrationName,
@@ -100,7 +100,7 @@ fun LoginUserScreen(
         mutableStateOf("password")
     }
 
-    var userLoginData by rememberSaveable {
+    val userLoginData by rememberSaveable {
         mutableStateOf(
             UserLoginData(
                 email = emailInput,
