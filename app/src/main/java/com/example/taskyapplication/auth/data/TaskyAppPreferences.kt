@@ -15,8 +15,6 @@ class TaskyAppPreferences @Inject constructor(
     // Cache for the token
     private var cachedToken: String = ""
 
-    // functions
-
     // Saving and retrieving user's registration status
     suspend fun writeRegisteredUserState(isRegistered: Boolean) {
         context.dataStore.edit { preferences ->

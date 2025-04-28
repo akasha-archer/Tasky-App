@@ -53,7 +53,6 @@ fun AccountCreationScreen(
         verticalArrangement = Arrangement.Center,
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
-// Handle user input change: NewUserRegistration object
         UserInfoTextField(
             userInput = registrationName,
             onUserInputChange = {
@@ -82,7 +81,6 @@ fun AccountCreationScreen(
             buttonText = "Register",
             onButtonClick = {
                 onRegisterClick(newUserData)
-                // call register endpoint
             }
         )
     }
@@ -102,7 +100,7 @@ fun LoginUserScreen(
         mutableStateOf("password")
     }
 
-    var newUserData by rememberSaveable {
+    var userLoginData by rememberSaveable {
         mutableStateOf(
             UserLoginData(
                 email = emailInput,
@@ -118,19 +116,18 @@ fun LoginUserScreen(
         verticalArrangement = Arrangement.Center,
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
-        // UserLoginData Object
         UserInfoTextField(
-            userInput = "",
+            userInput = emailInput,
             onUserInputChange = {
-                // Update email field to send login request
+                emailInput = it
             },
             placeholderText = "Enter your email",
             keyboardType = KeyboardType.Email
         )
         PasswordTextField(
-            userInput = "",
+            userInput = passwordInput,
             onUserInputChange = {
-                // Update password field to send login request
+                passwordInput = it
             },
         )
 
@@ -138,8 +135,7 @@ fun LoginUserScreen(
             modifier = Modifier.padding(top = 16.dp),
             buttonText = "LOG IN",
             onButtonClick = {
-                onLoginClick(newUserData)
-                // call login endpoint
+                onLoginClick(userLoginData)
             }
         )
     }

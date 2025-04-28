@@ -27,7 +27,7 @@ android {
     }
 
     val properties = Properties()
-    val propertiesFile = File(rootDir, "local.properties")
+    val propertiesFile = File(rootDir, "secrets.properties")
     if(propertiesFile.exists() && propertiesFile.isFile) {
         propertiesFile.inputStream().use { stream ->
             properties.load(stream  )

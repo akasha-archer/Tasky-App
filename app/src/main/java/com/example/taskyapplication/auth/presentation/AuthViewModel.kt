@@ -1,27 +1,31 @@
 package com.example.taskyapplication.auth.presentation
 
 import android.util.Log
-import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.example.taskyapplication.auth.data.TaskyAppPreferences
 import com.example.taskyapplication.auth.domain.AuthRepository
+import com.example.taskyapplication.auth.domain.AuthUserState
+import com.example.taskyapplication.auth.domain.Lce
 import com.example.taskyapplication.auth.domain.LoggedInUserResponse
 import com.example.taskyapplication.auth.domain.NewUserRegistrationData
 import com.example.taskyapplication.auth.domain.UserLoginData
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 @HiltViewModel
 class AuthViewModel @Inject constructor(
     private val authRepository: AuthRepository,
-    savedStateHandle: SavedStateHandle
 ) : ViewModel() {
 
-    // save form data with savedStateHandle?
+    private val _lceAuthUserData = MutableStateFlow<Lce<LoggedInUserResponse?>>(Lce.Loading)
+    val lceAuthUserData = _lceAuthUserData.asStateFlow()
+
+    private val _authUserState = MutableStateFlow<AuthUserState?>(null)
+    val authUserState = _authUserState.asStateFlow()
 
     suspend fun registerNewUser(registerData: NewUserRegistrationData) =
         viewModelScope.launch {
@@ -33,30 +37,30 @@ class AuthViewModel @Inject constructor(
             }
         }
 
-    suspend fun loginUser(userData: UserLoginData): LoggedInUserResponse? {
-        // login from text button on registration page OR splash screen
-        // authenticate endpoint to check access token validity
-        // check response > returns 200 or 401
-        // if valid [200] > log in automatically > go to Agenda screen
-        /*
-        *  if (response.code == 401) {
-        *  // request new token --> call /accessToken endpoint using refresh token
-        * // write new token
-        * }
-        *
-        * show log in screen using new accessToken
-        * fetch new response and write new token
-        * */
-        var tokens: LoggedInUserResponse? = null
+    suspend fun loginUser(userData: UserLoginData) {
+        _lceAuthUserData.value = Lce.Loading
         viewModelScope.launch {
             try {
-                tokens = authRepository.loginUser(userData)
+                val loginResponse = authRepository.loginUser(userData)
+                _lceAuthUserData.value = Lce.Success(loginResponse)
+
+                if (loginResponse != null) {
+                    // Update the auth user state
+                    _authUserState.update { state ->
+                        state?.copy(
+                            userId = loginResponse.userId,
+                            fullName = loginResponse.fullName,
+                        )
+                    }
+                    // save refresh token
+                    authRepository.saveRefreshToken(loginResponse)
+                }
             } catch (e: Exception) {
+                _lceAuthUserData.value = Lce.Error(e)
                 Log.e("User Login: ", "Failed to log in user ${e.message}")
                 throw e
             }
         }
-        return tokens
     }
 
     suspend fun logOut() {

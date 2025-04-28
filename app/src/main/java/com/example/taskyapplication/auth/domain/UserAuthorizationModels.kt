@@ -2,12 +2,17 @@ package com.example.taskyapplication.auth.domain
 
 import kotlinx.serialization.Serializable
 
-// use AuthState class
-data class User(
-    val name: String,
-    val initials: String,
-    val isRegistered: Boolean = false,
-)
+data class AuthUserState(
+    val fullName: String?,
+    val userId: String?,
+    val isRegistered: Boolean
+) {
+    fun userInitials(): String {
+        return fullName?.split(" ")?.joinToString("") {
+            it.first().toString()
+        } ?: "??"
+    }
+}
 
 @Serializable
 data class NewUserRegistrationData(
