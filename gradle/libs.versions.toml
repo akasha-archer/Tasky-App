@@ -16,6 +16,7 @@ kspVersion = "2.1.20-1.0.32"
 datastore = "1.1.4"
 retrofit2KotlinxSerializationConverter = "1.0.0"
 retrofitgson = "2.7.2"
+splashscreen = "1.0.1"
 
 [libraries]
 androidx-core-ktx = { group = "androidx.core", name = "core-ktx", version.ref = "coreKtx" }
@@ -39,10 +40,10 @@ squareup-retrofit2 = { group = "com.squareup.retrofit2", name = "retrofit", vers
 squareup-okhttp = { group = "com.squareup.okhttp3", name = "okhttp" }
 squareup-okhttp-interceptor = { group = "com.squareup.okhttp3", name = "logging-interceptor" }
 retrofit-gson = { group = "com.squareup.retrofit2", name = "converter-gson", version.ref = "retrofitgson" }
-
 hilt-android = { group = "com.google.dagger", name = "hilt-android", version.ref = "hilt" }
 hilt-compiler = { group = "com.google.dagger", name = "hilt-android-compiler", version.ref = "hilt" }
 androidx-datastore = { group = "androidx.datastore", name = "datastore-preferences", version.ref = "datastore" }
+androidx-core-splashscreen = { group = "androidx.core", name = "core-splashscreen", version.ref="splashscreen"}
 
 
 

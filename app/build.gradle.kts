@@ -85,6 +85,7 @@ dependencies {
     implementation(platform(libs.okhttp.bom))
     implementation(libs.kotlinx.serialization.json)
     implementation(libs.retrofit2.kotlinx.serialization.converter)
+    implementation(libs.androidx.core.splashscreen)
 
     ksp(libs.hilt.compiler)
 
