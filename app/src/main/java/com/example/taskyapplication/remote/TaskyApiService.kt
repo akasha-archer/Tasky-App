@@ -29,7 +29,7 @@ interface TaskyApiService {
     ): Response<UserAccessTokenResponse>
 
     @GET("/authenticate")
-    suspend fun authenticateUser(): Response<String>
+    suspend fun authenticateUser(): Response<Int>
 
 
     @GET("/logout")

@@ -37,7 +37,7 @@ class AuthViewModel @Inject constructor(
             }
         }
 
-    suspend fun loginUser(userData: UserLoginData) {
+    suspend fun login(userData: UserLoginData) {
         _lceAuthUserData.value = Lce.Loading
         viewModelScope.launch {
             try {
@@ -52,8 +52,9 @@ class AuthViewModel @Inject constructor(
                             fullName = loginResponse.fullName,
                         )
                     }
-                    // save refresh token
+                    // save refresh token and registered status
                     authRepository.saveRefreshToken(loginResponse)
+                    authRepository.saveRegisteredUser(loginResponse.userId.isNotEmpty())
                 }
             } catch (e: Exception) {
                 _lceAuthUserData.value = Lce.Error(e)
@@ -65,6 +66,5 @@ class AuthViewModel @Inject constructor(
 
     suspend fun logOut() {
         authRepository.logoutUser()
-        // show toast confirming log out
     }
 }

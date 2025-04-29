@@ -28,17 +28,22 @@ class AuthRepository @Inject constructor(
         return taskyApiService.getNewAccessToken(userRefreshTokenData).body()
     }
 
-    suspend fun checkAuthentication(): String {
-        return taskyApiService.authenticateUser().message()
+    suspend fun isTokenExpired(): Boolean {
+        val response = taskyApiService.authenticateUser()
+        return response.code() == 401
     }
 
     suspend fun logoutUser() {
         taskyApiService.logoutUser()
-        // delete refresh token
+        appPreferences.deleteRefreshToken()
     }
 
     suspend fun saveRefreshToken(tokenResponse: LoggedInUserResponse) {
-        appPreferences.saveAuthToken(tokenResponse.refreshToken)
+        appPreferences.saveAccessToken(tokenResponse.refreshToken)
+    }
+
+    suspend fun saveRegisteredUser(isRegistered: Boolean) {
+        appPreferences.saveUserRegisteredState(isRegistered)
     }
 
 
