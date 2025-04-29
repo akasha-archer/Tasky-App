@@ -86,6 +86,8 @@ dependencies {
     implementation(libs.kotlinx.serialization.json)
     implementation(libs.retrofit2.kotlinx.serialization.converter)
     implementation(libs.androidx.core.splashscreen)
+    implementation(libs.navigation.compose)
+    implementation(libs.androidx.activity)
 
     ksp(libs.hilt.compiler)
 

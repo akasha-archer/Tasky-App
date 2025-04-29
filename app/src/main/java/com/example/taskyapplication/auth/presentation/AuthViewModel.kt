@@ -1,9 +1,6 @@
 package com.example.taskyapplication.auth.presentation
 
 import android.util.Log
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.taskyapplication.auth.domain.AuthRepository
@@ -13,7 +10,6 @@ import com.example.taskyapplication.auth.domain.LoggedInUserResponse
 import com.example.taskyapplication.auth.domain.NewUserRegistrationData
 import com.example.taskyapplication.auth.domain.UserLoginData
 import dagger.hilt.android.lifecycle.HiltViewModel
-import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
@@ -30,6 +26,9 @@ class AuthViewModel @Inject constructor(
 
     private val _authUserState = MutableStateFlow<AuthUserState?>(null)
     val authUserState = _authUserState.asStateFlow()
+
+    private val _isTokenValid = MutableStateFlow(false)
+    val isTokenValid = _isTokenValid.asStateFlow()
 
     suspend fun registerNewUser(registerData: NewUserRegistrationData) =
         viewModelScope.launch {
@@ -68,8 +67,10 @@ class AuthViewModel @Inject constructor(
         }
     }
 
-    suspend fun isTokenExpired(): Boolean {
-        return authRepository.isTokenExpired()
+     fun isTokenExpired() {
+        viewModelScope.launch {
+            _isTokenValid.value = authRepository.isTokenExpired()
+        }
     }
 
     suspend fun logOut() {

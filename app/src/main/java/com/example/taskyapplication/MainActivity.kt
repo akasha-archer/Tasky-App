@@ -8,25 +8,30 @@ import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
 import androidx.activity.viewModels
+import androidx.compose.material3.Text
 import androidx.core.animation.doOnEnd
 import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
-import androidx.lifecycle.lifecycleScope
-import com.example.taskyapplication.agenda.presentation.AgendaScreen
+import androidx.navigation.compose.NavHost
+import androidx.navigation.compose.composable
+import androidx.navigation.compose.rememberNavController
 import com.example.taskyapplication.auth.presentation.AuthViewModel
 import com.example.taskyapplication.ui.theme.TaskyApplicationTheme
 import dagger.hilt.android.AndroidEntryPoint
-import kotlinx.coroutines.launch
 
 @AndroidEntryPoint
 class MainActivity : ComponentActivity() {
 
-    private val authViewModel by viewModels<AuthViewModel>()
-
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        val authViewModel: AuthViewModel by viewModels()
+        authViewModel.isTokenExpired()
+        val isTokenValid = authViewModel.isTokenValid.value
+        val isUserRegistered = authViewModel.lceAuthUserData.value.data?.userId?.isNotEmpty()
+
         installSplashScreen().apply {
-//            setKeepOnScreenCondition {
-//            }
+            setKeepOnScreenCondition {
+                authViewModel.isTokenValid.value
+            }
 
             setOnExitAnimationListener { screen ->
                 val zoomX = ObjectAnimator.ofFloat(
@@ -56,7 +61,18 @@ class MainActivity : ComponentActivity() {
         enableEdgeToEdge()
         setContent {
             TaskyApplicationTheme {
-AgendaScreen()
+                val navController = rememberNavController()
+                NavHost(navController = navController,
+                    startDestination = UserStateScreen
+                    ) {
+                    composable<UserStateScreen> {_ ->
+                        userStateScreen(
+                            isRegisteredUser = isUserRegistered ?: false,
+                            isTokenValid = isTokenValid,
+                            navController = navController
+                        )
+                    }
+                }
             }
         }
     }

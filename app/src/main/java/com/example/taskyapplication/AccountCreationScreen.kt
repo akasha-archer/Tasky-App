@@ -14,6 +14,8 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.navigation.NavController
+import androidx.navigation.compose.rememberNavController
 import com.example.taskyapplication.auth.domain.NewUserRegistrationData
 import com.example.taskyapplication.auth.domain.UserLoginData
 import com.example.taskyapplication.auth.presentation.AuthorizationCtaButton
@@ -23,7 +25,8 @@ import com.example.taskyapplication.auth.presentation.UserInfoTextField
 @Composable
 fun AccountCreationScreen(
     modifier: Modifier = Modifier,
-    onRegisterClick: (NewUserRegistrationData) -> Unit
+    navController: NavController,
+    onRegisterClick: (NewUserRegistrationData) -> Unit = {}
 ) {
     var registrationName by rememberSaveable {
         mutableStateOf("fullName")
@@ -81,6 +84,7 @@ fun AccountCreationScreen(
             buttonText = "Register",
             onButtonClick = {
                 onRegisterClick(newUserData)
+                // navigate to log in screen
             }
         )
     }
@@ -88,9 +92,10 @@ fun AccountCreationScreen(
 
 
 @Composable
-fun LoginUserScreen(
+fun LoginScreen(
     modifier: Modifier = Modifier,
-    onLoginClick: (UserLoginData) -> Unit,
+    navController: NavController,
+    onLoginClick: (UserLoginData) -> Unit = {},
 ) {
     var emailInput by rememberSaveable {
         mutableStateOf("email")
@@ -136,6 +141,7 @@ fun LoginUserScreen(
             buttonText = "LOG IN",
             onButtonClick = {
                 onLoginClick(userLoginData)
+                // navigate to agenda
             }
         )
     }
@@ -145,6 +151,7 @@ fun LoginUserScreen(
 @Composable
 fun AuthenticationScreenPreview() {
     AccountCreationScreen(
+        navController = rememberNavController(),
         onRegisterClick = {}
     )
 }
@@ -152,7 +159,8 @@ fun AuthenticationScreenPreview() {
 @Preview(showBackground = true)
 @Composable
 fun RegisteredUserScreenPreview() {
-    LoginUserScreen(
+    LoginScreen(
+        navController = rememberNavController(),
         onLoginClick = {}
     )
 }

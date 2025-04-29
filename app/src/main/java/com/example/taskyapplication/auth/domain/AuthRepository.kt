@@ -1,5 +1,6 @@
 package com.example.taskyapplication.auth.domain
 
+import android.util.Log
 import com.example.taskyapplication.auth.data.TaskyAppPreferences
 import com.example.taskyapplication.remote.TaskyApiService
 import javax.inject.Inject
@@ -29,8 +30,14 @@ class AuthRepository @Inject constructor(
     }
 
     suspend fun isTokenExpired(): Boolean {
-        val response = taskyApiService.authenticateUser()
-        return response.code() == 401
+        var responseCode = 0
+        try {
+             responseCode = taskyApiService.authenticateUser().code()
+        } catch (e: Exception) {
+            Log.e("Parse exception in AuthRepository", "Failed to read authentication response code: ${e.message}")
+            throw e
+        }
+        return responseCode == 401
     }
 
     suspend fun logoutUser() {
