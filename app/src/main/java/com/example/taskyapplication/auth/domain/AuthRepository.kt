@@ -34,7 +34,7 @@ class AuthRepository @Inject constructor(
         var responseCode: Int
         try {
              responseCode = taskyApiService.authenticateUser().code()
-        } catch (e: SerializationException) {
+        } catch (e: Exception) {
             Log.e("Parse exception in AuthRepository", "Failed to read authentication response code: ${e.message}")
             throw e
         }
