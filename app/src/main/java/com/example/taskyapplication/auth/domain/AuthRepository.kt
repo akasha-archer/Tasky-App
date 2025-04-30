@@ -3,6 +3,7 @@ package com.example.taskyapplication.auth.domain
 import android.util.Log
 import com.example.taskyapplication.auth.data.TaskyAppPreferences
 import com.example.taskyapplication.remote.TaskyApiService
+import kotlinx.serialization.SerializationException
 import javax.inject.Inject
 import javax.inject.Singleton
 
@@ -30,10 +31,10 @@ class AuthRepository @Inject constructor(
     }
 
     suspend fun isTokenExpired(): Boolean {
-        var responseCode = 0
+        var responseCode: Int
         try {
              responseCode = taskyApiService.authenticateUser().code()
-        } catch (e: Exception) {
+        } catch (e: SerializationException) {
             Log.e("Parse exception in AuthRepository", "Failed to read authentication response code: ${e.message}")
             throw e
         }

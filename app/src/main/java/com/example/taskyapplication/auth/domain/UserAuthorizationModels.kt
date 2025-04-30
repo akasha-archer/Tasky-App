@@ -1,5 +1,7 @@
 package com.example.taskyapplication.auth.domain
 
+import android.os.Parcelable
+import kotlinx.parcelize.Parcelize
 import kotlinx.serialization.Serializable
 
 data class AuthUserState(
@@ -14,18 +16,18 @@ data class AuthUserState(
     }
 }
 
-@Serializable
+@Parcelize
 data class NewUserRegistrationData(
     val fullName: String,
     val email: String,
     val password: String
-)
+) : Parcelable
 
-@Serializable
+@Parcelize
 data class UserLoginData(
     val email: String,
     val password: String
-)
+) : Parcelable
 
 @Serializable
 data class LoggedInUserResponse(

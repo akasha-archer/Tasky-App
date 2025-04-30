@@ -8,11 +8,13 @@ import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
 import androidx.activity.viewModels
+import androidx.compose.runtime.LaunchedEffect
 import androidx.core.animation.doOnEnd
 import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
+import com.example.taskyapplication.agenda.presentation.AgendaScreen
 import com.example.taskyapplication.auth.presentation.AuthViewModel
 import com.example.taskyapplication.ui.theme.TaskyApplicationTheme
 import dagger.hilt.android.AndroidEntryPoint
@@ -25,7 +27,8 @@ class MainActivity : ComponentActivity() {
         val authViewModel: AuthViewModel by viewModels()
         authViewModel.isTokenExpired()
         val isTokenValid = authViewModel.isTokenValid.value
-        val isUserRegistered = authViewModel.lceAuthUserData.value.data?.userId?.isNotEmpty()
+        val isUserRegistered =
+            authViewModel.lceAuthUserData.value.data?.userId?.isNotEmpty() ?: false
 
         installSplashScreen().apply {
             setKeepOnScreenCondition {
@@ -61,15 +64,32 @@ class MainActivity : ComponentActivity() {
         setContent {
             TaskyApplicationTheme {
                 val navController = rememberNavController()
-                NavHost(navController = navController,
+                NavHost(
+                    navController = navController,
                     startDestination = UserStateScreen
-                    ) {
-                    composable<UserStateScreen> {_ ->
-                        userStateScreen(
-                            isRegisteredUser = isUserRegistered ?: false,
-                            isTokenValid = isTokenValid,
-                            navController = navController
-                        )
+                ) {
+                    composable<UserStateScreen> {
+                        LaunchedEffect(isTokenValid, isUserRegistered) {
+                            val route = when {
+                                isTokenValid -> AgendaScreen
+                                isUserRegistered -> LoginScreen
+                                else -> RegisterScreen
+                            }
+                            navController.navigate(route) {
+                                popUpTo(UserStateScreen) { inclusive = true }
+                            }
+                        }
+                    }
+                    composable<AgendaScreen> {
+                        AgendaScreen(navController = navController)
+                    }
+
+                    composable<LoginScreen> {
+                        LoginScreen(navController = navController)
+                    }
+
+                    composable<RegisterScreen> {
+                        AccountCreationScreen(navController = navController)
                     }
                 }
             }

@@ -3,8 +3,10 @@ package com.example.taskyapplication
 import kotlinx.serialization.Serializable
 
 // navigation screen destinations
+
+// shell for initial screen that selects UI based on
+// user's token validity or registration status
 @Serializable
-// shell for initial screen that selects UI based on user's token validity or registration status
 object UserStateScreen
 
 @Serializable
