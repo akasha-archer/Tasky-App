@@ -65,7 +65,7 @@ fun UserInfoTextField(
         modifier = modifier
             .fillMaxWidth()
             .padding(horizontal = 20.dp)
-            .padding(vertical = 16.dp)            .clip(shape = RoundedCornerShape(10.dp))
+            .padding(vertical = 16.dp).clip(shape = RoundedCornerShape(10.dp))
             .background(color = InputFieldGray),
         value = userInput,
         onValueChange = onUserInputChange,
