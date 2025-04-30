@@ -12,7 +12,7 @@ data class AuthUserState(
     fun userInitials(): String {
         return fullName?.split(" ")?.joinToString("") {
             it.first().toString()
-        } ?: "??"
+        }!!
     }
 }
 
