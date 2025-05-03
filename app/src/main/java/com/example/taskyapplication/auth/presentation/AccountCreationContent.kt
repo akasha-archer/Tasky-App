@@ -1,8 +1,14 @@
 package com.example.taskyapplication.auth.presentation
 
+import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -12,26 +18,48 @@ import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.input.KeyboardType
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import com.example.taskyapplication.TaskyScaffold
+import com.example.taskyapplication.TaskyBaseScreen
 import com.example.taskyapplication.auth.domain.NewUserRegistrationData
 import com.example.taskyapplication.auth.domain.UserLoginData
-import com.example.taskyapplication.ui.theme.TaskyThemeTypography
+import com.example.taskyapplication.ui.theme.TaskyDesignSystem
+import com.example.taskyapplication.ui.theme.TaskyTypography
 
 
 @Composable
 fun UserRegistrationScreen(
     modifier: Modifier = Modifier,
 ) {
-    TaskyScaffold(
-        modifier = modifier,
-        titleBarContent = {
-
+    TaskyBaseScreen(
+        screenHeader = {
+            AuthScreenTitle(
+                titleText = "Create Your Account"
+            )
         },
         mainContent = {
-            AccountCreationScreen(
+            AccountCreationContent(
+                modifier = modifier,
+            )
+        }
+    )
+}
+
+@Composable
+fun UserLoginScreen(
+    modifier: Modifier = Modifier,
+) {
+    TaskyBaseScreen(
+        screenHeader = {
+            AuthScreenTitle(
+                titleText = "Welcome Back!"
+            )
+        },
+        mainContent = {
+            LoginContent(
                 modifier = modifier,
             )
         }
@@ -44,20 +72,27 @@ fun AuthScreenTitle(
     titleText: String = "Screen Title"
 ) {
     Column(
-        modifier = modifier,
-        verticalArrangement = Arrangement.Center,
-        horizontalAlignment = Alignment.CenterHorizontally
+        modifier = modifier
+            .fillMaxWidth()
     ) {
         Text(
+            modifier = Modifier
+                .padding(top = 64.dp)
+                .padding(horizontal = 16.dp)
+                .fillMaxWidth()
+                .height(60.dp)
+                .background(color = Color.Black),
+            textAlign = TextAlign.Center,
             text = titleText,
-            style = TaskyThemeTypography.headlineLarge
+            color = Color.White,
+            style = TaskyTypography.headlineLarge,
         )
     }
 }
 
 
 @Composable
-fun AccountCreationScreen(
+fun AccountCreationContent(
     modifier: Modifier = Modifier,
     onRegisterClick: (NewUserRegistrationData) -> Unit = {}
 ) {
@@ -86,7 +121,7 @@ fun AccountCreationScreen(
         modifier = modifier
             .fillMaxSize()
             .padding(16.dp),
-        verticalArrangement = Arrangement.Center,
+        verticalArrangement = Arrangement.Top,
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
         UserInfoTextField(
@@ -114,18 +149,40 @@ fun AccountCreationScreen(
 
         AuthorizationCtaButton(
             modifier = Modifier.padding(top = 16.dp),
-            buttonText = "Register",
+            buttonText = "GET STARTED",
             onButtonClick = {
                 onRegisterClick(newUserData)
                 // navigate to log in screen
             }
         )
+        Spacer(
+            modifier = Modifier.height(16.dp)
+        )
+        Row(
+            modifier = Modifier
+                .fillMaxWidth()
+                .clickable {
+                // navigate to log in screen
+            },
+            horizontalArrangement = Arrangement.Center
+        ) {
+            Text(
+                text = "Already have an account?  ".uppercase(),
+                style = TaskyTypography.labelSmall,
+                color = TaskyDesignSystem.taskyColors.onSurfaceVariant
+            )
+            Text(
+                text = "LOG IN",
+                style = TaskyTypography.labelSmall,
+                color = TaskyDesignSystem.taskyColors.link,
+            )
+        }
     }
 }
 
 
 @Composable
-fun LoginScreen(
+fun LoginContent(
     modifier: Modifier = Modifier,
     onLoginClick: (UserLoginData) -> Unit = {},
 ) {
@@ -145,12 +202,11 @@ fun LoginScreen(
             )
         )
     }
-
     Column(
         modifier = modifier
             .fillMaxSize()
             .padding(16.dp),
-        verticalArrangement = Arrangement.Center,
+        verticalArrangement = Arrangement.Top,
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
         UserInfoTextField(
@@ -167,7 +223,6 @@ fun LoginScreen(
                 passwordInput = it
             },
         )
-
         AuthorizationCtaButton(
             modifier = Modifier.padding(top = 16.dp),
             buttonText = "LOG IN",
@@ -176,13 +231,35 @@ fun LoginScreen(
                 // navigate to agenda
             }
         )
+        Spacer(
+            modifier = Modifier.height(16.dp)
+        )
+        Row(
+            modifier = Modifier
+                .fillMaxWidth()
+                .clickable {
+                    // navigate to registration screen
+                },
+            horizontalArrangement = Arrangement.Center
+        ) {
+            Text(
+                text = "Don't have an account?  ".uppercase(),
+                style = TaskyTypography.labelSmall,
+                color = TaskyDesignSystem.taskyColors.onSurfaceVariant,
+            )
+            Text(
+                text = "Sign up".uppercase(),
+                style = TaskyTypography.labelSmall,
+                color = TaskyDesignSystem.taskyColors.link,
+            )
+        }
     }
 }
 
 @Preview(showBackground = true)
 @Composable
 fun AuthenticationScreenPreview() {
-    AccountCreationScreen(
+    AccountCreationContent(
         onRegisterClick = {}
     )
 }
@@ -190,7 +267,7 @@ fun AuthenticationScreenPreview() {
 @Preview(showBackground = true)
 @Composable
 fun RegisteredUserScreenPreview() {
-    LoginScreen(
+    LoginContent(
         onLoginClick = {}
     )
 }
@@ -201,4 +278,16 @@ fun AuthTitlePreview() {
     AuthScreenTitle(
         titleText = "Create Account"
     )
+}
+
+@Preview(showBackground = true)
+@Composable
+fun RegisterPreview() {
+    UserRegistrationScreen()
+}
+
+@Preview(showBackground = true)
+@Composable
+fun LoginPreview() {
+    UserLoginScreen()
 }

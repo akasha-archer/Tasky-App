@@ -12,8 +12,8 @@ import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
+import androidx.compose.material3.OutlinedTextFieldDefaults
 import androidx.compose.material3.Text
-import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
@@ -24,8 +24,8 @@ import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.example.taskyapplication.R
-import com.example.taskyapplication.ui.theme.InputFieldGray
 import com.example.taskyapplication.ui.theme.InputText
+import com.example.taskyapplication.ui.theme.TaskyDesignSystem
 import com.example.taskyapplication.ui.theme.TaskyTypography
 
 @Composable
@@ -66,22 +66,25 @@ fun UserInfoTextField(
             .fillMaxWidth()
             .padding(horizontal = 20.dp)
             .padding(vertical = 16.dp).clip(shape = RoundedCornerShape(10.dp))
-            .background(color = InputFieldGray),
+            .background(color = TaskyDesignSystem.taskyColors.inputFieldGray),
         value = userInput,
         onValueChange = onUserInputChange,
         singleLine = true,
-        textStyle = TaskyTypography.BODY_MEDIUM.value,
-        colors = TextFieldDefaults.colors(
-            focusedTextColor = InputText,
-            unfocusedTextColor = InputText,
-            disabledTextColor = InputText,
-            errorTextColor = MaterialTheme.colorScheme.error,
+        textStyle = MaterialTheme.typography.bodyMedium,
+        colors = OutlinedTextFieldDefaults.colors(
+            focusedTextColor = TaskyDesignSystem.taskyColors.inputHintGray,
+            unfocusedTextColor = TaskyDesignSystem.taskyColors.inputHintGray,
+            disabledTextColor = TaskyDesignSystem.taskyColors.inputText,
+            errorTextColor = TaskyDesignSystem.taskyColors.error,
+            unfocusedBorderColor = TaskyDesignSystem.taskyColors.inputFieldGray,
+            focusedBorderColor = TaskyDesignSystem.taskyColors.inputFieldGray,
+
         ),
         placeholder = {
             Text(
                 text = placeholderText,
                 color = InputText,
-                style = TaskyTypography.BODY_MEDIUM.value,
+                style = MaterialTheme.typography.bodyMedium,
             )
         },
         keyboardOptions = KeyboardOptions.Default.copy(
@@ -109,12 +112,17 @@ fun AuthorizationCtaButton(
             .padding(start = 20.dp, end = 20.dp, top = 16.dp, bottom = 16.dp)
             .clip(RoundedCornerShape(25.dp)),
         onClick = onButtonClick,
-        colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.primary)
+        colors = ButtonDefaults.buttonColors(
+            containerColor = TaskyDesignSystem.taskyColors.primary,
+            contentColor = TaskyDesignSystem.taskyColors.onPrimary,
+//            disabledContainerColor = MaterialTheme.taskyColors.secondaryBackground,
+//            disabledContentColor = MaterialTheme.taskyColors.secondaryBackground
+            )
     ) {
         Text(
             text = buttonText.uppercase(),
-            color = MaterialTheme.colorScheme.onPrimary,
-            style = TaskyTypography.LABEL_MEDIUM.value
+            color = TaskyDesignSystem.taskyColors.onPrimary,
+            style = TaskyTypography.labelMedium
         )
     }
 }
