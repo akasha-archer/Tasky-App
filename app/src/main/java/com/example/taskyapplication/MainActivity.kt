@@ -87,11 +87,11 @@ class MainActivity : ComponentActivity() {
                     }
 
                     composable<LoginScreen> {
-                        LoginScreen(navController = navController)
+                        LoginScreen()
                     }
 
                     composable<RegisterScreen> {
-                        AccountCreationScreen(navController = navController)
+                        AccountCreationScreen()
                     }
                 }
             }

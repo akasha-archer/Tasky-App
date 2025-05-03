@@ -1,5 +1,6 @@
 package com.example.taskyapplication.ui.theme
 
+import androidx.compose.material3.Typography
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.Font
 import androidx.compose.ui.text.font.FontFamily
@@ -18,6 +19,13 @@ val interFamily600 = FontFamily(
 )
 val interFamily700 = FontFamily(
     Font(R.font.inter_medium, FontWeight.W500),
+)
+
+val TaskyThemeTypography = Typography(
+    bodyMedium = TaskyTypography.BODY_MEDIUM.value,
+    labelMedium = TaskyTypography.LABEL_MEDIUM.value,
+    labelSmall = TaskyTypography.LABEL_SMALL.value,
+    headlineLarge = TaskyTypography.HEADLINE_LARGE.value,
 )
 
 enum class TaskyTypography(

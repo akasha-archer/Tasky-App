@@ -4,6 +4,7 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
+import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -14,15 +15,50 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import androidx.navigation.NavController
-import androidx.navigation.compose.rememberNavController
+import com.example.taskyapplication.TaskyScaffold
 import com.example.taskyapplication.auth.domain.NewUserRegistrationData
 import com.example.taskyapplication.auth.domain.UserLoginData
+import com.example.taskyapplication.ui.theme.TaskyThemeTypography
+
+
+@Composable
+fun UserRegistrationScreen(
+    modifier: Modifier = Modifier,
+) {
+    TaskyScaffold(
+        modifier = modifier,
+        titleBarContent = {
+
+        },
+        mainContent = {
+            AccountCreationScreen(
+                modifier = modifier,
+            )
+        }
+    )
+}
+
+@Composable
+fun AuthScreenTitle(
+    modifier: Modifier = Modifier,
+    titleText: String = "Screen Title"
+) {
+    Column(
+        modifier = modifier,
+        verticalArrangement = Arrangement.Center,
+        horizontalAlignment = Alignment.CenterHorizontally
+    ) {
+        Text(
+            text = titleText,
+            style = TaskyThemeTypography.headlineLarge
+        )
+    }
+}
+
 
 @Composable
 fun AccountCreationScreen(
     modifier: Modifier = Modifier,
-    navController: NavController,
     onRegisterClick: (NewUserRegistrationData) -> Unit = {}
 ) {
     var registrationName by rememberSaveable {
@@ -91,7 +127,6 @@ fun AccountCreationScreen(
 @Composable
 fun LoginScreen(
     modifier: Modifier = Modifier,
-    navController: NavController = rememberNavController(),
     onLoginClick: (UserLoginData) -> Unit = {},
 ) {
     var emailInput by rememberSaveable {
@@ -148,7 +183,6 @@ fun LoginScreen(
 @Composable
 fun AuthenticationScreenPreview() {
     AccountCreationScreen(
-        navController = rememberNavController(),
         onRegisterClick = {}
     )
 }
@@ -157,7 +191,14 @@ fun AuthenticationScreenPreview() {
 @Composable
 fun RegisteredUserScreenPreview() {
     LoginScreen(
-        navController = rememberNavController(),
         onLoginClick = {}
+    )
+}
+
+@Preview(showBackground = true)
+@Composable
+fun AuthTitlePreview() {
+    AuthScreenTitle(
+        titleText = "Create Account"
     )
 }
