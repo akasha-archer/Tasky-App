@@ -1,4 +1,4 @@
-package com.example.taskyapplication
+package com.example.taskyapplication.auth.presentation
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -18,9 +18,6 @@ import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
 import com.example.taskyapplication.auth.domain.NewUserRegistrationData
 import com.example.taskyapplication.auth.domain.UserLoginData
-import com.example.taskyapplication.auth.presentation.AuthorizationCtaButton
-import com.example.taskyapplication.auth.presentation.PasswordTextField
-import com.example.taskyapplication.auth.presentation.UserInfoTextField
 
 @Composable
 fun AccountCreationScreen(

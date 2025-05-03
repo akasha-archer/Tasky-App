@@ -2,8 +2,7 @@ package com.example.taskyapplication.auth.domain
 
 import android.util.Log
 import com.example.taskyapplication.auth.data.TaskyAppPreferences
-import com.example.taskyapplication.remote.TaskyApiService
-import kotlinx.serialization.SerializationException
+import com.example.taskyapplication.network.TaskyApiService
 import javax.inject.Inject
 import javax.inject.Singleton
 

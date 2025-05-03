@@ -15,7 +15,9 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import com.example.taskyapplication.agenda.presentation.AgendaScreen
+import com.example.taskyapplication.auth.presentation.AccountCreationScreen
 import com.example.taskyapplication.auth.presentation.AuthViewModel
+import com.example.taskyapplication.auth.presentation.LoginScreen
 import com.example.taskyapplication.ui.theme.TaskyApplicationTheme
 import dagger.hilt.android.AndroidEntryPoint
 
