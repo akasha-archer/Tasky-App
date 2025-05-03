@@ -18,6 +18,8 @@ import com.example.taskyapplication.agenda.presentation.AgendaScreen
 import com.example.taskyapplication.auth.presentation.AccountCreationContent
 import com.example.taskyapplication.auth.presentation.AuthViewModel
 import com.example.taskyapplication.auth.presentation.LoginContent
+import com.example.taskyapplication.auth.presentation.UserLoginScreen
+import com.example.taskyapplication.auth.presentation.UserRegistrationScreen
 import com.example.taskyapplication.ui.theme.TaskyApplicationTheme
 import dagger.hilt.android.AndroidEntryPoint
 
@@ -87,11 +89,11 @@ class MainActivity : ComponentActivity() {
                     }
 
                     composable<LoginScreen> {
-                        LoginContent()
+                        UserLoginScreen()
                     }
 
                     composable<RegisterScreen> {
-                        AccountCreationContent()
+                        UserRegistrationScreen()
                     }
                 }
             }
