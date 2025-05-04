@@ -1,6 +1,5 @@
 package com.example.taskyapplication.auth.presentation
 
-import android.util.Patterns
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
