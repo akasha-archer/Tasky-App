@@ -60,19 +60,17 @@ class MainActivity : ComponentActivity() {
         enableEdgeToEdge()
         setContent {
             TaskyApplicationTheme {
-                TaskyApplicationTheme {
-                    Surface(color = MaterialTheme.colorScheme.background) {
-                        val isTokenValid by authViewModel.isTokenValid.collectAsStateWithLifecycle()
-                        val isUserRegistered =
-                            authViewModel.lceAuthUserData.value.data?.userId?.isNotEmpty() ?: false
-                        val navController = rememberNavController()
-                        // Composable that has NavHost as the root composable to handle navigation logic
-                        NavigationRoot(
-                            navController = navController,
-                            isLoggedIn = isTokenValid,
-                            isUserRegistered = isUserRegistered
-                        )
-                    }
+                Surface(color = MaterialTheme.colorScheme.background) {
+                    val isTokenValid by authViewModel.isTokenValid.collectAsStateWithLifecycle()
+                    val isUserRegistered =
+                        authViewModel.lceAuthUserData.value.data?.userId?.isNotEmpty() ?: false
+                    val navController = rememberNavController()
+                    // Composable that has NavHost as the root composable to handle navigation logic
+                    NavigationRoot(
+                        navController = navController,
+                        isLoggedIn = isTokenValid,
+                        isUserRegistered = isUserRegistered
+                    )
                 }
             }
         }
