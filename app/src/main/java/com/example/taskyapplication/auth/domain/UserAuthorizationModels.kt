@@ -5,9 +5,11 @@ import kotlinx.parcelize.Parcelize
 import kotlinx.serialization.Serializable
 
 data class AuthUserState(
-    val fullName: String?,
-    val userId: String?,
-    val isRegistered: Boolean
+    val fullName: String? = null,
+    val email: String? = null,
+    val userId: String? = null,
+    val password: String? = null,
+    val isRegistered: Boolean = false
 ) {
     fun userInitials(): String {
         return fullName?.split(" ")?.joinToString("") {
@@ -59,3 +61,23 @@ data class AuthInfo(
     val accessToken: String,
     val refreshToken: String,
 )
+
+interface InputErrorState
+
+@Parcelize
+data class PasswordValidationState(
+    val isValid: Boolean = false,
+    val errorMessage: String? = null
+): Parcelable, InputErrorState
+
+@Parcelize
+data class EmailValidationState(
+    val isValid: Boolean = false,
+    val errorMessage: String? = null
+): Parcelable, InputErrorState
+
+@Parcelize
+data class FullNameValidationState(
+    val isValid: Boolean = false,
+    val errorMessage: String? = null
+): Parcelable, InputErrorState

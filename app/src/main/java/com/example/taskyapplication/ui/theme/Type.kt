@@ -55,4 +55,10 @@ val TaskyTypography = Typography(
         lineHeight = 30.sp,
         letterSpacing = 0.0.sp
     ),
+    bodySmall = TextStyle(
+        fontFamily = interFamily400,
+        fontSize = 12.sp,
+        lineHeight = 20.sp,
+        letterSpacing = 0.1.sp
+    ),
 )

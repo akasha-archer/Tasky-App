@@ -12,6 +12,7 @@ val SecondaryBackground = Color(0xFFFFFFFF)
 val InputFieldGray = Color(0xFFF2F3F7)
 val InputHintGray = Color(0xFF76808F)
 val InputText = Color(0xFF3A4045)
+val InputSuccess = Color(0xFF279F70)
 
 // Dark values
 val Link_Dark = Color(0xFFB1B8FE)
@@ -23,4 +24,5 @@ val SecondaryBackground_Dark  = Color(0xFF1B1B20)
 val InputFieldGray_Dark  = Color(0xFF242428)
 val InputHintGray_Dark  = Color(0xFF808B9B)
 val InputText_Dark  = Color(0xFFF2F3F7)
+val InputSuccess_Dark  = Color(0xFF3BD699)
 

@@ -40,6 +40,7 @@ data class TaskyColors(
     val inputText: Color = InputText,
     val inputHintGray: Color = InputHintGray,
     val inputFieldGray: Color = InputFieldGray,
+    val validInput: Color = InputSuccess
 )
 
 private val DarkColorScheme = darkColorScheme(
@@ -70,7 +71,8 @@ private val DarkTaskyColors = TaskyColors(
     secondaryBackground = SecondaryBackground_Dark,
     inputText = InputText_Dark,
     inputHintGray = InputHintGray_Dark,
-    inputFieldGray = InputFieldGray_Dark
+    inputFieldGray = InputFieldGray_Dark,
+    validInput = InputSuccess_Dark
 )
 
 private val LightTaskyColors = TaskyColors(
@@ -88,6 +90,7 @@ private val LightTaskyColors = TaskyColors(
     inputText = InputText,
     inputHintGray = InputHintGray,
     inputFieldGray = InputFieldGray,
+    validInput = InputSuccess
 )
 
 @Composable
