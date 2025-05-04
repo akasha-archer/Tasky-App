@@ -4,6 +4,12 @@ import android.os.Parcelable
 import kotlinx.parcelize.Parcelize
 import kotlinx.serialization.Serializable
 
+data class RegistrationUserState(
+    val fullName: String?,
+    val email: String?,
+    val password: String?
+)
+
 data class AuthUserState(
     val fullName: String?,
     val userId: String?,
