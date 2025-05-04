@@ -14,7 +14,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import com.example.taskyapplication.auth.domain.RegisterUser
 import com.example.taskyapplication.auth.domain.RegisterUserState
 import com.example.taskyapplication.auth.domain.UserLoginData
 import com.example.taskyapplication.auth.presentation.AuthorizationCtaButton
