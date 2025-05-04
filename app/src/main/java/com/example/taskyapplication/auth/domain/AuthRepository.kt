@@ -1,9 +1,10 @@
 package com.example.taskyapplication.auth.domain
 
 import android.util.Log
+import com.example.taskyapplication.auth.data.AccessTokenResponse
+import com.example.taskyapplication.auth.data.LoggedInUserResponse
 import com.example.taskyapplication.auth.data.TaskyAppPreferences
 import com.example.taskyapplication.remote.TaskyApiService
-import kotlinx.serialization.SerializationException
 import javax.inject.Inject
 import javax.inject.Singleton
 
@@ -13,7 +14,7 @@ class AuthRepository @Inject constructor(
     private val appPreferences: TaskyAppPreferences
 ) {
     suspend fun registerNewUser(
-        userRegistrationData: NewUserRegistrationData
+        userRegistrationData: RegisterUserState
     ) {
         taskyApiService.registerUser(userRegistrationData)
     }
@@ -25,9 +26,9 @@ class AuthRepository @Inject constructor(
     }
 
     suspend fun requestAccessToken(
-        userRefreshTokenData: UserRefreshTokenData
-    ): UserAccessTokenResponse? {
-        return taskyApiService.getNewAccessToken(userRefreshTokenData).body()
+        accessTokenRequest: AccessTokenRequest
+    ): AccessTokenResponse? {
+        return taskyApiService.getNewAccessToken(accessTokenRequest).body()
     }
 
     suspend fun isTokenExpired(): Boolean {

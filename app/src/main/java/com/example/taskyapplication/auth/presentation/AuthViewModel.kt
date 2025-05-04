@@ -3,13 +3,10 @@ package com.example.taskyapplication.auth.presentation
 import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.example.taskyapplication.auth.data.LoggedInUserResponse
 import com.example.taskyapplication.auth.domain.AuthRepository
-import com.example.taskyapplication.auth.domain.AuthUserState
 import com.example.taskyapplication.auth.domain.Lce
-import com.example.taskyapplication.auth.domain.LoggedInUserResponse
-import com.example.taskyapplication.auth.domain.NewUserRegistrationData
-import com.example.taskyapplication.auth.domain.RegistrationUserState
-import com.example.taskyapplication.auth.domain.UserLoginData
+import com.example.taskyapplication.auth.domain.RegisterUserState
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -28,35 +25,35 @@ class AuthViewModel @Inject constructor(
     private val _isTokenValid = MutableStateFlow(false)
     val isTokenValid = _isTokenValid.asStateFlow()
 
-    private val _registrationUserState = MutableStateFlow(
-            RegistrationUserState(
+    private val _registerUserState = MutableStateFlow(
+            RegisterUserState(
                 fullName = "",
                 email = "",
                 password = ""
             )
         )
-    val registrationUserState = _registrationUserState.asStateFlow()
+    val registrationUserState = _registerUserState.asStateFlow()
 
     // update registration state values
     fun setRegistrationName(name: String) {
         viewModelScope.launch {
-            _registrationUserState.update { it.copy(fullName = name) }
+            _registerUserState.update { it.copy(fullName = name) }
         }
     }
 
     fun setRegistrationEmail(email: String) {
         viewModelScope.launch {
-            _registrationUserState.update { it.copy(email = email) }
+            _registerUserState.update { it.copy(email = email) }
         }
     }
 
     fun setRegistrationPassword(password: String) {
         viewModelScope.launch {
-            _registrationUserState.update { it.copy(password = password) }
+            _registerUserState.update { it.copy(password = password) }
         }
     }
 
-    suspend fun registerNewUser(registerData: NewUserRegistrationData) =
+    suspend fun registerNewUser(registerData: RegisterUserState) =
         viewModelScope.launch {
             try {
                 authRepository.registerNewUser(registerData)
