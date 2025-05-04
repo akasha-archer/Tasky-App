@@ -19,6 +19,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.focus.FocusDirection
 import androidx.compose.ui.platform.LocalFocusManager
+import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.input.PasswordVisualTransformation
@@ -26,10 +27,8 @@ import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.example.taskyapplication.BaseInputField
-import com.example.taskyapplication.auth.domain.InputErrorState
+import com.example.taskyapplication.auth.presentation.utils.ShowInputValidationIcon
 import com.example.taskyapplication.auth.presentation.utils.ShowOrHidePassword
-import com.example.taskyapplication.auth.presentation.utils.ValidInputIcon
-import com.example.taskyapplication.ui.theme.TaskyDesignSystem
 import com.example.taskyapplication.ui.theme.TaskyDesignSystem.Companion.taskyColors
 import com.example.taskyapplication.ui.theme.TaskyTypography
 
@@ -73,17 +72,21 @@ fun PasswordTextField(
     userInput: String,
     onUserInputChange: (String) -> Unit,
     placeholderText: String,
-    errorMessage: @Composable (() -> Unit)? = null,
+    isError: Boolean,
+    errorMessage: @Composable (() -> Unit),
     keyboardType: KeyboardType = KeyboardType.Password,
     onValidatePassword: (String) -> Unit = {}
 ) {
     var passwordVisible by rememberSaveable { mutableStateOf(false) }
+    val keyboardController = LocalSoftwareKeyboardController.current
+    val focusManager = LocalFocusManager.current
     BaseInputField(
         modifier = modifier,
         userInput = userInput,
         onUserInputChange = onUserInputChange,
         placeholderText = placeholderText,
-        errorMessage = errorMessage,
+        isError = isError,
+        errorMessage = { errorMessage() },
         visualTransformation = if (passwordVisible)
             VisualTransformation.None
         else PasswordVisualTransformation(),
@@ -99,7 +102,9 @@ fun PasswordTextField(
         ),
         keyboardActions = KeyboardActions(
             onDone = {
-                 onValidatePassword(userInput)
+                keyboardController?.hide()
+                focusManager.clearFocus()
+                onValidatePassword(userInput)
             },
         )
     )
@@ -110,10 +115,9 @@ fun UserInfoTextField(
     modifier: Modifier = Modifier,
     userInput: String,
     onUserInputChange: (String) -> Unit,
-    isError: Boolean = false,
+    isError: Boolean,
     placeholderText: String,
     errorMessage: @Composable (() -> Unit),
-    textFieldIcon: @Composable () -> Unit,
     visualTransformation: VisualTransformation = VisualTransformation.None,
     keyboardType: KeyboardType = KeyboardType.Text,
     onValidateInput: (String) -> Unit
@@ -124,20 +128,23 @@ fun UserInfoTextField(
         userInput = userInput,
         onUserInputChange = onUserInputChange,
         placeholderText = placeholderText,
-        errorMessage = errorMessage,
+        isError = isError,
+        errorMessage = { errorMessage() },
         visualTransformation = visualTransformation,
-        textFieldIcon = textFieldIcon,
+        textFieldIcon = {
+            ShowInputValidationIcon(
+                isError = (isError || userInput.isEmpty())
+            )
+        },
         keyboardOptions = KeyboardOptions(
             keyboardType = keyboardType,
             imeAction = ImeAction.Next
         ),
         keyboardActions = KeyboardActions(
             onNext = {
+                onValidateInput(userInput)
                 focusManager.moveFocus(FocusDirection.Down)
             },
-            onDone = {
-                onValidateInput(userInput)
-            }
         )
     )
 }
@@ -179,6 +186,7 @@ fun UserInputPreview() {
         userInput = "",
         onUserInputChange = { },
         placeholderText = "Enter your name",
+        isError = false,
         errorMessage = {
             Text(
                 text = "An input error has occurred",
@@ -188,7 +196,7 @@ fun UserInputPreview() {
         },
         keyboardType = KeyboardType.Text,
         onValidateInput = { },
-        textFieldIcon = {}
+//        textFieldIcon = {}
     )
 }
 
@@ -199,6 +207,14 @@ fun PasswordInputPreview() {
         userInput = "1234abc",
         onUserInputChange = { },
         placeholderText = "Enter your password",
+        isError = false,
+        errorMessage = {
+            Text(
+                text = "An input error has occurred",
+                color = taskyColors.error,
+                style = TaskyTypography.bodySmall
+            )
+        }
     )
 }
 

@@ -5,9 +5,9 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.taskyapplication.auth.domain.AuthRepository
 import com.example.taskyapplication.auth.domain.AuthUserState
-import com.example.taskyapplication.auth.domain.EmailValidationState
 import com.example.taskyapplication.auth.domain.Lce
 import com.example.taskyapplication.auth.domain.LoggedInUserResponse
+import com.example.taskyapplication.auth.domain.NameValidationState
 import com.example.taskyapplication.auth.domain.NewUserRegistrationData
 import com.example.taskyapplication.auth.domain.PasswordValidationState
 import com.example.taskyapplication.auth.domain.UserLoginData
@@ -39,8 +39,8 @@ class AuthViewModel @Inject constructor(
     private val _passwordValidationState = MutableStateFlow<PasswordValidationState?>(null)
     val passwordValidationState = _passwordValidationState.asStateFlow()
 
-    private val _emailValidationState = MutableStateFlow<EmailValidationState?>(null)
-    val emailValidationState = _emailValidationState.asStateFlow()
+    private val _nameValidationState = MutableStateFlow<NameValidationState?>(null)
+    val nameValidationState = _nameValidationState.asStateFlow()
 
     fun updateUserName(name: String) {
         _authUserState.update { state ->
@@ -56,8 +56,8 @@ class AuthViewModel @Inject constructor(
         }
     }
 
-    suspend fun updateUserPassword(password: String) {
-        if (_passwordValidationState.value?.isValid == true) {
+     fun updateUserPassword(password: String) {
+         viewModelScope.launch {
             _authUserState.update { state ->
                 state?.copy(password = password)
             }
@@ -124,76 +124,72 @@ class AuthViewModel @Inject constructor(
      * - Contains at least one digit.
      *
      * @param password The password string to validate.
-     * @return True if the password meets all criteria, false otherwise.
+     * @return PasswordValidationState containing validation result and error message if invalid
      */
-    fun isPasswordValid(password: String) {
-        var errorMessage: String? = null
-        var isValid = true
+    fun validatePassword(password: String) {
         viewModelScope.launch {
+            var errorMessage: String? = null
+            var isValid = true
+
             // Check 1: Minimum length
-            if (password.length < 9) {
+            if (password.trim().length < 9) {
                 errorMessage = "Password must be at least 9 characters long."
-                isValid = !isValid
+                isValid = false
             }
-
-            // Check 2: Contains at least one lowercase letter
-            val hasLowercase = password.any { it.isLowerCase() }
-            if (!hasLowercase) {
+            else if (!password.any { it.isLowerCase() }) {
+                // Check 2: Contains at least one lowercase letter
                 errorMessage = "Password must contain at least one lowercase letter."
-                isValid = !isValid
+                isValid = false
             }
-
-            // Check 3: Contains at least one uppercase letter
-            val hasUppercase = password.any { it.isUpperCase() }
-            if (!hasUppercase) {
+            else if (!password.any { it.isUpperCase() }) {
+                // Check 3: Contains at least one uppercase letter
                 errorMessage = "Password must contain at least one uppercase letter."
-                isValid = !isValid
+                isValid = false
             }
-
-            // Check 4: Contains at least one digit
-            val hasDigit = password.any { it.isDigit() }
-            if (!hasDigit) {
+            else if (!password.any { it.isDigit() }) {
+                // Check 4: Contains at least one digit
                 errorMessage = "Password must contain at least one digit."
-                isValid = !isValid
+                isValid = false
             }
+                _passwordValidationState.value = PasswordValidationState(isValid, errorMessage)
         }
-        _passwordValidationState.value = PasswordValidationState(isValid, errorMessage)
     }
 
     /**
-     * Validates an email address based on basic criteria:
-     * - Must contain the '@' symbol.
-     * - Must have characters following the '@' symbol (representing the domain).
+     * Validates a full name based on the following criteria:
+     * - Contains at least a first name and last name separated by a space
+     * - Maximum length of 50 characters
+     * - Does not contain special characters or digits
      *
-     * @param email The email string to validate.
-     * @return True if the email meets the basic criteria, false otherwise.
+     * @param fullName The full name string to validate
+     * @return NameValidationState containing validation result and error message if invalid
      */
-    fun isEmailValid(email: String) {
-        var errorMessage: String? = null
-        var isValid = true
+    fun validateFullName(fullName: String) {
         viewModelScope.launch {
-            // Check 1: Must contain '@'
-            val atIndex = email.indexOf('@')
-            if (atIndex == -1) {
-                errorMessage = "Email must contain an '@' symbol."
-                isValid = !isValid
+            var errorMessage: String? = null
+            var isValid = true
+            val trimmedName = fullName.trim()
+
+            when {
+                trimmedName.isEmpty() -> {
+                    errorMessage = "Name cannot be empty."
+                    isValid = false
+                }
+                trimmedName.length > 50 -> {
+                    errorMessage = "Name cannot exceed 50 characters."
+                    isValid = false
+                }
+                !trimmedName.contains(" ") -> {
+                    errorMessage = "Please enter both first and last name."
+                    isValid = false
+                }
+                !trimmedName.matches(Regex("^[a-zA-Z]+(\\s[a-zA-Z]+)+\$")) -> {
+                    errorMessage = "Name should contain only letters and spaces."
+                    isValid = false
+                }
             }
 
-            // Check 2: Must have something after '@' (domain part)
-            // Ensure '@' is not the last character in the string.
-            if (atIndex == email.length - 1) {
-                errorMessage = "Email must have a domain name after the '@' symbol."
-                isValid = !isValid
-            }
-
-            // Check 3: Ensure there's something before '@' (local part)
-            // Uncomment this block if you want to enforce having a local part.
-            if (atIndex == 0) {
-                errorMessage = "Email must have a local part before the '@' symbol."
-                isValid = !isValid
-            }
+            _nameValidationState.value = NameValidationState(isValid, errorMessage)
         }
-        Log.d("EmailValidation", "Email: $email, isValid: $isValid, errorMessage: $errorMessage")
-        _emailValidationState.value = EmailValidationState(isValid, errorMessage)
     }
 }

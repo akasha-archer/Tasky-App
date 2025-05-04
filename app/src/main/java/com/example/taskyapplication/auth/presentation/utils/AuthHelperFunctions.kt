@@ -20,8 +20,6 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.example.taskyapplication.R
-import com.example.taskyapplication.auth.domain.EmailValidationState
-import com.example.taskyapplication.auth.domain.PasswordValidationState
 import com.example.taskyapplication.ui.theme.TaskyDesignSystem.Companion.taskyColors
 import com.example.taskyapplication.ui.theme.TaskyTypography
 
@@ -50,11 +48,13 @@ fun AuthScreenTitle(
 }
 
 @Composable
-fun ValidInputIcon(
+fun ShowInputValidationIcon(
     modifier: Modifier = Modifier,
+    isError: Boolean,
 ) {
+    val iconAlpha = if (isError) 0f else 1f
     Icon(
-        modifier = modifier.alpha(1.0f),
+        modifier = modifier.alpha(iconAlpha),
         imageVector = Icons.Filled.Done,
         contentDescription = "Your input is valid",
         tint = taskyColors.validInput,

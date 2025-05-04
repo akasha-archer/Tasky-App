@@ -1,32 +1,30 @@
 package com.example.taskyapplication.auth.presentation
 
-import android.widget.Toast
-import androidx.compose.animation.AnimatedVisibility
+import android.util.Patterns
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.focus.onFocusChanged
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.KeyboardType
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.example.taskyapplication.R
-import com.example.taskyapplication.auth.domain.NewUserRegistrationData
 import com.example.taskyapplication.auth.domain.UserLoginData
 import com.example.taskyapplication.ui.theme.TaskyDesignSystem.Companion.taskyColors
 import com.example.taskyapplication.ui.theme.TaskyTypography
 import androidx.hilt.navigation.compose.hiltViewModel
-import com.example.taskyapplication.auth.presentation.utils.ValidInputIcon
 
 @Composable
 fun AccountCreationContent(
@@ -34,34 +32,42 @@ fun AccountCreationContent(
     onRegisterClick: () -> Unit = {},
     authViewModel: AuthViewModel = hiltViewModel()
 ) {
-    val userState by authViewModel.authUserState.collectAsState()
-    val emailInputState by authViewModel.emailValidationState.collectAsState()
-    val passwordInputState by authViewModel.passwordValidationState.collectAsState()
+    val passwordValidation = authViewModel.passwordValidationState.collectAsState()
+    val nameValidation = authViewModel.nameValidationState.collectAsState()
 
-    // local mutable state initialized from the ViewModel
-    var registrationName by rememberSaveable {
-        mutableStateOf(userState?.fullName.orEmpty())
+    var registrationName by remember {
+        mutableStateOf("")
     }
-    var registrationEmail by rememberSaveable {
-        mutableStateOf(userState?.email.orEmpty())
+    var registrationEmail by remember {
+        mutableStateOf("")
     }
-    var registrationPassword by rememberSaveable {
-        mutableStateOf(userState?.password.orEmpty())
+    var registrationPassword by remember {
+        mutableStateOf("")
     }
 
-    val showErrorMessage by rememberSaveable {
-        mutableStateOf(emailInputState?.isValid == false || passwordInputState?.isValid == false)
-    }
-
-    var isButtonEnabled by rememberSaveable {
+    var isEmailInputError by remember {
         mutableStateOf(false)
     }
 
-    val newUserData = NewUserRegistrationData(
-        fullName = registrationName,
-        email = registrationEmail,
-        password = registrationPassword
-    )
+    var hasEmailBeenFocused by remember {
+        mutableStateOf(false)
+    }
+
+    var isNameInputError by remember {
+        mutableStateOf(false)
+    }
+
+    var hasNameBeenFocused by remember {
+        mutableStateOf(false)
+    }
+
+    var isPasswordInputError by remember {
+        mutableStateOf(passwordValidation.value?.isValid == false)
+    }
+
+    var hasPasswordBeenFocused by remember {
+        mutableStateOf(false)
+    }
 
     Column(
         modifier = modifier
@@ -70,30 +76,69 @@ fun AccountCreationContent(
         verticalArrangement = Arrangement.Top,
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
-        UserInfoTextField(
+        UserInfoTextField(  // User Name
             userInput = registrationName,
             onUserInputChange = {
                 registrationName = it
+                if (hasNameBeenFocused) {
+                    authViewModel.validateFullName(it)
+                    isNameInputError = nameValidation.value?.isValid == false
+                }
             },
+            modifier = Modifier
+                .onFocusChanged { focusState ->
+                    if (focusState.isFocused) {
+                        hasNameBeenFocused = true
+                    } else if (registrationName.isNotEmpty()) {
+                        // Validate when user leaves the field and it's not empty
+                        authViewModel.validateFullName(registrationName)
+                        isNameInputError = nameValidation.value?.isValid == false
+                    }
+                },
+            isError = isNameInputError,
             errorMessage = {
-
+                if (isNameInputError) {
+                    Text(
+                        modifier = Modifier.fillMaxWidth(),
+                        text = nameValidation.value?.errorMessage ?: "",
+                        color = taskyColors.error,
+                        style = TaskyTypography.bodySmall
+                    )
+                }
             },
             placeholderText = stringResource(R.string.register_name_placeholder),
-            onValidateInput = { },
-            textFieldIcon = {
-                ValidInputIcon()
-            }
+            onValidateInput = { input ->
+                authViewModel.updateUserName(input)
+            },
         )
         UserInfoTextField( // User's Email
             userInput = registrationEmail,
             onUserInputChange = {
                 registrationEmail = it
-                authViewModel.isEmailValid(registrationEmail)
+//                if (hasEmailBeenFocused) {
+//                    isEmailInputError =
+//                        Patterns.EMAIL_ADDRESS.matcher(registrationEmail).matches().not()
+//                }
             },
+            modifier = Modifier
+                .onFocusChanged { focusState ->
+                    if (focusState.isFocused) {
+                        hasEmailBeenFocused = true
+                    } else if (registrationEmail.isNotEmpty()) {
+                        isEmailInputError =
+                            Patterns.EMAIL_ADDRESS.matcher(registrationEmail).matches().not()
+                    }
+//                    if (!focusState.isFocused && registrationEmail.isNotEmpty()) {
+//                        isEmailInputError =
+//                            Patterns.EMAIL_ADDRESS.matcher(registrationEmail).matches().not()
+//                    }
+                },
+            isError = isEmailInputError,
             errorMessage = {
-                if (showErrorMessage) {
+                if (isEmailInputError) {
                     Text(
-                        text = emailInputState?.errorMessage.orEmpty(),
+                        modifier = Modifier.fillMaxWidth(),
+                        text = "Please enter a valid email address",
                         color = taskyColors.error,
                         style = TaskyTypography.bodySmall
                     )
@@ -102,40 +147,50 @@ fun AccountCreationContent(
             placeholderText = stringResource(R.string.register_email_placeholder),
             keyboardType = KeyboardType.Email,
             onValidateInput = {
-                authViewModel.isEmailValid(registrationEmail)
-                if (emailInputState?.isValid == true) {
+                if (!isEmailInputError) {
                     authViewModel.updateUserEmail(registrationEmail)
                 }
             },
-            textFieldIcon = {
-                AnimatedVisibility(visible = !showErrorMessage) {
-                    ValidInputIcon()
-                }
-            }
         )
-        PasswordTextField(
+        PasswordTextField(  // User Password
             userInput = registrationPassword,
             onUserInputChange = {
                 registrationPassword = it
+                if (hasPasswordBeenFocused) {
+                    authViewModel.validatePassword(it)
+                    isPasswordInputError = passwordValidation.value?.isValid == false
+                }
             },
-            onValidatePassword = {
-                authViewModel.isPasswordValid(it)
-            },
+            modifier = Modifier
+                .onFocusChanged { focusState ->
+                    if (focusState.isFocused) {
+                        hasPasswordBeenFocused = true
+                    } else if (registrationPassword.isNotEmpty()) {
+                        // Validate when user leaves the field and it's not empty
+                        authViewModel.validatePassword(registrationPassword)
+                        isPasswordInputError = passwordValidation.value?.isValid == false
+                    }
+                },
+            isError = isPasswordInputError,
             errorMessage = {
-                Text(
-                    text = passwordInputState?.errorMessage ?: "",
-                    color = taskyColors.error,
-                    style = TaskyTypography.bodySmall
-                )
+                if (isPasswordInputError) {
+                    Text(
+                        text = passwordValidation.value?.errorMessage ?: "",
+                        color = taskyColors.error,
+                        style = TaskyTypography.bodySmall
+                    )
+                }
+            },
+            onValidatePassword = { input ->
+                    authViewModel.updateUserPassword(input)
             },
             placeholderText = stringResource(R.string.register_login_password_placeholder),
         )
-
         AuthorizationCtaButton(
             modifier = Modifier
                 .padding(top = 16.dp),
             buttonText = "GET STARTED",
-            isButtonEnabled = false,
+            isButtonEnabled = true,
             onButtonClick = {
                 onRegisterClick()
                 // navigate to log in screen
@@ -187,7 +242,7 @@ fun LoginContent(
             placeholderText = stringResource(id = R.string.login_email_placeholder),
             keyboardType = KeyboardType.Email,
             onValidateInput = {},
-            textFieldIcon = {},
+            isError = false,
             errorMessage = {},
         )
         PasswordTextField(
@@ -195,7 +250,9 @@ fun LoginContent(
             onUserInputChange = {
                 passwordInput = it
             },
+            isError = false,
             placeholderText = stringResource(id = R.string.register_login_password_placeholder),
+            errorMessage = {},
         )
         AuthorizationCtaButton(
             modifier = Modifier.padding(top = 16.dp),
