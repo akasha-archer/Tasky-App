@@ -1,6 +1,7 @@
 package com.example.taskyapplication.auth.presentation
 
 import android.util.Log
+import android.util.Patterns
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.taskyapplication.auth.data.LoggedInUserResponse
@@ -31,17 +32,11 @@ class AuthViewModel @Inject constructor(
     private val _nameValidationState = MutableStateFlow<NameValidationState?>(null)
     val nameValidationState = _nameValidationState.asStateFlow()
 
+    private val _emailValidationState = MutableStateFlow<Boolean?>(null)
+    val emailValidationState = _emailValidationState.asStateFlow()
+
     private val _passwordValidationState = MutableStateFlow<PasswordValidationState?>(null)
     val passwordValidationState = _passwordValidationState.asStateFlow()
-
-    private val _isNameInputError = MutableStateFlow(false)
-    val isNameInputError = _isNameInputError.asStateFlow()
-
-    private val _isEmailInputError = MutableStateFlow(false)
-    val isEmailInputError = _isEmailInputError.asStateFlow()
-
-    private val _isPasswordInputError = MutableStateFlow(false)
-    val isPasswordInputError = _isPasswordInputError.asStateFlow()
 
     private val _registerUserState = MutableStateFlow(
             RegisterUserState(
@@ -66,7 +61,7 @@ class AuthViewModel @Inject constructor(
     }
 
     fun setRegistrationPassword(password: String) {
-        viewModelScope.launch(Dispatchers.Main.immediate)  {
+        viewModelScope.launch(Dispatchers.Main.immediate) {
             _registerUserState.update { it.copy(password = password) }
         }
     }
@@ -116,6 +111,12 @@ class AuthViewModel @Inject constructor(
 
     suspend fun logOut() {
         authRepository.logoutUser()
+    }
+
+    fun validateEmail(email: String) {
+        viewModelScope.launch {
+            _emailValidationState.value = Patterns.EMAIL_ADDRESS.matcher(email).matches()
+        }
     }
 
     /**

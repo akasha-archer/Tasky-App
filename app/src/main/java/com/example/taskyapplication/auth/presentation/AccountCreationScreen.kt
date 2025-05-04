@@ -38,24 +38,14 @@ fun AccountCreationScreen(
     authViewModel: AuthViewModel = hiltViewModel()
 ) {
     val registerState by authViewModel.registerUserState.collectAsState()
+    val emailValidationState by authViewModel.emailValidationState.collectAsState()
     val nameValidationState by authViewModel.nameValidationState.collectAsState()
     val passwordValidationState by authViewModel.passwordValidationState.collectAsState()
 
-    var isEmailInputError by remember {
-        mutableStateOf(false)
-    }
     var hasEmailBeenFocused by remember {
         mutableStateOf(false)
     }
-
-    var isNameInputError by remember {
-        mutableStateOf(false)
-    }
     var hasNameBeenFocused by remember {
-        mutableStateOf(false)
-    }
-
-    var isPasswordInputError by remember {
         mutableStateOf(false)
     }
     var hasPasswordBeenFocused by remember {
@@ -82,7 +72,6 @@ fun AccountCreationScreen(
                         authViewModel.setRegistrationName(value)
                         if (hasNameBeenFocused) {
                             authViewModel.validateFullName(value)
-                            isNameInputError = nameValidationState?.isValid == false
                         }
                     },
                     modifier = Modifier
@@ -92,12 +81,11 @@ fun AccountCreationScreen(
                             } else if (registerState.fullName.isNotEmpty()) {
                                 // Validate when user leaves the field and it's not empty
                                 authViewModel.validateFullName(registerState.fullName)
-                                isNameInputError = nameValidationState?.isValid == false
                             }
                         },
-                    isError = isNameInputError,
+                    isError = nameValidationState?.isValid == false,
                     errorMessage = {
-                        if (isNameInputError) {
+                        if (nameValidationState?.isValid == false) {
                             Text(
                                 modifier = Modifier.fillMaxWidth(),
                                 text = nameValidationState?.errorMessage ?: "",
@@ -115,20 +103,22 @@ fun AccountCreationScreen(
                     userInput = registerState.email,
                     onUserInputChange = { value ->
                         authViewModel.setRegistrationEmail(value)
+                        if (hasEmailBeenFocused) {
+                            authViewModel.validateEmail(value)
+                        }
                     },
                     modifier = Modifier
                         .onFocusChanged { focusState ->
                             if (focusState.isFocused) {
                                 hasEmailBeenFocused = true
                             } else if (registerState.email.isNotEmpty()) {
-                                isEmailInputError =
-                                    Patterns.EMAIL_ADDRESS.matcher(registerState.email)
-                                        .matches().not()
+                                // Validate when user leaves the field and it's not empty
+                                authViewModel.validateEmail(registerState.email)
                             }
                         },
-                    isError = isEmailInputError,
+                    isError = emailValidationState == false,
                     errorMessage = {
-                        if (isEmailInputError) {
+                        if (emailValidationState == false) {
                             Text(
                                 modifier = Modifier.fillMaxWidth(),
                                 text = "Please enter a valid email address",
@@ -140,7 +130,7 @@ fun AccountCreationScreen(
                     placeholderText = stringResource(R.string.register_email_placeholder),
                     keyboardType = KeyboardType.Email,
                     onValidateInput = {
-                        if (!isEmailInputError) {
+                        if (emailValidationState == false) {
                             authViewModel.setRegistrationEmail(it)
                         }
                     },
@@ -151,7 +141,6 @@ fun AccountCreationScreen(
                         authViewModel.setRegistrationPassword(value)
                         if (hasPasswordBeenFocused) {
                             authViewModel.validatePassword(value)
-                            isPasswordInputError = passwordValidationState?.isValid == false
                         }
                     },
                     modifier = Modifier
@@ -161,12 +150,11 @@ fun AccountCreationScreen(
                             } else if (registerState.password.isNotEmpty()) {
                                 // Validate when user leaves the field and it's not empty
                                 authViewModel.validatePassword(registerState.password)
-                                isPasswordInputError = passwordValidationState?.isValid == false
                             }
                         },
-                    isError = isPasswordInputError,
+                    isError = passwordValidationState?.isValid == false,
                     errorMessage = {
-                        if (isPasswordInputError) {
+                        if (passwordValidationState?.isValid == false) {
                             Text(
                                 text = passwordValidationState?.errorMessage ?: "",
                                 color = taskyColors.error,
@@ -183,7 +171,10 @@ fun AccountCreationScreen(
                     modifier = Modifier
                         .padding(top = 16.dp),
                     buttonText = "GET STARTED",
-                    isButtonEnabled = (!isNameInputError && !isEmailInputError && !isPasswordInputError),
+                    isButtonEnabled = ((nameValidationState?.isValid == false) ||
+                            (nameValidationState?.isValid == false) ||
+                            (passwordValidationState?.isValid == false)
+                            ),
                     onButtonClick = {
                         onRegisterClick()
                         // navigate to log in screen
