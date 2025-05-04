@@ -71,7 +71,7 @@ class AuthViewModel @Inject constructor(
         }
     }
 
-    suspend fun registerNewUser(registerData: RegisterUserState) =
+     fun registerNewUser(registerData: RegisterUserState) =
         viewModelScope.launch {
             try {
                 authRepository.registerNewUser(registerData)
