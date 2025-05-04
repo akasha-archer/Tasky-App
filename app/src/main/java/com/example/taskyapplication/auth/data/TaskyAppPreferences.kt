@@ -1,6 +1,7 @@
 package com.example.taskyapplication.auth.data
 
 import android.content.Context
+import androidx.datastore.preferences.core.booleanPreferencesKey
 import androidx.datastore.preferences.core.edit
 import androidx.datastore.preferences.core.stringPreferencesKey
 import com.example.taskyapplication.di.dataStore
@@ -11,36 +12,56 @@ import javax.inject.Inject
 class TaskyAppPreferences @Inject constructor(
     private val context: Context
 ) {
-    // Cache for the token
-    private var cachedToken: String = ""
 
-    //write token to store
-    suspend fun saveAuthToken(newToken: String) {
+    // Saving and retrieving user's registration status
+    suspend fun saveUserRegisteredState(isRegistered: Boolean) {
         context.dataStore.edit { preferences ->
-            preferences[AUTH_TOKEN] = newToken
-            // Update cache when token is set
-            cachedToken = newToken
+            preferences[REGISTERED_USER_STATE] = isRegistered
         }
     }
 
-    // Suspend function to update the cache from DataStore
-    suspend fun refreshAuthToken() {
-        context.dataStore.data.collect { preferences ->
-            cachedToken = preferences[AUTH_TOKEN] ?: "no value found for token"
-        }
-    }
-
-    // Suspend function to read and write to DataStore
-    suspend fun readAuthToken(): String {
+    suspend fun fetchUserRegisteredState(): Boolean {
         return context.dataStore.data.map { preferences ->
-            preferences[AUTH_TOKEN] ?: "no value found for token"
+            preferences[REGISTERED_USER_STATE] ?: false
         }.first()
     }
 
-    // Non-suspend function for the auth interceptor to use
-    fun getCachedAuthToken(): String = cachedToken
+    // manage tokens with data store
+    suspend fun saveAccessToken(newToken: String) {
+        context.dataStore.edit { preferences ->
+            preferences[ACCESS_TOKEN] = newToken
+        }
+    }
+
+    suspend fun readAccessToken(): String {
+        return context.dataStore.data.map { preferences ->
+            preferences[ACCESS_TOKEN] ?: ""
+        }.first()
+    }
+
+    suspend fun saveRefreshToken(newToken: String) {
+        context.dataStore.edit { preferences ->
+            preferences[REFRESH_TOKEN] = newToken
+        }
+    }
+
+    suspend fun readRefreshToken(): String {
+        return context.dataStore.data.map { preferences ->
+            preferences[REFRESH_TOKEN] ?: ""
+        }.first()
+    }
+
+    suspend fun deleteRefreshToken() {
+        context.dataStore.edit { preferences ->
+            preferences.remove(REFRESH_TOKEN)
+        }
+    }
+
+
 
     companion object {
-        private val AUTH_TOKEN = stringPreferencesKey("auth_token")
+        private val ACCESS_TOKEN = stringPreferencesKey("access_token")
+        private val REFRESH_TOKEN = stringPreferencesKey("refresh_token")
+        private val REGISTERED_USER_STATE = booleanPreferencesKey("user_registered_state")
     }
 }

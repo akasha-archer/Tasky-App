@@ -7,6 +7,7 @@ plugins {
     alias(libs.plugins.hilt.android)
     alias(libs.plugins.ksp)
     alias(libs.plugins.kotlin.serialization)
+    alias(libs.plugins.kotlin.parcelize)
 }
 
 android {
@@ -42,9 +43,11 @@ android {
                 "proguard-rules.pro"
             )
             buildConfigField("String", "API_KEY",properties.getProperty("API_KEY"))
+            buildConfigField("String", "BASE_URL",properties.getProperty("BASE_URL"))
         }
         debug {
             buildConfigField("String", "API_KEY",properties.getProperty("API_KEY"))
+            buildConfigField("String", "BASE_URL",properties.getProperty("BASE_URL"))
         }
     }
     compileOptions {
@@ -83,6 +86,9 @@ dependencies {
     implementation(platform(libs.okhttp.bom))
     implementation(libs.kotlinx.serialization.json)
     implementation(libs.retrofit2.kotlinx.serialization.converter)
+    implementation(libs.androidx.core.splashscreen)
+    implementation(libs.androidx.navigation.compose)
+    implementation(libs.androidx.activity)
 
     ksp(libs.hilt.compiler)
 

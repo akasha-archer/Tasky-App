@@ -1,4 +1,5 @@
 [versions]
+activity = "1.6.0-alpha05"
 agp = "8.8.2"
 kotlin = "2.1.20"
 coreKtx = "1.15.0"
@@ -6,6 +7,7 @@ junit = "4.13.2"
 junitVersion = "1.2.1"
 espressoCore = "3.6.1"
 kotlinxSerializationJson = "1.8.1"
+kotlinPlugin = "2.1.20"
 lifecycleRuntimeKtx = "2.8.7"
 activityCompose = "1.10.1"
 composeBom = "2024.04.01"
@@ -16,8 +18,12 @@ kspVersion = "2.1.20-1.0.32"
 datastore = "1.1.4"
 retrofit2KotlinxSerializationConverter = "1.0.0"
 retrofitgson = "2.7.2"
+splashscreen = "1.0.1"
+composeNavigation = "2.8.9"
+kotlinParcelize = "2.2.0-Beta1"
 
 [libraries]
+androidx-activity = { module = "androidx.activity:activity", version.ref = "activity" }
 androidx-core-ktx = { group = "androidx.core", name = "core-ktx", version.ref = "coreKtx" }
 junit = { group = "junit", name = "junit", version.ref = "junit" }
 androidx-junit = { group = "androidx.test.ext", name = "junit", version.ref = "junitVersion" }
@@ -39,11 +45,11 @@ squareup-retrofit2 = { group = "com.squareup.retrofit2", name = "retrofit", vers
 squareup-okhttp = { group = "com.squareup.okhttp3", name = "okhttp" }
 squareup-okhttp-interceptor = { group = "com.squareup.okhttp3", name = "logging-interceptor" }
 retrofit-gson = { group = "com.squareup.retrofit2", name = "converter-gson", version.ref = "retrofitgson" }
-
 hilt-android = { group = "com.google.dagger", name = "hilt-android", version.ref = "hilt" }
 hilt-compiler = { group = "com.google.dagger", name = "hilt-android-compiler", version.ref = "hilt" }
 androidx-datastore = { group = "androidx.datastore", name = "datastore-preferences", version.ref = "datastore" }
-
+androidx-core-splashscreen = { group = "androidx.core", name = "core-splashscreen", version.ref="splashscreen"}
+androidx-navigation-compose = { module = "androidx.navigation:navigation-compose",   version.ref="composeNavigation"}
 
 
 [plugins]
@@ -52,4 +58,5 @@ kotlin-android = { id = "org.jetbrains.kotlin.android", version.ref = "kotlin" }
 kotlin-compose = { id = "org.jetbrains.kotlin.plugin.compose", version.ref = "kotlin" }
 hilt-android = { id = "com.google.dagger.hilt.android", version.ref = "hilt" }
 ksp = { id = "com.google.devtools.ksp", version.ref = "kspVersion" }
-kotlin-serialization = { id = "org.jetbrains.kotlin.plugin.serialization", version.ref = "kotlin" }
+kotlin-serialization = { id = "org.jetbrains.kotlin.plugin.serialization", version.ref = "kotlinPlugin" }
+kotlin-parcelize = { id = "org.jetbrains.kotlin.plugin.parcelize", version.ref = "kotlinPlugin" }
