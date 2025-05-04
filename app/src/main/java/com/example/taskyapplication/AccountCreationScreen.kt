@@ -25,7 +25,6 @@ import com.example.taskyapplication.auth.presentation.UserInfoTextField
 @Composable
 fun AccountCreationScreen(
     modifier: Modifier = Modifier,
-    navController: NavController,
     onRegisterClick: (NewUserRegistrationData) -> Unit = {}
 ) {
     var registrationName by rememberSaveable {
@@ -94,7 +93,6 @@ fun AccountCreationScreen(
 @Composable
 fun LoginScreen(
     modifier: Modifier = Modifier,
-    navController: NavController = rememberNavController(),
     onLoginClick: (UserLoginData) -> Unit = {},
 ) {
     var emailInput by rememberSaveable {
@@ -151,7 +149,6 @@ fun LoginScreen(
 @Composable
 fun AuthenticationScreenPreview() {
     AccountCreationScreen(
-        navController = rememberNavController(),
         onRegisterClick = {}
     )
 }
@@ -160,7 +157,6 @@ fun AuthenticationScreenPreview() {
 @Composable
 fun RegisteredUserScreenPreview() {
     LoginScreen(
-        navController = rememberNavController(),
         onLoginClick = {}
     )
 }

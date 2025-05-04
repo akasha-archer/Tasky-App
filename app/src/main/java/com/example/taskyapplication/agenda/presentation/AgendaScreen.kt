@@ -15,7 +15,6 @@ import androidx.navigation.compose.rememberNavController
 
 @Composable
 fun AgendaScreen(
-    navController: NavController = rememberNavController(),
     modifier: Modifier = Modifier
 ) {
     Column(
@@ -32,5 +31,5 @@ fun AgendaScreen(
 @Preview(showBackground = true)
 @Composable
 fun AgendaScreenPreview() {
-    AgendaScreen(rememberNavController())
+    AgendaScreen()
 }

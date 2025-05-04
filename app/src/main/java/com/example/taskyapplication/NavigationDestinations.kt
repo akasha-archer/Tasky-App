@@ -1,11 +1,54 @@
 package com.example.taskyapplication
 
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.ui.Modifier
+import androidx.navigation.NavHostController
+import androidx.navigation.compose.NavHost
+import androidx.navigation.compose.composable
+import com.example.taskyapplication.agenda.presentation.AgendaScreen
 import kotlinx.serialization.Serializable
 
-// navigation screen destinations
+@Composable
+fun NavigationRoot(
+    modifier: Modifier = Modifier,
+    navController: NavHostController,
+    isLoggedIn: Boolean = false,
+    isUserRegistered: Boolean = false
+) {
+    NavHost(
+        modifier = modifier,
+        navController = navController,
+        startDestination = UserStateScreen
+    ) {
+        composable<UserStateScreen> {
+            LaunchedEffect(isLoggedIn, isUserRegistered) {
+                val route = when {
+                    isLoggedIn -> AgendaScreen
+                    isUserRegistered -> LoginScreen
+                    else -> RegisterScreen
+                }
+                navController.navigate(route) {
+                    popUpTo(UserStateScreen) { inclusive = true }
+                }
+            }
+        }
+        composable<AgendaScreen> {
+            AgendaScreen()
+        }
 
-// shell for initial screen that selects UI based on
-// user's token validity or registration status
+        composable<LoginScreen> {
+            LoginScreen()
+        }
+
+        composable<RegisterScreen> {
+            AccountCreationScreen()
+        }
+    }
+}
+
+
+// navigation screen destinations
 @Serializable
 object UserStateScreen
 
