@@ -1,4 +1,4 @@
-package com.example.taskyapplication.auth.presentation
+package com.example.taskyapplication.auth.presentation.components
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
