@@ -39,12 +39,12 @@ class AuthViewModel @Inject constructor(
     val passwordValidationState = _passwordValidationState.asStateFlow()
 
     private val _registerUserState = MutableStateFlow(
-            RegisterUserState(
-                fullName = "",
-                email = "",
-                password = ""
-            )
+        RegisterUserState(
+            fullName = "",
+            email = "",
+            password = ""
         )
+    )
     val registerUserState = _registerUserState.asStateFlow()
 
     // update registration state values
@@ -55,7 +55,7 @@ class AuthViewModel @Inject constructor(
     }
 
     fun setRegistrationEmail(email: String) {
-        viewModelScope.launch(Dispatchers.Main.immediate)  {
+        viewModelScope.launch(Dispatchers.Main.immediate) {
             _registerUserState.update { it.copy(email = email) }
         }
     }
@@ -103,7 +103,7 @@ class AuthViewModel @Inject constructor(
 //        }
 //    }
 
-     fun isTokenExpired() {
+    fun isTokenExpired() {
         viewModelScope.launch {
             _isTokenValid.value = authRepository.isTokenExpired()
         }
@@ -138,18 +138,15 @@ class AuthViewModel @Inject constructor(
             if (password.trim().length < 9) {
                 errorMessage = "Password must be at least 9 characters long."
                 isValid = false
-            }
-            else if (!password.any { it.isLowerCase() }) {
+            } else if (!password.any { it.isLowerCase() }) {
                 // Check 2: Contains at least one lowercase letter
                 errorMessage = "Password must contain at least one lowercase letter."
                 isValid = false
-            }
-            else if (!password.any { it.isUpperCase() }) {
+            } else if (!password.any { it.isUpperCase() }) {
                 // Check 3: Contains at least one uppercase letter
                 errorMessage = "Password must contain at least one uppercase letter."
                 isValid = false
-            }
-            else if (!password.any { it.isDigit() }) {
+            } else if (!password.any { it.isDigit() }) {
                 // Check 4: Contains at least one digit
                 errorMessage = "Password must contain at least one digit."
                 isValid = false
@@ -178,14 +175,17 @@ class AuthViewModel @Inject constructor(
                     errorMessage = "Name cannot be empty."
                     isValid = false
                 }
+
                 trimmedName.length > 50 -> {
                     errorMessage = "Name cannot exceed 50 characters."
                     isValid = false
                 }
+
                 !trimmedName.contains(" ") -> {
                     errorMessage = "Please enter both first and last name."
                     isValid = false
                 }
+
                 !trimmedName.matches(Regex("^[a-zA-Z]+(\\s[a-zA-Z]+)+\$")) -> {
                     errorMessage = "Name should contain only letters and spaces."
                     isValid = false
@@ -194,5 +194,4 @@ class AuthViewModel @Inject constructor(
             _nameValidationState.value = NameValidationState(isValid, errorMessage)
         }
     }
-
 }

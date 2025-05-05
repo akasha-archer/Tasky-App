@@ -36,12 +36,6 @@ data class AccessTokenRequest(
     val userId: String
 )
 
-// model for error received from API
-@Serializable
-data class Error(
-    val message: String
-)
-
 data class AuthInfo(
     val accessToken: String,
     val refreshToken: String,

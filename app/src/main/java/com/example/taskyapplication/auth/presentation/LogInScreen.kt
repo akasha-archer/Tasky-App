@@ -63,9 +63,7 @@ fun LoginScreen(
 @Preview(showBackground = true)
 @Composable
 fun AuthenticationScreenPreview() {
-    AccountCreationScreen(
-        onRegisterClick = {}
-    )
+    AccountCreationScreen()
 }
 
 @Preview(showBackground = true)
