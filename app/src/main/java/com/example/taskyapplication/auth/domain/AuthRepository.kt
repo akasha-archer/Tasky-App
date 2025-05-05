@@ -8,33 +8,38 @@ import com.example.taskyapplication.network.TaskyApiService
 import javax.inject.Inject
 import javax.inject.Singleton
 
+interface AuthRepository {
+    suspend fun registerNewUser(userRegistrationData: RegisterUserState)
+    suspend fun loginUser(userLoginData: UserLoginData): LoggedInUserResponse?
+    suspend fun requestAccessToken(accessTokenRequest: AccessTokenRequest): AccessTokenResponse?
+    suspend fun isTokenExpired(): Boolean
+    suspend fun logoutUser()
+    suspend fun saveRefreshToken(tokenResponse: LoggedInUserResponse)
+    suspend fun saveRegisteredUser(isRegistered: Boolean)
+}
+
 @Singleton
-class AuthRepository @Inject constructor(
+class AuthRepositoryImpl @Inject constructor(
     private val taskyApiService: TaskyApiService,
     private val appPreferences: TaskyAppPreferences
-) {
-    suspend fun registerNewUser(
-        userRegistrationData: RegisterUserState
-    ) {
+) : AuthRepository {
+
+    override suspend fun registerNewUser(userRegistrationData: RegisterUserState) {
         taskyApiService.registerUser(userRegistrationData)
     }
 
-    suspend fun loginUser(
-        userLoginData: UserLoginData
-    ): LoggedInUserResponse? {
+    override suspend fun loginUser(userLoginData: UserLoginData): LoggedInUserResponse? {
         return taskyApiService.loginUser(userLoginData).body()
     }
 
-    suspend fun requestAccessToken(
-        accessTokenRequest: AccessTokenRequest
-    ): AccessTokenResponse? {
+    override suspend fun requestAccessToken(accessTokenRequest: AccessTokenRequest): AccessTokenResponse? {
         return taskyApiService.getNewAccessToken(accessTokenRequest).body()
     }
 
-    suspend fun isTokenExpired(): Boolean {
+    override suspend fun isTokenExpired(): Boolean {
         var responseCode: Int
         try {
-             responseCode = taskyApiService.authenticateUser().code()
+            responseCode = taskyApiService.authenticateUser().code()
         } catch (e: Exception) {
             Log.e("Parse exception in AuthRepository", "Failed to read authentication response code: ${e.message}")
             throw e
@@ -42,18 +47,17 @@ class AuthRepository @Inject constructor(
         return responseCode == 401
     }
 
-    suspend fun logoutUser() {
+    override suspend fun logoutUser() {
         taskyApiService.logoutUser()
         appPreferences.deleteRefreshToken()
     }
 
-    suspend fun saveRefreshToken(tokenResponse: LoggedInUserResponse) {
+    override suspend fun saveRefreshToken(tokenResponse: LoggedInUserResponse) {
         appPreferences.saveAccessToken(tokenResponse.refreshToken)
     }
 
-    suspend fun saveRegisteredUser(isRegistered: Boolean) {
+    override suspend fun saveRegisteredUser(isRegistered: Boolean) {
         appPreferences.saveUserRegisteredState(isRegistered)
     }
-
 
 }
