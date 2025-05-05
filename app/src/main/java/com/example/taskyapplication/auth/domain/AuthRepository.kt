@@ -59,5 +59,4 @@ class AuthRepositoryImpl @Inject constructor(
     override suspend fun saveRegisteredUser(isRegistered: Boolean) {
         appPreferences.saveUserRegisteredState(isRegistered)
     }
-
 }
