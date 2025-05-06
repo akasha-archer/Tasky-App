@@ -7,9 +7,9 @@ data class RegisterUserState(
     val fullName: TextFieldState = TextFieldState(),
     val email: TextFieldState = TextFieldState(),
     val password: TextFieldState = TextFieldState(),
-    val isNameValid: Boolean = false,
+    val nameValidationState: NameValidationState = NameValidationState(),
     val isEmailValid: Boolean = false,
-    val isPasswordValid: Boolean = false,
+    val passwordValidationState: PasswordValidationState = PasswordValidationState(),
     val isRegistering: Boolean = false,
     val canRegister: Boolean = false
 )

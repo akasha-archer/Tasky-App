@@ -1,26 +1,28 @@
 package com.example.taskyapplication.auth.presentation
 
 import android.util.Log
-import android.util.Patterns
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.taskyapplication.auth.data.LoggedInUserResponse
 import com.example.taskyapplication.auth.domain.AuthRepository
 import com.example.taskyapplication.auth.domain.Lce
-import com.example.taskyapplication.auth.domain.InputValidationState
-import com.example.taskyapplication.auth.domain.PasswordValidationState
 import com.example.taskyapplication.auth.domain.RegisterUserState
+import com.example.taskyapplication.auth.domain.UserInputValidator
+import com.example.taskyapplication.auth.presentation.utils.textAsFlow
 import dagger.hilt.android.lifecycle.HiltViewModel
-import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
-import kotlinx.coroutines.flow.update
+import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 @HiltViewModel
 class AuthViewModel @Inject constructor(
     private val authRepository: AuthRepository,
+    private val inputValidator: UserInputValidator
 ) : ViewModel() {
 
     private val _lceAuthUserData = MutableStateFlow<Lce<LoggedInUserResponse?>>(Lce.Loading)
@@ -29,44 +31,43 @@ class AuthViewModel @Inject constructor(
     private val _isTokenValid = MutableStateFlow(false)
     val isTokenValid = _isTokenValid.asStateFlow()
 
-    private val _nameValidationState = MutableStateFlow<InputValidationState?>(null)
-    val nameValidationState = _nameValidationState.asStateFlow()
+    var state by mutableStateOf(RegisterUserState())
+        private set
 
-    private val _emailValidationState = MutableStateFlow<Boolean?>(null)
-    val emailValidationState = _emailValidationState.asStateFlow()
+    init {
+        // save input values as snapshot flows
+        state.fullName.textAsFlow()
+            .onEach { name ->
+                val nameValidationState = inputValidator.validateFullName(name.toString())
+                state = state.copy(
+                    nameValidationState = nameValidationState,
+                    canRegister = nameValidationState.isValid && state.isEmailValid
+                            && state.passwordValidationState.isValidPassword && !state.isRegistering
+                )
+            }
 
-    private val _passwordValidationState = MutableStateFlow<PasswordValidationState?>(null)
-    val passwordValidationState = _passwordValidationState.asStateFlow()
+        state.email.textAsFlow()
+            .onEach { email ->
+                val isEmailValid = inputValidator.isValidEmail(email.toString())
+                state = state.copy(
+                    isEmailValid = isEmailValid,
+                    canRegister = isEmailValid && state.nameValidationState.isValid
+                            && state.passwordValidationState.isValidPassword && !state.isRegistering
+                )
+            }
 
-    private val _registerUserState = MutableStateFlow(
-        RegisterUserState(
-            fullName = "",
-            email = "",
-            password = ""
-        )
-    )
-    val registerUserState = _registerUserState.asStateFlow()
-
-    // update registration state values
-    fun setRegistrationName(name: String) {
-        viewModelScope.launch(Dispatchers.Main.immediate) {
-            _registerUserState.update { it.copy(fullName = name) }
-        }
+        state.password.textAsFlow()
+            .onEach { password ->
+                val passwordValidationState = inputValidator.validatePassword(password.toString())
+                state = state.copy(
+                    passwordValidationState = passwordValidationState,
+                    canRegister = passwordValidationState.isValidPassword && state.isEmailValid
+                            && state.nameValidationState.isValid && !state.isRegistering
+                )
+            }
     }
 
-    fun setRegistrationEmail(email: String) {
-        viewModelScope.launch(Dispatchers.Main.immediate) {
-            _registerUserState.update { it.copy(email = email) }
-        }
-    }
-
-    fun setRegistrationPassword(password: String) {
-        viewModelScope.launch(Dispatchers.Main.immediate) {
-            _registerUserState.update { it.copy(password = password) }
-        }
-    }
-
-     fun registerNewUser(registerData: RegisterUserState) =
+    fun registerNewUser(registerData: RegisterUserState) =
         viewModelScope.launch {
             try {
                 authRepository.registerNewUser(registerData)
