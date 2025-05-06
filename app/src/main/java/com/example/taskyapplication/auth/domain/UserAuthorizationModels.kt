@@ -1,11 +1,17 @@
 package com.example.taskyapplication.auth.domain
 
+import androidx.compose.foundation.text.input.TextFieldState
 import kotlinx.serialization.Serializable
 
 data class RegisterUserState(
-    val fullName: String,
-    val email: String,
-    val password: String
+    val fullName: TextFieldState = TextFieldState(),
+    val email: TextFieldState = TextFieldState(),
+    val password: TextFieldState = TextFieldState(),
+    val isNameValid: Boolean = false,
+    val isEmailValid: Boolean = false,
+    val isPasswordValid: Boolean = false,
+    val isRegistering: Boolean = false,
+    val canRegister: Boolean = false
 )
 
 data class AuthUserState(
@@ -41,12 +47,12 @@ data class AuthInfo(
     val refreshToken: String,
 )
 
-data class PasswordValidationState(
-    val isValid: Boolean = false,
-    val errorMessage: String? = null
-)
+//data class PasswordValidationState(
+//    val isValid: Boolean = false,
+//    val errorMessage: String? = null
+//)
 
-data class NameValidationState(
-    val isValid: Boolean = false,
-    val errorMessage: String? = null
-)
+//data class NameValidationState(
+//    val isValid: Boolean = false,
+//    val errorMessage: String? = null
+//)
