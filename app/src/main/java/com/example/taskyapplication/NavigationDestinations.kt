@@ -43,9 +43,9 @@ fun NavigationRoot(
         }
 
         composable<RegisterScreen> {
-            AccountCreationScreen(
-                navigateToLogin = { navController.navigate(LoginScreen) },
-            )
+//            AccountCreationScreen(
+//                navigateToLogin = { navController.navigate(LoginScreen) },
+//            )
         }
     }
 }
