@@ -1,8 +1,10 @@
 package com.example.taskyapplication
 
 import androidx.compose.foundation.background
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -17,19 +19,28 @@ import androidx.compose.foundation.text.input.TextFieldLineLimits
 import androidx.compose.foundation.text.input.TextFieldState
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Done
+import androidx.compose.material.icons.rounded.Check
+import androidx.compose.material.icons.rounded.Person
 import androidx.compose.material3.Icon
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
 import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.focus.FocusDirection
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.SolidColor
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.res.vectorResource
+import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.tooling.preview.Preview
@@ -40,70 +51,90 @@ import com.example.taskyapplication.ui.theme.TaskyTypography
 @Composable
 fun BaseInputField2(
     modifier: Modifier = Modifier,
-    userInput: TextFieldState,
+    state: TextFieldState,
     supportingText: String = "",
-    errorMessage: @Composable (() -> Unit),
-    isError: Boolean,
-    keyboardOptions: KeyboardOptions = KeyboardOptions(),
-    keyboardType: KeyboardType = KeyboardType.Text
+    hintText: String = "",
+    textFieldIcon: @Composable (() -> Unit),
+    keyboardType: KeyboardType = KeyboardType.Text,
+    imeAction: ImeAction = ImeAction.Next
 ) {
-    Column {
-//        Box(
-//            modifier = modifier
-//                .fillMaxWidth()
-//                .align(Alignment.End)
-//        ) {
-            BasicTextField(
-                state = userInput,
-                modifier = modifier
-                    .fillMaxWidth()
-                    .height(84.dp)
-                    .padding(horizontal = 16.dp)
-                    .padding(vertical = 12.dp)
-                    .clip(shape = RoundedCornerShape(10.dp))
-                    .background(color = taskyColors.inputFieldGray),
-                textStyle = TaskyTypography.bodyMedium,
-                keyboardOptions = keyboardOptions,
-                onKeyboardAction = KeyboardActionHandler { },
-                lineLimits = TextFieldLineLimits.SingleLine,
-                cursorBrush = SolidColor(taskyColors.inputText),
-                decorator = {
-                    Icon(
-                        modifier = modifier
-                            .size(4.dp)
-                            .align(Alignment.End),
-                        imageVector = Icons.Filled.Done,
-                        contentDescription = "Your input is valid",
-                        tint = taskyColors.validInput,
-                    )
+    var isFocused by remember {
+        mutableStateOf(false)
+    }
+
+    Column(
+        modifier = Modifier
+            .padding(start = 16.dp, end = 16.dp)
+            .fillMaxWidth(),
+    ) {
+        BasicTextField(
+            state = state,
+            modifier = modifier
+                .fillMaxWidth()
+                .height(84.dp)
+                .padding(top = 24.dp)
+                .clip(shape = RoundedCornerShape(10.dp))
+                .background(color = taskyColors.inputFieldGray),
+            textStyle = TaskyTypography.bodyMedium.copy(
+                color = taskyColors.inputText
+            ),
+            keyboardOptions = KeyboardOptions(
+                keyboardType = keyboardType,
+                imeAction = imeAction
+            ),
+            lineLimits = TextFieldLineLimits.SingleLine,
+            cursorBrush = SolidColor(taskyColors.inputText),
+            decorator = { innerTextField ->
+                Row(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(start = 16.dp, end = 8.dp),
+                    verticalAlignment = Alignment.CenterVertically,
+                    horizontalArrangement = Arrangement.Start,
+                ) {
+                    Box(
+                        modifier = Modifier
+                            .weight(1f)
+                    ) {
+                        if (state.text.isEmpty() && !isFocused) {
+                            Text(
+                                text = hintText,
+                                color = taskyColors.inputHintGray,
+                                modifier = Modifier.fillMaxWidth()
+                            )
+                        }
+                        innerTextField()
+                    }
+                        textFieldIcon()
                 }
-            )
-        }
-        Spacer(modifier = Modifier.padding(top = 4.dp))
+            }
+        )
+        Spacer(modifier = Modifier.height(8.dp))
         Text(
+            modifier = Modifier
+                .padding(start = 16.dp),
             text = supportingText,
             style = TaskyTypography.bodySmall,
-            color = taskyColors.onSurfaceVariant
+            color = taskyColors.error,
         )
-//    }
+    }
 }
-
-val textFieldStateSample = TextFieldState(
-    initialText = "First Name",
-)
 
 @Preview(showBackground = true, backgroundColor = 0xFF00FF00)
 @Composable
 fun PlaygroundPreview() {
     BaseInputField2(
-        userInput = textFieldStateSample,
-        isError = false,
-        errorMessage = {
-            Text(
-                text = "An input error has occurred",
-                color = taskyColors.error,
-                style = TaskyTypography.bodySmall
+        state = remember { TextFieldState() },
+        hintText = "Name",
+        supportingText = "Please enter a valid name",
+        textFieldIcon = {
+            Icon(
+                imageVector = Icons.Rounded.Check,
+                contentDescription = "valid input",
+                tint = taskyColors.validInput,
+                modifier = Modifier
+                    .padding(8.dp)
             )
-        },
+        }
     )
 }
