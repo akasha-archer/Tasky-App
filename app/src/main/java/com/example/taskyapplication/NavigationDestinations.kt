@@ -7,7 +7,7 @@ import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import com.example.taskyapplication.agenda.presentation.AgendaScreen
-import com.example.taskyapplication.auth.presentation.AccountCreationScreen
+import com.example.taskyapplication.auth.presentation.RegisterRoot
 import kotlinx.serialization.Serializable
 
 @Composable
@@ -43,9 +43,7 @@ fun NavigationRoot(
         }
 
         composable<RegisterScreen> {
-//            AccountCreationScreen(
-//                navigateToLogin = { navController.navigate(LoginScreen) },
-//            )
+            RegisterRoot()
         }
     }
 }
