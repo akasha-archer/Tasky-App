@@ -4,7 +4,7 @@ import android.util.Log
 import com.example.taskyapplication.auth.data.AccessTokenResponse
 import com.example.taskyapplication.auth.data.LoggedInUserResponse
 import com.example.taskyapplication.auth.data.TaskyAppPreferences
-import com.example.taskyapplication.remote.TaskyApiService
+import com.example.taskyapplication.network.TaskyApiService
 import javax.inject.Inject
 import javax.inject.Singleton
 

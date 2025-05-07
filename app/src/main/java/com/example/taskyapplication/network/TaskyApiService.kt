@@ -1,4 +1,4 @@
-package com.example.taskyapplication.remote
+package com.example.taskyapplication.network
 
 import com.example.taskyapplication.auth.data.AccessTokenResponse
 import com.example.taskyapplication.auth.data.LoggedInUserResponse

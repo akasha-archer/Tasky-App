@@ -1,54 +1,73 @@
 package com.example.taskyapplication.auth.presentation.components
 
-import androidx.compose.foundation.background
-import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.shape.RoundedCornerShape
+import com.example.taskyapplication.auth.presentation.utils.ShowInputValidationIcon
+import com.example.taskyapplication.auth.presentation.utils.ShowOrHidePassword
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
-import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
-import androidx.compose.material3.TextFieldDefaults
-import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.runtime.*
+import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.focus.FocusDirection
 import androidx.compose.ui.platform.LocalFocusManager
-import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.platform.LocalSoftwareKeyboardController
+import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardType
+import androidx.compose.ui.text.input.PasswordVisualTransformation
+import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import com.example.taskyapplication.R
-import com.example.taskyapplication.ui.theme.InputFieldGray
-import com.example.taskyapplication.ui.theme.InputText
+import com.example.taskyapplication.ui.theme.TaskyDesignSystem.Companion.taskyColors
 import com.example.taskyapplication.ui.theme.TaskyTypography
 
 @Composable
 fun PasswordTextField(
+    modifier: Modifier = Modifier,
     userInput: String,
     onUserInputChange: (String) -> Unit,
+    placeholderText: String,
+    isError: Boolean,
+    errorMessage: @Composable (() -> Unit),
+    keyboardType: KeyboardType = KeyboardType.Password,
+    onValidatePassword: (String) -> Unit = {}
 ) {
-    Box {
-        UserInfoTextField(
-            userInput = userInput,
-            onUserInputChange = onUserInputChange,
-            keyboardType = KeyboardType.Password,
-            placeholderText = stringResource(R.string.account_password_placeholder)
+    var passwordVisible by rememberSaveable { mutableStateOf(false) }
+    val keyboardController = LocalSoftwareKeyboardController.current
+    val focusManager = LocalFocusManager.current
+    BaseInputField(
+        modifier = modifier,
+        userInput = userInput,
+        onUserInputChange = onUserInputChange,
+        placeholderText = placeholderText,
+        isError = isError,
+        errorMessage = { errorMessage() },
+        visualTransformation = if (passwordVisible)
+            VisualTransformation.None
+        else PasswordVisualTransformation(),
+        textFieldIcon = {
+            ShowOrHidePassword(
+                passwordVisible = passwordVisible,
+                onIconClick = { passwordVisible = !passwordVisible }
+            )
+        },
+        keyboardOptions = KeyboardOptions(
+            keyboardType = keyboardType,
+            imeAction = ImeAction.Done
+        ),
+        keyboardActions = KeyboardActions(
+            onDone = {
+                keyboardController?.hide()
+                focusManager.clearFocus()
+                onValidatePassword(userInput)
+            },
         )
-//        Image(
-//            modifier = Modifier
-//                .padding(end = 16.dp)
-//                .align(Alignment.CenterEnd)
-//                .clickable { TODO("Not yet implemented") },
-//            painter = painterResource(R.drawable.eye_closed),
-//            contentDescription = "hide password"
-//        )
-    }
+    )
 }
 
 @Composable
@@ -56,42 +75,38 @@ fun UserInfoTextField(
     modifier: Modifier = Modifier,
     userInput: String,
     onUserInputChange: (String) -> Unit,
+    isError: Boolean,
     placeholderText: String,
+    errorMessage: @Composable (() -> Unit),
+    visualTransformation: VisualTransformation = VisualTransformation.None,
     keyboardType: KeyboardType = KeyboardType.Text,
+    onValidateInput: (String) -> Unit
 ) {
     val focusManager = LocalFocusManager.current
-    
-    OutlinedTextField(
-        modifier = modifier
-            .fillMaxWidth()
-            .padding(horizontal = 20.dp)
-            .padding(vertical = 16.dp).clip(shape = RoundedCornerShape(10.dp))
-            .background(color = InputFieldGray),
-        value = userInput,
-        onValueChange = onUserInputChange,
-        singleLine = true,
-        textStyle = TaskyTypography.BODY_MEDIUM.value,
-        colors = TextFieldDefaults.colors(
-            focusedTextColor = InputText,
-            unfocusedTextColor = InputText,
-            disabledTextColor = InputText,
-            errorTextColor = MaterialTheme.colorScheme.error,
-        ),
-        placeholder = {
-            Text(
-                text = placeholderText,
-                color = InputText,
-                style = TaskyTypography.BODY_MEDIUM.value,
-            )
+    BaseInputField(
+        modifier = modifier,
+        userInput = userInput,
+        onUserInputChange = onUserInputChange,
+        placeholderText = placeholderText,
+        isError = isError,
+        errorMessage = { errorMessage() },
+        visualTransformation = visualTransformation,
+        textFieldIcon = {
+            if (userInput.isNotEmpty()) {
+                ShowInputValidationIcon(
+                    isError = (isError)
+                )
+            }
         },
-        keyboardOptions = KeyboardOptions.Default.copy(
+        keyboardOptions = KeyboardOptions(
             keyboardType = keyboardType,
-            imeAction = ImeAction.Done
+            imeAction = ImeAction.Next
         ),
         keyboardActions = KeyboardActions(
-            onDone = {
-                focusManager.clearFocus()
-            }
+            onNext = {
+                onValidateInput(userInput)
+                focusManager.moveFocus(FocusDirection.Down)
+            },
         )
     )
 }
@@ -100,42 +115,65 @@ fun UserInfoTextField(
 fun AuthorizationCtaButton(
     modifier: Modifier = Modifier,
     buttonText: String,
+    isButtonEnabled: Boolean = false,
     onButtonClick: () -> Unit = { },
 ) {
     Button(
         modifier = modifier
             .fillMaxWidth()
-            .height(96.dp)
             .padding(start = 20.dp, end = 20.dp, top = 16.dp, bottom = 16.dp)
             .clip(RoundedCornerShape(25.dp)),
         onClick = onButtonClick,
-        colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.primary)
+        enabled = isButtonEnabled,
+        colors = ButtonDefaults.buttonColors(
+            containerColor = taskyColors.primary,
+            contentColor = taskyColors.onPrimary,
+            disabledContainerColor = taskyColors.primary,
+        )
     ) {
         Text(
             text = buttonText.uppercase(),
-            color = MaterialTheme.colorScheme.onPrimary,
-            style = TaskyTypography.LABEL_MEDIUM.value
+            color = taskyColors.onPrimary,
+            style = TaskyTypography.labelMedium
         )
     }
 }
-
 
 @Preview(showBackground = true, backgroundColor = 0xFF00FF00)
 @Composable
 fun UserInputPreview() {
     UserInfoTextField(
-        userInput = "FirstName LastName",
+        userInput = "",
         onUserInputChange = { },
-        placeholderText = "NAME"
+        placeholderText = "Enter your name",
+        isError = false,
+        errorMessage = {
+            Text(
+                text = "An input error has occurred",
+                color = taskyColors.error,
+                style = TaskyTypography.bodySmall
+            )
+        },
+        keyboardType = KeyboardType.Text,
+        onValidateInput = { },
     )
 }
 
-@Preview(showBackground = true, backgroundColor = 0xFF00FF00)
 @Composable
+@Preview(showBackground = true, backgroundColor = 0xFF00FF00)
 fun PasswordInputPreview() {
     PasswordTextField(
         userInput = "1234abc",
         onUserInputChange = { },
+        placeholderText = "Enter your password",
+        isError = false,
+        errorMessage = {
+            Text(
+                text = "An input error has occurred",
+                color = taskyColors.error,
+                style = TaskyTypography.bodySmall
+            )
+        }
     )
 }
 
