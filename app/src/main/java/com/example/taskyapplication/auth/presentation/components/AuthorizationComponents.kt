@@ -8,6 +8,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.text.BasicText
 import com.example.taskyapplication.auth.presentation.utils.ShowInputValidationIcon
 import com.example.taskyapplication.auth.presentation.utils.ShowOrHidePassword
 import androidx.compose.foundation.text.KeyboardActions
@@ -22,10 +23,15 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.focus.FocusDirection
 import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.platform.LocalSoftwareKeyboardController
+import androidx.compose.ui.text.LinkAnnotation
+import androidx.compose.ui.text.SpanStyle
+import androidx.compose.ui.text.TextLinkStyles
+import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.text.input.VisualTransformation
+import androidx.compose.ui.text.withLink
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.example.taskyapplication.ui.theme.TaskyDesignSystem.Companion.taskyColors
@@ -42,37 +48,37 @@ fun PasswordTextField(
     keyboardType: KeyboardType = KeyboardType.Password,
     onValidatePassword: (String) -> Unit = {}
 ) {
-    var passwordVisible by rememberSaveable { mutableStateOf(false) }
-    val keyboardController = LocalSoftwareKeyboardController.current
-    val focusManager = LocalFocusManager.current
-    BaseInputField(
-        modifier = modifier,
-        userInput = userInput,
-        onUserInputChange = onUserInputChange,
-        placeholderText = placeholderText,
-        isError = isError,
-        errorMessage = { errorMessage() },
-        visualTransformation = if (passwordVisible)
-            VisualTransformation.None
-        else PasswordVisualTransformation(),
-        textFieldIcon = {
-            ShowOrHidePassword(
-                passwordVisible = passwordVisible,
-                onIconClick = { passwordVisible = !passwordVisible }
-            )
-        },
-        keyboardOptions = KeyboardOptions(
-            keyboardType = keyboardType,
-            imeAction = ImeAction.Done
-        ),
-        keyboardActions = KeyboardActions(
-            onDone = {
-                keyboardController?.hide()
-                focusManager.clearFocus()
-                onValidatePassword(userInput)
-            },
-        )
-    )
+//    var passwordVisible by rememberSaveable { mutableStateOf(false) }
+//    val keyboardController = LocalSoftwareKeyboardController.current
+//    val focusManager = LocalFocusManager.current
+//    BaseInputField(
+//        modifier = modifier,
+//        userInput = userInput,
+//        onUserInputChange = onUserInputChange,
+//        placeholderText = placeholderText,
+//        isError = isError,
+//        errorMessage = { errorMessage() },
+//        visualTransformation = if (passwordVisible)
+//            VisualTransformation.None
+//        else PasswordVisualTransformation(),
+//        textFieldIcon = {
+//            ShowOrHidePassword(
+//                passwordVisible = passwordVisible,
+//                onIconClick = { passwordVisible = !passwordVisible }
+//            )
+//        },
+//        keyboardOptions = KeyboardOptions(
+//            keyboardType = keyboardType,
+//            imeAction = ImeAction.Done
+//        ),
+//        keyboardActions = KeyboardActions(
+//            onDone = {
+//                keyboardController?.hide()
+//                focusManager.clearFocus()
+//                onValidatePassword(userInput)
+//            },
+//        )
+//    )
 }
 
 @Composable
@@ -87,33 +93,33 @@ fun UserInfoTextField(
     keyboardType: KeyboardType = KeyboardType.Text,
     onValidateInput: (String) -> Unit
 ) {
-    val focusManager = LocalFocusManager.current
-    BaseInputField(
-        modifier = modifier,
-        userInput = userInput,
-        onUserInputChange = onUserInputChange,
-        placeholderText = placeholderText,
-        isError = isError,
-        errorMessage = { errorMessage() },
-        visualTransformation = visualTransformation,
-        textFieldIcon = {
-            if (userInput.isNotEmpty()) {
-                ShowInputValidationIcon(
-                    isError = (isError)
-                )
-            }
-        },
-        keyboardOptions = KeyboardOptions(
-            keyboardType = keyboardType,
-            imeAction = ImeAction.Next
-        ),
-        keyboardActions = KeyboardActions(
-            onNext = {
-                onValidateInput(userInput)
-                focusManager.moveFocus(FocusDirection.Down)
-            },
-        )
-    )
+//    val focusManager = LocalFocusManager.current
+//    BaseInputField(
+//        modifier = modifier,
+//        userInput = userInput,
+//        onUserInputChange = onUserInputChange,
+//        placeholderText = placeholderText,
+//        isError = isError,
+//        errorMessage = { errorMessage() },
+//        visualTransformation = visualTransformation,
+//        textFieldIcon = {
+//            if (userInput.isNotEmpty()) {
+//                ShowInputValidationIcon(
+//                    isError = (isError)
+//                )
+//            }
+//        },
+//        keyboardOptions = KeyboardOptions(
+//            keyboardType = keyboardType,
+//            imeAction = ImeAction.Next
+//        ),
+//        keyboardActions = KeyboardActions(
+//            onNext = {
+//                onValidateInput(userInput)
+//                focusManager.moveFocus(FocusDirection.Down)
+//            },
+//        )
+//    )
 }
 
 @Composable
@@ -162,19 +168,26 @@ fun AuthScreenFooter(
             .fillMaxWidth(),
         horizontalArrangement = Arrangement.Center
     ) {
-        Text(
-            modifier = Modifier.padding(end = 8.dp),
-            text = accountRegisteredPrompt.uppercase(),
-            style = TaskyTypography.labelSmall,
-            color = taskyColors.onSurfaceVariant,
-        )
-        Text(
-            modifier = Modifier.clickable {
-                navigateToScreen()
+        BasicText(
+            text = buildAnnotatedString {
+                append("${accountRegisteredPrompt}  ".uppercase())
+                withLink(
+                    LinkAnnotation.Clickable(
+                        tag = "",
+                        styles = TextLinkStyles(
+                            style = TaskyTypography.labelSmall.toSpanStyle().copy(
+                                color = taskyColors.link
+                            )
+                        ),
+                        linkInteractionListener = { navigateToScreen() }
+                    ),
+                ) {
+                    append(loginOrSignupPrompt)
+                }
             },
-            text = loginOrSignupPrompt.uppercase(),
-            style = TaskyTypography.labelSmall,
-            color = taskyColors.link,
+            style = TaskyTypography.labelSmall.copy(
+                color = taskyColors.onSurfaceVariant,
+            )
         )
     }
 }

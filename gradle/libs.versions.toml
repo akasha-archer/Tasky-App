@@ -11,6 +11,8 @@ kotlinPlugin = "2.1.20"
 lifecycleRuntimeKtx = "2.8.7"
 activityCompose = "1.10.1"
 composeBom = "2025.04.01"
+material = "1.9.0-alpha01"
+material3 = "1.4.0-alpha13"
 okhttpBom = "4.12.0"
 retrofit2 = "2.11.0"
 hilt = "2.56.1"
@@ -26,6 +28,7 @@ hiltNavigation = "1.2.0"
 [libraries]
 androidx-activity = { module = "androidx.activity:activity", version.ref = "activity" }
 androidx-core-ktx = { group = "androidx.core", name = "core-ktx", version.ref = "coreKtx" }
+androidx-material = { module = "androidx.compose.material:material", version.ref = "material" }
 junit = { group = "junit", name = "junit", version.ref = "junit" }
 androidx-junit = { group = "androidx.test.ext", name = "junit", version.ref = "junitVersion" }
 androidx-espresso-core = { group = "androidx.test.espresso", name = "espresso-core", version.ref = "espressoCore" }
