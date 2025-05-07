@@ -15,7 +15,7 @@ import com.example.taskyapplication.auth.domain.UserInputValidator
 import com.example.taskyapplication.auth.presentation.utils.textAsFlow
 import com.example.taskyapplication.auth.register.RegisterAction
 import com.example.taskyapplication.auth.register.RegistrationEvent
-import com.example.taskyapplication.domain.utils.NetworkResultState
+import com.example.taskyapplication.domain.utils.NetworkResult
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -82,10 +82,10 @@ class AuthViewModel @Inject constructor(
                     email = state.email.text.toString().trim(),
                     password = state.password.text.toString().trim()
                 )
-                NetworkResultState.Success(result)
+                NetworkResult.Success(result)
                 state = state.copy(isRegistering = false)
             } catch (e: Exception) {
-                NetworkResultState.Error(e.message.toString())
+                NetworkResult.Error<Nothing>(e.message.toString())
                 Log.e("New User Registration: ", "Failed to register user ${e.message}")
             }
         }
@@ -99,10 +99,10 @@ class AuthViewModel @Inject constructor(
                     email = state.email.text.toString().trim(),
                     password = state.password.text.toString().trim()
                 )
-                NetworkResultState.Success(result)
+                NetworkResult.Success(result)
 //            state = state.copy(isRegistering = false) //isLoggingIn = false
             } catch (e: Exception) {
-                NetworkResultState.Error(e.message.toString())
+                NetworkResult.Error<Nothing>(e.message.toString())
                 Log.e("User Login: ", "Failed to log in user ${e.message}")
             }
         }
