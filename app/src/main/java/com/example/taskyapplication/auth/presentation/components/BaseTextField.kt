@@ -1,6 +1,8 @@
 package com.example.taskyapplication.auth.presentation.components
 
 import androidx.compose.foundation.background
+import androidx.compose.foundation.interaction.MutableInteractionSource
+import androidx.compose.foundation.interaction.collectIsFocusedAsState
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -31,6 +33,9 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.focus.onFocusChanged
 import androidx.compose.ui.graphics.SolidColor
+import androidx.compose.ui.platform.LocalAutofillManager
+import androidx.compose.ui.semantics.contentType
+import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.LinkAnnotation
 import androidx.compose.ui.text.TextLinkStyles
 import androidx.compose.ui.text.buildAnnotatedString
@@ -51,7 +56,7 @@ fun BaseInputField(
     hintText: String = "",
     textFieldIcon: @Composable (() -> Unit),
     keyboardType: KeyboardType = KeyboardType.Text,
-    imeAction: ImeAction = ImeAction.Next
+    imeAction: ImeAction = ImeAction.Next,
 ) {
     var isFocused by remember {
         mutableStateOf(false)
@@ -70,7 +75,11 @@ fun BaseInputField(
                 .padding(top = 24.dp)
                 .clip(shape = RoundedCornerShape(10.dp))
                 .onFocusChanged { isFocused = it.isFocused }
-                .background(color = taskyColors.inputFieldGray),
+                .background(color = taskyColors.inputFieldGray)
+                .semantics {
+                    contentType = androidx.compose.ui.autofill.ContentType.PersonFullName +
+                            androidx.compose.ui.autofill.ContentType.EmailAddress
+                },
             textStyle = TaskyTypography.bodyMedium.copy(
                 color = taskyColors.inputText
             ),
@@ -104,12 +113,11 @@ fun BaseInputField(
                     if (!isError) {
                         textFieldIcon()
                     }
-
                 }
             }
         )
         Spacer(modifier = Modifier.height(8.dp))
-        if (isError) {
+        if (isError && isFocused && state.text.isNotEmpty()) {
             Text(
                 modifier = Modifier
                     .padding(start = 16.dp),

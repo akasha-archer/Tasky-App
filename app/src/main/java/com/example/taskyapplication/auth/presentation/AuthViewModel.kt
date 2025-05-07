@@ -4,6 +4,7 @@ import android.util.Log
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
+import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.taskyapplication.auth.data.LoggedInUserResponse
@@ -12,6 +13,8 @@ import com.example.taskyapplication.auth.domain.Lce
 import com.example.taskyapplication.auth.domain.RegisterUserState
 import com.example.taskyapplication.auth.domain.UserInputValidator
 import com.example.taskyapplication.auth.presentation.utils.textAsFlow
+import com.example.taskyapplication.auth.register.RegisterAction
+import com.example.taskyapplication.auth.register.RegistrationEvent
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -30,6 +33,8 @@ class AuthViewModel @Inject constructor(
 
     private val _isTokenValid = MutableStateFlow(false)
     val isTokenValid = _isTokenValid.asStateFlow()
+
+    val registrationEvents = MutableLiveData<RegistrationEvent>()
 
     var state by mutableStateOf(RegisterUserState())
         private set
@@ -67,15 +72,29 @@ class AuthViewModel @Inject constructor(
             }
     }
 
-    fun registerNewUser(registerData: RegisterUserState) =
+    private fun registerNewUser() {
         viewModelScope.launch {
-            try {
-                authRepository.registerNewUser(registerData)
-            } catch (e: Exception) {
-                Log.e("New User Registration: ", "Failed to register user ${e.message}")
-                throw e
-            }
+            state = state.copy(isRegistering = true)
+            val result = authRepository.registerNewUser(
+                fullName = state.fullName.text.toString().trim(),
+                email = state.email.text.toString().trim(),
+                password = state.password.text.toString().trim()
+            )
+            state = state.copy(isRegistering = false)
+
+            when (result) {
         }
+    }
+
+//    fun registerNewUser(registerData: RegisterUserState) =
+//        viewModelScope.launch {
+//            try {
+//                authRepository.registerNewUser(registerData)
+//            } catch (e: Exception) {
+//                Log.e("New User Registration: ", "Failed to register user ${e.message}")
+//                throw e
+//            }
+//        }
 
 //    suspend fun login(userData: UserLoginData) {
 //        _lceAuthUserData.value = Lce.Loading
@@ -103,6 +122,13 @@ class AuthViewModel @Inject constructor(
 //            }
 //        }
 //    }
+
+    fun registerActions(action: RegisterAction) {
+        when(action) {
+            RegisterAction.OnRegisterClick -> { } //register
+            else -> Unit
+        }
+    }
 
     fun isTokenExpired() {
         viewModelScope.launch {

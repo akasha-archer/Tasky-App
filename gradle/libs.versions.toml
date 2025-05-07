@@ -24,6 +24,7 @@ splashscreen = "1.0.1"
 composeNavigation = "2.8.9"
 kotlinParcelize = "2.2.0-Beta1"
 hiltNavigation = "1.2.0"
+composeRuntime = "1.8.0"
 
 [libraries]
 androidx-activity = { module = "androidx.activity:activity", version.ref = "activity" }
@@ -55,7 +56,8 @@ hilt-navigation-compose = { group = "androidx.hilt", name = "hilt-navigation-com
 androidx-datastore = { group = "androidx.datastore", name = "datastore-preferences", version.ref = "datastore" }
 androidx-core-splashscreen = { group = "androidx.core", name = "core-splashscreen", version.ref="splashscreen"}
 androidx-navigation-compose = { module = "androidx.navigation:navigation-compose",   version.ref="composeNavigation"}
-
+androidx-compose-runtime = { group = "androidx.compose.runtime", name = "runtime", version.ref="composeRuntime"}
+androidx-compose-runtime-livedata = { group = "androidx.compose.runtime", name = "runtime-livedata", version.ref="composeRuntime"}
 
 [plugins]
 android-application = { id = "com.android.application", version.ref = "agp" }

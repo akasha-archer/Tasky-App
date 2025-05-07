@@ -9,8 +9,8 @@ import javax.inject.Inject
 import javax.inject.Singleton
 
 interface AuthRepository {
-    suspend fun registerNewUser(userRegistrationData: RegisterUserState)
-    suspend fun loginUser(userLoginData: UserLoginData): LoggedInUserResponse?
+    suspend fun registerNewUser(fullName: String, email: String, password: String)
+    suspend fun loginUser(email: String, password: String): LoggedInUserResponse?
     suspend fun requestAccessToken(accessTokenRequest: AccessTokenRequest): AccessTokenResponse?
     suspend fun isTokenExpired(): Boolean
     suspend fun logoutUser()
@@ -24,12 +24,19 @@ class AuthRepositoryImpl @Inject constructor(
     private val appPreferences: TaskyAppPreferences
 ) : AuthRepository {
 
-    override suspend fun registerNewUser(userRegistrationData: RegisterUserState) {
-        taskyApiService.registerUser(userRegistrationData)
+    override suspend fun registerNewUser(fullName: String, email: String, password: String) {
+        taskyApiService.registerUser(
+            fullName = fullName,
+            email = email,
+            password = password
+        )
     }
 
-    override suspend fun loginUser(userLoginData: UserLoginData): LoggedInUserResponse? {
-        return taskyApiService.loginUser(userLoginData).body()
+    override suspend fun loginUser(email: String, password: String): LoggedInUserResponse? {
+        return taskyApiService.loginUser(
+            email = email,
+            password = password
+        ).body()
     }
 
     override suspend fun requestAccessToken(accessTokenRequest: AccessTokenRequest): AccessTokenResponse? {

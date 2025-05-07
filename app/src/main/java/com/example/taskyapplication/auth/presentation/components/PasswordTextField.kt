@@ -98,7 +98,7 @@ fun PasswordTextField(
             )
         )
         Spacer(modifier = Modifier.height(8.dp))
-        if (!isPasswordValid) {
+        if (!isPasswordValid && isFocused && state.text.isNotEmpty()) {
             Text(
                 modifier = Modifier
                     .padding(start = 16.dp),
