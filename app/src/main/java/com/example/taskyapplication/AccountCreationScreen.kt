@@ -14,19 +14,16 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import androidx.navigation.NavController
-import androidx.navigation.compose.rememberNavController
-import com.example.taskyapplication.auth.domain.NewUserRegistrationData
+import com.example.taskyapplication.auth.domain.RegisterUserState
 import com.example.taskyapplication.auth.domain.UserLoginData
-import com.example.taskyapplication.auth.presentation.AuthorizationCtaButton
-import com.example.taskyapplication.auth.presentation.PasswordTextField
-import com.example.taskyapplication.auth.presentation.UserInfoTextField
+import com.example.taskyapplication.auth.presentation.components.AuthorizationCtaButton
+import com.example.taskyapplication.auth.presentation.components.PasswordTextField
+import com.example.taskyapplication.auth.presentation.components.UserInfoTextField
 
 @Composable
 fun AccountCreationScreen(
     modifier: Modifier = Modifier,
-    navController: NavController,
-    onRegisterClick: (NewUserRegistrationData) -> Unit = {}
+    onRegisterClick: (RegisterUserState) -> Unit = {}
 ) {
     var registrationName by rememberSaveable {
         mutableStateOf("fullName")
@@ -42,7 +39,7 @@ fun AccountCreationScreen(
 
     val newUserData by rememberSaveable {
         mutableStateOf(
-            NewUserRegistrationData(
+            RegisterUserState(
                 fullName = registrationName,
                 email = registrationEmail,
                 password = registrationPassword
@@ -94,7 +91,6 @@ fun AccountCreationScreen(
 @Composable
 fun LoginScreen(
     modifier: Modifier = Modifier,
-    navController: NavController = rememberNavController(),
     onLoginClick: (UserLoginData) -> Unit = {},
 ) {
     var emailInput by rememberSaveable {
@@ -151,7 +147,6 @@ fun LoginScreen(
 @Composable
 fun AuthenticationScreenPreview() {
     AccountCreationScreen(
-        navController = rememberNavController(),
         onRegisterClick = {}
     )
 }
@@ -160,7 +155,6 @@ fun AuthenticationScreenPreview() {
 @Composable
 fun RegisteredUserScreenPreview() {
     LoginScreen(
-        navController = rememberNavController(),
         onLoginClick = {}
     )
 }

@@ -3,12 +3,10 @@ package com.example.taskyapplication.auth.presentation
 import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.example.taskyapplication.auth.data.LoggedInUserResponse
 import com.example.taskyapplication.auth.domain.AuthRepository
-import com.example.taskyapplication.auth.domain.AuthUserState
 import com.example.taskyapplication.auth.domain.Lce
-import com.example.taskyapplication.auth.domain.LoggedInUserResponse
-import com.example.taskyapplication.auth.domain.NewUserRegistrationData
-import com.example.taskyapplication.auth.domain.UserLoginData
+import com.example.taskyapplication.auth.domain.RegisterUserState
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -24,13 +22,38 @@ class AuthViewModel @Inject constructor(
     private val _lceAuthUserData = MutableStateFlow<Lce<LoggedInUserResponse?>>(Lce.Loading)
     val lceAuthUserData = _lceAuthUserData.asStateFlow()
 
-    private val _authUserState = MutableStateFlow<AuthUserState?>(null)
-    val authUserState = _authUserState.asStateFlow()
-
     private val _isTokenValid = MutableStateFlow(false)
     val isTokenValid = _isTokenValid.asStateFlow()
 
-    suspend fun registerNewUser(registerData: NewUserRegistrationData) =
+    private val _registerUserState = MutableStateFlow(
+            RegisterUserState(
+                fullName = "",
+                email = "",
+                password = ""
+            )
+        )
+    val registrationUserState = _registerUserState.asStateFlow()
+
+    // update registration state values
+    fun setRegistrationName(name: String) {
+        viewModelScope.launch {
+            _registerUserState.update { it.copy(fullName = name) }
+        }
+    }
+
+    fun setRegistrationEmail(email: String) {
+        viewModelScope.launch {
+            _registerUserState.update { it.copy(email = email) }
+        }
+    }
+
+    fun setRegistrationPassword(password: String) {
+        viewModelScope.launch {
+            _registerUserState.update { it.copy(password = password) }
+        }
+    }
+
+    suspend fun registerNewUser(registerData: RegisterUserState) =
         viewModelScope.launch {
             try {
                 authRepository.registerNewUser(registerData)
@@ -40,32 +63,32 @@ class AuthViewModel @Inject constructor(
             }
         }
 
-    suspend fun login(userData: UserLoginData) {
-        _lceAuthUserData.value = Lce.Loading
-        viewModelScope.launch {
-            try {
-                val loginResponse = authRepository.loginUser(userData)
-                _lceAuthUserData.value = Lce.Success(loginResponse)
-
-                if (loginResponse != null) {
-                    // Update the auth user state
-                    _authUserState.update { state ->
-                        state?.copy(
-                            userId = loginResponse.userId,
-                            fullName = loginResponse.fullName,
-                        )
-                    }
-                    // save refresh token and registered status
-                    authRepository.saveRefreshToken(loginResponse)
-                    authRepository.saveRegisteredUser(loginResponse.userId.isNotEmpty())
-                }
-            } catch (e: Exception) {
-                _lceAuthUserData.value = Lce.Error(e)
-                Log.e("User Login: ", "Failed to log in user ${e.message}")
-                throw e
-            }
-        }
-    }
+//    suspend fun login(userData: UserLoginData) {
+//        _lceAuthUserData.value = Lce.Loading
+//        viewModelScope.launch {
+//            try {
+//                val loginResponse = authRepository.loginUser(userData)
+//                _lceAuthUserData.value = Lce.Success(loginResponse)
+//
+//                if (loginResponse != null) {
+//                    // Update the auth user state
+//                    _authUserState.update { state ->
+//                        state?.copy(
+//                            userId = loginResponse.userId,
+//                            fullName = loginResponse.fullName,
+//                        )
+//                    }
+//                    // save refresh token and registered status
+//                    authRepository.saveRefreshToken(loginResponse)
+//                    authRepository.saveRegisteredUser(loginResponse.userId.isNotEmpty())
+//                }
+//            } catch (e: Exception) {
+//                _lceAuthUserData.value = Lce.Error(e)
+//                Log.e("User Login: ", "Failed to log in user ${e.message}")
+//                throw e
+//            }
+//        }
+//    }
 
      fun isTokenExpired() {
         viewModelScope.launch {

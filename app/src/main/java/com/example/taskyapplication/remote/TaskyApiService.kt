@@ -1,10 +1,10 @@
 package com.example.taskyapplication.remote
 
-import com.example.taskyapplication.auth.domain.LoggedInUserResponse
-import com.example.taskyapplication.auth.domain.NewUserRegistrationData
-import com.example.taskyapplication.auth.domain.UserAccessTokenResponse
+import com.example.taskyapplication.auth.data.AccessTokenResponse
+import com.example.taskyapplication.auth.data.LoggedInUserResponse
 import com.example.taskyapplication.auth.domain.UserLoginData
-import com.example.taskyapplication.auth.domain.UserRefreshTokenData
+import com.example.taskyapplication.auth.domain.AccessTokenRequest
+import com.example.taskyapplication.auth.domain.RegisterUserState
 import retrofit2.Response
 import retrofit2.http.Body
 import retrofit2.http.GET
@@ -15,7 +15,7 @@ interface TaskyApiService {
 
     @POST("/register")
     suspend fun registerUser(
-        @Body userRegistrationRequest: NewUserRegistrationData
+        @Body userRegistrationRequest: RegisterUserState
     )
 
     @POST("/login")
@@ -25,8 +25,8 @@ interface TaskyApiService {
 
     @POST("/accessToken")
     suspend fun getNewAccessToken(
-        @Body userAccessTokenRequest: UserRefreshTokenData,
-    ): Response<UserAccessTokenResponse>
+        @Body userAccessTokenRequest: AccessTokenRequest,
+    ): Response<AccessTokenResponse>
 
     @GET("/authenticate")
     suspend fun authenticateUser(): Response<Int>

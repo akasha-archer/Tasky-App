@@ -1,36 +1,27 @@
 package com.example.taskyapplication.auth.domain
 
-import android.os.Parcelable
-import kotlinx.parcelize.Parcelize
 import kotlinx.serialization.Serializable
+
+data class RegisterUserState(
+    val fullName: String?,
+    val email: String?,
+    val password: String?
+)
 
 data class AuthUserState(
     val fullName: String?,
     val userId: String?,
     val isRegistered: Boolean
-) {
-    fun userInitials(): String {
-        return fullName?.split(" ")?.joinToString("") {
-            it.first().toString()
-        }!!
-    }
-}
+)
 
-@Parcelize
-data class NewUserRegistrationData(
-    val fullName: String,
-    val email: String,
-    val password: String
-) : Parcelable
-
-@Parcelize
+// model for credentials sent to authenticate registered user
 data class UserLoginData(
     val email: String,
     val password: String
-) : Parcelable
+)
 
-@Serializable
-data class LoggedInUserResponse(
+// model for the response for a logged in user
+data class LoggedInUser(
     val accessToken: String,
     val refreshToken: String,
     val fullName: String,
@@ -38,20 +29,16 @@ data class LoggedInUserResponse(
     val accessTokenExpirationTimestamp: Long
 )
 
+// model for requesting a new access token
 @Serializable
-data class UserRefreshTokenData(
+data class AccessTokenRequest(
     val refreshToken: String,
     val userId: String
 )
 
+// model for error received from API
 @Serializable
-data class UserAccessTokenResponse(
-    val accessToken: String,
-    val expirationTimestamp: Long
-)
-
-@Serializable
-data class AuthenticationResponse(
+data class Error(
     val message: String
 )
 
