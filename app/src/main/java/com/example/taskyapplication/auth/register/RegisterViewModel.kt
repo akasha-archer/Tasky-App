@@ -1,4 +1,4 @@
-package com.example.taskyapplication.auth.presentation
+package com.example.taskyapplication.auth.register
 
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -11,8 +11,6 @@ import com.example.taskyapplication.auth.domain.RegisterUserState
 import com.example.taskyapplication.auth.domain.UserInputValidator
 import com.example.taskyapplication.auth.login.LoginEvent
 import com.example.taskyapplication.auth.presentation.utils.textAsFlow
-import com.example.taskyapplication.auth.register.RegisterAction
-import com.example.taskyapplication.auth.register.RegistrationEvent
 import com.example.taskyapplication.domain.utils.Result
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -22,7 +20,7 @@ import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 @HiltViewModel
-class AuthViewModel @Inject constructor(
+class RegisterViewModel @Inject constructor(
     private val authRepository: AuthRepository,
     private val inputValidator: UserInputValidator
 ) : ViewModel() {
@@ -31,8 +29,6 @@ class AuthViewModel @Inject constructor(
     val isTokenValid = _isTokenValid.asStateFlow()
 
     val registrationEvents = MutableLiveData<RegistrationEvent>()
-    val loginEvents = MutableLiveData<LoginEvent>()
-
     var state by mutableStateOf(RegisterUserState())
         private set
 
@@ -86,26 +82,6 @@ class AuthViewModel @Inject constructor(
                 }
                 is Result.Success -> {
                     registrationEvents.value = RegistrationEvent.RegistrationSuccess
-                }
-            }
-        }
-    }
-
-    private fun loginUser() {
-        viewModelScope.launch {
-//            state = state.copy(isRegistering = true) //LoginState object isLoggingIn = true
-            val result = authRepository.loginUser(
-                email = state.email.text.toString().trim(),
-                password = state.password.text.toString().trim()
-            )
-            //state = state.copy(isRegistering = false) //isLoggingIn = false
-            when (result) {
-                is Result.Error -> {
-                    loginEvents.value =
-                        LoginEvent.LoginError(result.error.toString())
-                }
-                is Result.Success -> {
-                    loginEvents.value = LoginEvent.LoginSuccess
                 }
             }
         }

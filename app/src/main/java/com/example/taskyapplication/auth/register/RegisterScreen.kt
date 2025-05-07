@@ -1,4 +1,4 @@
-package com.example.taskyapplication.auth.presentation
+package com.example.taskyapplication.auth.register
 
 import android.widget.Toast
 import androidx.compose.foundation.layout.Arrangement
@@ -24,8 +24,6 @@ import com.example.taskyapplication.auth.presentation.components.AuthorizationCt
 import com.example.taskyapplication.auth.presentation.components.BaseInputField
 import com.example.taskyapplication.auth.presentation.components.PasswordTextField
 import com.example.taskyapplication.auth.presentation.utils.AuthScreenTitle
-import com.example.taskyapplication.auth.register.RegisterAction
-import com.example.taskyapplication.auth.register.RegistrationEvent
 import com.example.taskyapplication.ui.theme.TaskyDesignSystem.Companion.taskyColors
 
 @Composable
@@ -33,11 +31,11 @@ fun RegisterRoot(
     modifier: Modifier = Modifier,
     onLoginClick: () -> Unit = {},
     onRegisterSuccess: () -> Unit,
-    authViewModel: AuthViewModel = hiltViewModel()
+    registerViewModel: RegisterViewModel = hiltViewModel()
 ) {
     val context = LocalContext.current
     val keyboardController = LocalSoftwareKeyboardController.current
-    val events = authViewModel.registrationEvents.observeAsState()
+    val events = registerViewModel.registrationEvents.observeAsState()
 
     events.value?.let { event ->
         when (event) {
@@ -70,13 +68,13 @@ fun RegisterRoot(
         },
         mainContent = {
             RegisterUserScreen(
-                state = authViewModel.state,
+                state = registerViewModel.state,
                 onAction = { action ->
                     when (action) {
                         RegisterAction.OnLoginClick -> onLoginClick()
                         else -> Unit
                     }
-                    authViewModel.registerActions(action)
+                    registerViewModel.registerActions(action)
                 }
             )
         }

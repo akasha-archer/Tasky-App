@@ -1,14 +1,13 @@
-package com.example.taskyapplication.auth.presentation
+package com.example.taskyapplication.auth.login
 
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
-import com.example.taskyapplication.auth.domain.UserLoginData
 
 @Composable
 fun LoginScreen(
     modifier: Modifier = Modifier,
-    onLoginClick: (UserLoginData) -> Unit = {},
+    onLoginClick: () -> Unit = {},
 ) {
 //    var emailInput by rememberSaveable {
 //        mutableStateOf("email")

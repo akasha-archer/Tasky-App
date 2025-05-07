@@ -7,7 +7,7 @@ import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import com.example.taskyapplication.agenda.presentation.AgendaScreen
-import com.example.taskyapplication.auth.presentation.RegisterRoot
+import com.example.taskyapplication.auth.register.RegisterRoot
 import kotlinx.serialization.Serializable
 
 @Composable
@@ -20,59 +20,66 @@ fun NavigationRoot(
     NavHost(
         modifier = modifier,
         navController = navController,
-        startDestination = UserStateScreen
+        startDestination = NavigationRoutes.UserStateScreen
     ) {
-        composable<UserStateScreen> {
+        composable<NavigationRoutes.UserStateScreen> {
             LaunchedEffect(isLoggedIn, isUserRegistered) {
                 val route = when {
-                    isLoggedIn -> AgendaScreen
-                    isUserRegistered -> LoginScreen
-                    else -> RegisterScreen
+                    isLoggedIn -> NavigationRoutes.AgendaScreen
+                    isUserRegistered -> NavigationRoutes.LoginScreen
+                    else -> NavigationRoutes.RegisterScreen
                 }
                 navController.navigate(route) {
-                    popUpTo(UserStateScreen) { inclusive = true }
+                    popUpTo(NavigationRoutes.UserStateScreen) { inclusive = true }
                 }
             }
         }
-        composable<AgendaScreen> {
+        composable<NavigationRoutes.AgendaScreen> {
             AgendaScreen()
         }
 
-        composable<LoginScreen> {
+        composable<NavigationRoutes.LoginScreen> {
 //            LogInScreen()
         }
 
-        composable<RegisterScreen> {
-            RegisterRoot()
+        composable<NavigationRoutes.RegisterScreen> {
+            RegisterRoot(
+                onLoginClick = {
+                    navController.navigate(NavigationRoutes.LoginScreen) {
+                        popUpTo(NavigationRoutes.RegisterScreen) {
+                            inclusive = true
+                            saveState = true
+                        }
+                        restoreState = true
+                    }
+                },
+                onRegisterSuccess = {
+                    navController.navigate(NavigationRoutes.LoginScreen)
+                }
+            )
         }
     }
 }
 
+sealed interface NavigationRoutes {
+    @Serializable
+    data object UserStateScreen : NavigationRoutes
 
-// navigation screen destinations
-@Serializable
-object UserStateScreen
+    @Serializable
+    data object LoginScreen : NavigationRoutes
 
-@Serializable
-object LoginScreen
+    @Serializable
+    data object RegisterScreen : NavigationRoutes
 
-@Serializable
-object RegisterScreen
+    @Serializable
+    data object AgendaScreen : NavigationRoutes
 
-@Serializable
-object AgendaScreen
+    @Serializable
+    data object EventScreen : NavigationRoutes
 
-@Serializable
-object EventScreen
+    @Serializable
+    data object TaskScreen : NavigationRoutes
 
-@Serializable
-object TaskScreen
-
-@Serializable
-object ReminderScreen
-
-
-
-
-
-
+    @Serializable
+    data object ReminderScreen : NavigationRoutes
+}
