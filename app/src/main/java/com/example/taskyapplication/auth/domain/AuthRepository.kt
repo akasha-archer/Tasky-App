@@ -5,7 +5,10 @@ import com.example.taskyapplication.auth.data.AccessTokenResponse
 import com.example.taskyapplication.auth.data.LoggedInUserResponse
 import com.example.taskyapplication.auth.data.TaskyAppPreferences
 import com.example.taskyapplication.domain.utils.BaseRepository
-import com.example.taskyapplication.domain.utils.NetworkResult
+import com.example.taskyapplication.domain.utils.DataError
+import com.example.taskyapplication.domain.utils.EmptyResult
+import com.example.taskyapplication.domain.utils.asEmptyDataResult
+import com.example.taskyapplication.domain.utils.onSuccess
 import com.example.taskyapplication.network.TaskyApiService
 import javax.inject.Inject
 import javax.inject.Singleton
@@ -15,9 +18,9 @@ interface AuthRepository {
         fullName: String,
         email: String,
         password: String
-    ): NetworkResult<Unit>
+    ): EmptyResult<DataError>
 
-    suspend fun loginUser(email: String, password: String): NetworkResult<LoggedInUserResponse>
+    suspend fun loginUser(email: String, password: String): EmptyResult<DataError>
     suspend fun requestAccessToken(accessTokenRequest: AccessTokenRequest): AccessTokenResponse?
     suspend fun isTokenExpired(): Boolean
     suspend fun logoutUser()
@@ -35,8 +38,8 @@ class AuthRepositoryImpl @Inject constructor(
         fullName: String,
         email: String,
         password: String
-    ): NetworkResult<Unit> {
-        return executeApiCall {
+    ): EmptyResult<DataError> {
+        return executeApi {
             taskyApiService.registerUser(
                 fullName = fullName,
                 email = email,
@@ -48,17 +51,16 @@ class AuthRepositoryImpl @Inject constructor(
     override suspend fun loginUser(
         email: String,
         password: String
-    ): NetworkResult<LoggedInUserResponse> {
-        return executeApiCall {
+    ): EmptyResult<DataError> {
+        val result = executeApi {
             taskyApiService.loginUser(
                 email = email,
                 password = password
             )
+        }.onSuccess {
+            TODO("save tokens and user info")
         }
-//        return taskyApiService.loginUser(
-//            email = email,
-//            password = password
-//        )
+        return result.asEmptyDataResult()
     }
 
     override suspend fun requestAccessToken(accessTokenRequest: AccessTokenRequest): AccessTokenResponse? {

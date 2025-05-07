@@ -12,10 +12,11 @@ import com.example.taskyapplication.auth.domain.AuthRepository
 import com.example.taskyapplication.auth.domain.Lce
 import com.example.taskyapplication.auth.domain.RegisterUserState
 import com.example.taskyapplication.auth.domain.UserInputValidator
+import com.example.taskyapplication.auth.login.LoginEvent
 import com.example.taskyapplication.auth.presentation.utils.textAsFlow
 import com.example.taskyapplication.auth.register.RegisterAction
 import com.example.taskyapplication.auth.register.RegistrationEvent
-import com.example.taskyapplication.domain.utils.NetworkResult
+import com.example.taskyapplication.domain.utils.Result
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -29,13 +30,11 @@ class AuthViewModel @Inject constructor(
     private val inputValidator: UserInputValidator
 ) : ViewModel() {
 
-    private val _lceAuthUserData = MutableStateFlow<Lce<LoggedInUserResponse?>>(Lce.Loading)
-    val lceAuthUserData = _lceAuthUserData.asStateFlow()
-
     private val _isTokenValid = MutableStateFlow(false)
     val isTokenValid = _isTokenValid.asStateFlow()
 
     val registrationEvents = MutableLiveData<RegistrationEvent>()
+    val loginEvents = MutableLiveData<LoginEvent>()
 
     var state by mutableStateOf(RegisterUserState())
         private set
@@ -76,34 +75,41 @@ class AuthViewModel @Inject constructor(
     private fun registerNewUser() {
         viewModelScope.launch {
             state = state.copy(isRegistering = true)
-            try {
-                val result = authRepository.registerNewUser(
-                    fullName = state.fullName.text.toString().trim(),
-                    email = state.email.text.toString().trim(),
-                    password = state.password.text.toString().trim()
-                )
-                NetworkResult.Success(result)
-                state = state.copy(isRegistering = false)
-            } catch (e: Exception) {
-                NetworkResult.Error<Nothing>(e.message.toString())
-                Log.e("New User Registration: ", "Failed to register user ${e.message}")
+            val result = authRepository.registerNewUser(
+                fullName = state.fullName.text.toString().trim(),
+                email = state.email.text.toString().trim(),
+                password = state.password.text.toString().trim()
+            )
+            state = state.copy(isRegistering = false)
+
+            when (result) {
+                is Result.Error -> {
+                    registrationEvents.value =
+                        RegistrationEvent.RegistrationError(result.error.toString())
+                }
+                is Result.Success -> {
+                    registrationEvents.value = RegistrationEvent.RegistrationSuccess
+                }
             }
         }
     }
 
     private fun loginUser() {
         viewModelScope.launch {
-//            state = state.copy(isRegistering = true) //isLoggingIn = true
-            try {
-                val result = authRepository.loginUser(
-                    email = state.email.text.toString().trim(),
-                    password = state.password.text.toString().trim()
-                )
-                NetworkResult.Success(result)
-//            state = state.copy(isRegistering = false) //isLoggingIn = false
-            } catch (e: Exception) {
-                NetworkResult.Error<Nothing>(e.message.toString())
-                Log.e("User Login: ", "Failed to log in user ${e.message}")
+//            state = state.copy(isRegistering = true) //LoginState object isLoggingIn = true
+            val result = authRepository.loginUser(
+                email = state.email.text.toString().trim(),
+                password = state.password.text.toString().trim()
+            )
+            //state = state.copy(isRegistering = false) //isLoggingIn = false
+            when (result) {
+                is Result.Error -> {
+                    loginEvents.value =
+                        LoginEvent.LoginError(result.error.toString())
+                }
+                is Result.Success -> {
+                    loginEvents.value = LoginEvent.LoginSuccess
+                }
             }
         }
     }
