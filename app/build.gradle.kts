@@ -83,6 +83,7 @@ dependencies {
     implementation(libs.squareup.okhttp.interceptor)
     implementation(libs.retrofit.gson)
     implementation(libs.hilt.android)
+    implementation(libs.hilt.navigation.compose)
     implementation(platform(libs.okhttp.bom))
     implementation(libs.kotlinx.serialization.json)
     implementation(libs.retrofit2.kotlinx.serialization.converter)

@@ -1,6 +1,11 @@
 package com.example.taskyapplication.auth.presentation.components
 
+import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.shape.RoundedCornerShape
 import com.example.taskyapplication.auth.presentation.utils.ShowInputValidationIcon
@@ -121,6 +126,7 @@ fun AuthorizationCtaButton(
     Button(
         modifier = modifier
             .fillMaxWidth()
+            .height(96.dp)
             .padding(start = 20.dp, end = 20.dp, top = 16.dp, bottom = 16.dp)
             .clip(RoundedCornerShape(25.dp)),
         onClick = onButtonClick,
@@ -135,6 +141,40 @@ fun AuthorizationCtaButton(
             text = buttonText.uppercase(),
             color = taskyColors.onPrimary,
             style = TaskyTypography.labelMedium
+        )
+    }
+}
+
+@Composable
+fun AuthScreenFooter(
+    modifier: Modifier = Modifier,
+    navigateToScreen: () -> Unit,
+    accountRegisteredPrompt: String,
+    loginOrSignupPrompt: String
+) {
+    Spacer(
+        modifier = modifier
+            .fillMaxWidth()
+            .height(16.dp)
+    )
+    Row(
+        modifier = Modifier
+            .fillMaxWidth(),
+        horizontalArrangement = Arrangement.Center
+    ) {
+        Text(
+            modifier = Modifier.padding(end = 8.dp),
+            text = accountRegisteredPrompt.uppercase(),
+            style = TaskyTypography.labelSmall,
+            color = taskyColors.onSurfaceVariant,
+        )
+        Text(
+            modifier = Modifier.clickable {
+                navigateToScreen()
+            },
+            text = loginOrSignupPrompt.uppercase(),
+            style = TaskyTypography.labelSmall,
+            color = taskyColors.link,
         )
     }
 }
