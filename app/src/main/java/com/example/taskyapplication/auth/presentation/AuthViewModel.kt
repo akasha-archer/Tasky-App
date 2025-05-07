@@ -15,6 +15,7 @@ import com.example.taskyapplication.auth.domain.UserInputValidator
 import com.example.taskyapplication.auth.presentation.utils.textAsFlow
 import com.example.taskyapplication.auth.register.RegisterAction
 import com.example.taskyapplication.auth.register.RegistrationEvent
+import com.example.taskyapplication.domain.utils.NetworkResultState
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -75,57 +76,41 @@ class AuthViewModel @Inject constructor(
     private fun registerNewUser() {
         viewModelScope.launch {
             state = state.copy(isRegistering = true)
-            val result = authRepository.registerNewUser(
-                fullName = state.fullName.text.toString().trim(),
-                email = state.email.text.toString().trim(),
-                password = state.password.text.toString().trim()
-            )
-            state = state.copy(isRegistering = false)
-
-            when (result) {
+            try {
+                val result = authRepository.registerNewUser(
+                    fullName = state.fullName.text.toString().trim(),
+                    email = state.email.text.toString().trim(),
+                    password = state.password.text.toString().trim()
+                )
+                NetworkResultState.Success(result)
+                state = state.copy(isRegistering = false)
+            } catch (e: Exception) {
+                NetworkResultState.Error(e.message.toString())
+                Log.e("New User Registration: ", "Failed to register user ${e.message}")
+            }
         }
     }
 
-//    fun registerNewUser(registerData: RegisterUserState) =
-//        viewModelScope.launch {
-//            try {
-//                authRepository.registerNewUser(registerData)
-//            } catch (e: Exception) {
-//                Log.e("New User Registration: ", "Failed to register user ${e.message}")
-//                throw e
-//            }
-//        }
-
-//    suspend fun login(userData: UserLoginData) {
-//        _lceAuthUserData.value = Lce.Loading
-//        viewModelScope.launch {
-//            try {
-//                val loginResponse = authRepository.loginUser(userData)
-//                _lceAuthUserData.value = Lce.Success(loginResponse)
-//
-//                if (loginResponse != null) {
-//                    // Update the auth user state
-//                    _authUserState.update { state ->
-//                        state?.copy(
-//                            userId = loginResponse.userId,
-//                            fullName = loginResponse.fullName,
-//                        )
-//                    }
-//                    // save refresh token and registered status
-//                    authRepository.saveRefreshToken(loginResponse)
-//                    authRepository.saveRegisteredUser(loginResponse.userId.isNotEmpty())
-//                }
-//            } catch (e: Exception) {
-//                _lceAuthUserData.value = Lce.Error(e)
-//                Log.e("User Login: ", "Failed to log in user ${e.message}")
-//                throw e
-//            }
-//        }
-//    }
+    private fun loginUser() {
+        viewModelScope.launch {
+//            state = state.copy(isRegistering = true) //isLoggingIn = true
+            try {
+                val result = authRepository.loginUser(
+                    email = state.email.text.toString().trim(),
+                    password = state.password.text.toString().trim()
+                )
+                NetworkResultState.Success(result)
+//            state = state.copy(isRegistering = false) //isLoggingIn = false
+            } catch (e: Exception) {
+                NetworkResultState.Error(e.message.toString())
+                Log.e("User Login: ", "Failed to log in user ${e.message}")
+            }
+        }
+    }
 
     fun registerActions(action: RegisterAction) {
-        when(action) {
-            RegisterAction.OnRegisterClick -> { } //register
+        when (action) {
+            RegisterAction.OnRegisterClick -> {} //register
             else -> Unit
         }
     }
