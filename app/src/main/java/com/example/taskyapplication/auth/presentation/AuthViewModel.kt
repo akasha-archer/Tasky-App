@@ -1,15 +1,12 @@
 package com.example.taskyapplication.auth.presentation
 
-import android.util.Log
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.example.taskyapplication.auth.data.LoggedInUserResponse
 import com.example.taskyapplication.auth.domain.AuthRepository
-import com.example.taskyapplication.auth.domain.Lce
 import com.example.taskyapplication.auth.domain.RegisterUserState
 import com.example.taskyapplication.auth.domain.UserInputValidator
 import com.example.taskyapplication.auth.login.LoginEvent
