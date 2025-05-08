@@ -23,6 +23,7 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableFloatStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
@@ -49,9 +50,9 @@ fun BaseInputField(
     modifier: Modifier = Modifier,
     state: TextFieldState,
     isError: Boolean,
-    supportingText: String,
+    supportingText: String = "",
     hintText: String = "",
-    textFieldIcon: @Composable (() -> Unit),
+    textFieldIcon: (@Composable (() -> Unit))? = null,
     keyboardType: KeyboardType = KeyboardType.Text,
     imeAction: ImeAction = ImeAction.Next,
 ) {
@@ -108,7 +109,9 @@ fun BaseInputField(
                         innerTextField()
                     }
                     if (!isError) {
-                        textFieldIcon()
+                        if (textFieldIcon != null) {
+                            textFieldIcon()
+                        }
                     }
                 }
             }
@@ -127,7 +130,7 @@ fun BaseInputField(
 }
 
 @Composable
-fun AuthorizationCtaButton(
+fun AuthCtaButton(
     modifier: Modifier = Modifier,
     buttonText: String,
     isButtonEnabled: Boolean = false,
@@ -186,7 +189,7 @@ fun AuthScreenFooter(
                         linkInteractionListener = { navigateToScreen() }
                     ),
                 ) {
-                    append(loginOrSignupPrompt)
+                    append(loginOrSignupPrompt.uppercase())
                 }
             },
             style = TaskyTypography.labelSmall.copy(
@@ -219,7 +222,7 @@ fun PlaygroundPreview() {
 @Preview(showBackground = true, backgroundColor = 0xFF00FF00)
 @Composable
 fun CtaButtonPreview() {
-    AuthorizationCtaButton(
+    AuthCtaButton(
         buttonText = "Sign In"
     )
 }

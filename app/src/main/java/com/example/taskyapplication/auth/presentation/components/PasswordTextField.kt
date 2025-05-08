@@ -34,7 +34,7 @@ fun PasswordTextField(
     modifier: Modifier = Modifier,
     state: TextFieldState,
     hintText: String = "Password",
-    isPasswordValid: Boolean,
+    isPasswordValid: Boolean = false,
     imeAction: ImeAction = ImeAction.Done,
 ) {
     var isFocused by remember {

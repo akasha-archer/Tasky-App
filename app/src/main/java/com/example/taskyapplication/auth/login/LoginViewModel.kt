@@ -10,6 +10,7 @@ import com.example.taskyapplication.auth.domain.AuthRepository
 import com.example.taskyapplication.auth.domain.LoginUserState
 import com.example.taskyapplication.auth.domain.UserInputValidator
 import com.example.taskyapplication.auth.presentation.utils.textAsFlow
+import com.example.taskyapplication.auth.register.RegisterAction
 import com.example.taskyapplication.domain.utils.Result
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.combine
@@ -62,6 +63,13 @@ class LoginViewModel @Inject constructor(
                     loginEvents.value = LoginEvent.LoginSuccess
                 }
             }
+        }
+    }
+
+    fun loginActions(action: LoginAction) {
+        when (action) {
+            LoginAction.OnLoginClick -> loginUser()
+            else -> Unit
         }
     }
 }

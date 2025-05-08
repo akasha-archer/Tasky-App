@@ -20,7 +20,7 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import com.example.taskyapplication.TaskyBaseScreen
 import com.example.taskyapplication.auth.domain.RegisterUserState
 import com.example.taskyapplication.auth.presentation.components.AuthScreenFooter
-import com.example.taskyapplication.auth.presentation.components.AuthorizationCtaButton
+import com.example.taskyapplication.auth.presentation.components.AuthCtaButton
 import com.example.taskyapplication.auth.presentation.components.BaseInputField
 import com.example.taskyapplication.auth.presentation.components.PasswordTextField
 import com.example.taskyapplication.auth.presentation.utils.AuthScreenTitle
@@ -135,7 +135,7 @@ fun RegisterUserScreen(
             state = state.password,
             isPasswordValid = state.passwordValidationState.isValidPassword,
         )
-        AuthorizationCtaButton(
+        AuthCtaButton(
             modifier = Modifier
                 .padding(top = 16.dp),
             buttonText = "GET STARTED",
