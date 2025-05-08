@@ -1,5 +1,6 @@
 package com.example.taskyapplication.auth.presentation.components
 
+import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -34,7 +35,7 @@ fun PasswordTextField(
     modifier: Modifier = Modifier,
     state: TextFieldState,
     hintText: String = "Password",
-    isPasswordValid: Boolean,
+    isPasswordValid: Boolean = false,
     imeAction: ImeAction = ImeAction.Done,
 ) {
     var isFocused by remember {
@@ -55,6 +56,14 @@ fun PasswordTextField(
                 .height(84.dp)
                 .padding(top = 24.dp)
                 .clip(shape = RoundedCornerShape(10.dp))
+                .border(
+                    width = 1.dp,
+                    color = when {
+                        (!isPasswordValid && !isFocused && state.text.isNotEmpty()) -> taskyColors.error
+                        isFocused -> taskyColors.textFieldFocusBorder
+                        else -> Color.Transparent
+                    }
+                )
                 .onFocusChanged { isFocused = it.isFocused },
             textStyle = TaskyTypography.bodyMedium.copy(
                 color = taskyColors.inputText
@@ -98,15 +107,6 @@ fun PasswordTextField(
             )
         )
         Spacer(modifier = Modifier.height(8.dp))
-        if (!isPasswordValid) {
-            Text(
-                modifier = Modifier
-                    .padding(start = 16.dp),
-                text = "Please enter a valid password",
-                style = TaskyTypography.bodySmall,
-                color = taskyColors.error,
-            )
-        }
     }
 }
 

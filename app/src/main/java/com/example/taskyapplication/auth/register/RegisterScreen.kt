@@ -1,5 +1,6 @@
-package com.example.taskyapplication.auth.presentation
+package com.example.taskyapplication.auth.register
 
+import android.widget.Toast
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
@@ -8,25 +9,56 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.rounded.Check
 import androidx.compose.material3.Icon
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalAutofillManager
+import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.example.taskyapplication.TaskyBaseScreen
 import com.example.taskyapplication.auth.domain.RegisterUserState
 import com.example.taskyapplication.auth.presentation.components.AuthScreenFooter
-import com.example.taskyapplication.auth.presentation.components.AuthorizationCtaButton
+import com.example.taskyapplication.auth.presentation.components.AuthCtaButton
 import com.example.taskyapplication.auth.presentation.components.BaseInputField
 import com.example.taskyapplication.auth.presentation.components.PasswordTextField
 import com.example.taskyapplication.auth.presentation.utils.AuthScreenTitle
 import com.example.taskyapplication.ui.theme.TaskyDesignSystem.Companion.taskyColors
 
 @Composable
-fun RegisterRoot(
+fun RegisterScreenRoot(
     modifier: Modifier = Modifier,
-    authViewModel: AuthViewModel = hiltViewModel()
+    onLoginClick: () -> Unit = {},
+    onRegisterSuccess: () -> Unit,
+    registerViewModel: RegisterViewModel = hiltViewModel()
 ) {
+    val context = LocalContext.current
+    val keyboardController = LocalSoftwareKeyboardController.current
+    val events = registerViewModel.registrationEvents.observeAsState()
+
+    events.value?.let { event ->
+        when (event) {
+            is RegistrationEvent.RegistrationSuccess -> {
+                keyboardController?.hide()
+                Toast.makeText(
+                    context,
+                    "Registration Successful! You can now log in.",
+                    Toast.LENGTH_SHORT
+                ).show()
+            }
+            is RegistrationEvent.RegistrationError -> {
+                keyboardController?.hide()
+                Toast.makeText(
+                    context,
+                    event.errorMessage,
+                    Toast.LENGTH_SHORT
+                ).show()
+                onRegisterSuccess()
+            }
+        }
+    }
+
     TaskyBaseScreen(
         screenHeader = {
             AuthScreenTitle(
@@ -36,7 +68,14 @@ fun RegisterRoot(
         },
         mainContent = {
             RegisterUserScreen(
-                state = authViewModel.state,
+                state = registerViewModel.state,
+                onAction = { action ->
+                    when (action) {
+                        RegisterAction.OnLoginClick -> onLoginClick()
+                        else -> Unit
+                    }
+                    registerViewModel.registerActions(action)
+                }
             )
         }
     )
@@ -46,21 +85,19 @@ fun RegisterRoot(
 fun RegisterUserScreen(
     modifier: Modifier = Modifier,
     state: RegisterUserState,
-    onRegister: () -> Unit = {}
+    onAction: (RegisterAction) -> Unit
 ) {
     val autofillManager = LocalAutofillManager.current
     Column(
-        modifier = Modifier
+        modifier = modifier
             .fillMaxSize()
             .padding(16.dp),
         verticalArrangement = Arrangement.Top,
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
-        // user name input
         BaseInputField(
             state = state.fullName,
-            isError = !state.nameValidationState.isValid,
-            supportingText = "Please enter a valid name",
+            isError = state.nameValidationState.isValid,
             hintText = "Name",
             textFieldIcon = {
                 if (state.nameValidationState.isValid) {
@@ -74,11 +111,9 @@ fun RegisterUserScreen(
                 }
             },
         )
-        // email input
         BaseInputField(
             state = state.email,
-            isError = !state.isEmailValid,
-            supportingText = "Please enter a valid email",
+            isError = state.isEmailValid,
             hintText = "Email",
             textFieldIcon = {
                 if (state.isEmailValid) {
@@ -96,21 +131,19 @@ fun RegisterUserScreen(
             state = state.password,
             isPasswordValid = state.passwordValidationState.isValidPassword,
         )
-        AuthorizationCtaButton(
+        AuthCtaButton(
             modifier = Modifier
                 .padding(top = 16.dp),
             buttonText = "GET STARTED",
-            isButtonEnabled = true,
+            isButtonEnabled = state.canRegister && !state.isRegistering,
+            isLoading = state.isRegistering,
             onButtonClick = {
+                onAction(RegisterAction.OnRegisterClick)
                 autofillManager?.commit()
-                // call register endpoint
-
-                // if registration is successful (check state)
-                // navigate to log in screen
             }
         )
         AuthScreenFooter(
-            navigateToScreen = { },
+            navigateToScreen = { onAction(RegisterAction.OnLoginClick) },
             accountRegisteredPrompt = "Already have an account?",
             loginOrSignupPrompt = "LOG IN"
         )
