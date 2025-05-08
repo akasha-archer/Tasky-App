@@ -36,7 +36,7 @@ class RegisterViewModel @Inject constructor(
         // save input values as snapshot flows
         state.fullName.textAsFlow()
             .onEach { name ->
-                val nameValidationState = inputValidator.validateFullName(name.toString())
+                val nameValidationState = inputValidator.isNameValid(name.toString())
                 state = state.copy(
                     nameValidationState = nameValidationState,
                     canRegister = nameValidationState.isValid && state.isEmailValid

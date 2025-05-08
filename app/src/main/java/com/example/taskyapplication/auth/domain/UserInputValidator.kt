@@ -6,45 +6,31 @@ import javax.inject.Inject
 class UserInputValidator @Inject constructor(
     private val patternValidator: PatternValidator
 ) {
-
     fun isValidEmail(email: String): Boolean {
-        val match = patternValidator.matches(email)
-        Log.d("EmailValidator", "isValidEmail: $match")
-        return match
+        return patternValidator.matches(email)
     }
 
-    fun validateFullName(fullName: String): NameValidationState {
-        val trimmedName = fullName.trim()
-        val isEmptyInput = trimmedName.isEmpty()
-        val isTooLong = trimmedName.length > MAX_NAME_LENGTH
-        val isTwoWords = trimmedName.contains(" ")
-        val containsOnlyLettersAndSpaces = trimmedName.matches(Regex("^[a-zA-Z]+(\\s[a-zA-Z]+)+\$"))
+    fun isNameValid(fullName: String): Boolean {
+        val trimmed = fullName.trim()
+        val words = trimmed.split(" ")
+        val hasValidLength = trimmed.length in MIN_NAME_LENGTH..MAX_NAME_LENGTH
+        val hasTwoWords = words.size >= 2
+        val hasOnlyLetters = trimmed.all { it.isLetter() || it.isWhitespace() }
 
-        Log.d("NameValidator", "validateFullName: isEmptyInput=$isEmptyInput, isTooLong=$isTooLong, isTwoWords=$isTwoWords, containsOnlyLettersAndSpaces=$containsOnlyLettersAndSpaces")
-        return NameValidationState(
-            isEmptyInput = isEmptyInput,
-            isTooLong = isTooLong,
-            isTwoWords = isTwoWords,
-            hasOnlyLetters = containsOnlyLettersAndSpaces
-        )
+        return hasTwoWords && hasOnlyLetters && hasValidLength
     }
 
-    fun validatePassword(password: String): PasswordValidationState {
+    fun isPasswordValid(password: String): Boolean {
         val hasMinLength = password.length >= MIN_PASSWORD_LENGTH
         val hasDigit = password.any { it.isDigit() }
         val hasLowerCaseCharacter = password.any { it.isLowerCase() }
         val hasUpperCaseCharacter = password.any { it.isUpperCase() }
-        Log.d("PasswordValidator", "validatePassword: hasMinLength=$hasMinLength, hasDigit=$hasDigit, hasLowerCaseCharacter=$hasLowerCaseCharacter, hasUpperCaseCharacter=$hasUpperCaseCharacter")
 
-        return PasswordValidationState(
-            hasMinLength = hasMinLength,
-            hasNumber = hasDigit,
-            hasLowerCaseCharacter = hasLowerCaseCharacter,
-            hasUpperCaseCharacter = hasUpperCaseCharacter
-        )
+       return hasMinLength && hasDigit && hasLowerCaseCharacter && hasUpperCaseCharacter
     }
 
     companion object {
+        const val MIN_NAME_LENGTH = 4
         const val MAX_NAME_LENGTH = 50
         const val MIN_PASSWORD_LENGTH = 9
     }
