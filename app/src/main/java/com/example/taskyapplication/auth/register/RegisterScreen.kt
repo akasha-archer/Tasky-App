@@ -27,7 +27,7 @@ import com.example.taskyapplication.auth.presentation.utils.AuthScreenTitle
 import com.example.taskyapplication.ui.theme.TaskyDesignSystem.Companion.taskyColors
 
 @Composable
-fun RegisterRoot(
+fun RegisterScreenRoot(
     modifier: Modifier = Modifier,
     onLoginClick: () -> Unit = {},
     onRegisterSuccess: () -> Unit,
@@ -98,7 +98,8 @@ fun RegisterUserScreen(
         // user name input
         BaseInputField(
             state = state.fullName,
-            isError = !state.nameValidationState.isValid,
+            isError = false,
+            //!state.nameValidationState.isValid,
             supportingText = "Please enter a valid name",
             hintText = "Name",
             textFieldIcon = {
@@ -116,7 +117,8 @@ fun RegisterUserScreen(
         // email input
         BaseInputField(
             state = state.email,
-            isError = !state.isEmailValid,
+            isError = false,
+            //!state.isEmailValid,
             supportingText = "Please enter a valid email",
             hintText = "Email",
             textFieldIcon = {
@@ -139,7 +141,7 @@ fun RegisterUserScreen(
             modifier = Modifier
                 .padding(top = 16.dp),
             buttonText = "GET STARTED",
-            isButtonEnabled = true,
+            isButtonEnabled = state.canRegister && !state.isRegistering,
             isLoading = state.isRegistering,
             onButtonClick = {
                 onAction(RegisterAction.OnRegisterClick)

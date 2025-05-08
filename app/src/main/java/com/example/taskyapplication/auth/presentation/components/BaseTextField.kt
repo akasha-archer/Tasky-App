@@ -1,6 +1,7 @@
 package com.example.taskyapplication.auth.presentation.components
 
 import androidx.compose.foundation.background
+import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -22,7 +23,6 @@ import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Icon
-import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -34,6 +34,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.focus.onFocusChanged
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.SolidColor
 import androidx.compose.ui.semantics.contentType
 import androidx.compose.ui.semantics.semantics
@@ -77,6 +78,14 @@ fun BaseInputField(
                 .clip(shape = RoundedCornerShape(10.dp))
                 .onFocusChanged { isFocused = it.isFocused }
                 .background(color = taskyColors.inputFieldGray)
+                .border(
+                    width = 1.dp,
+                    color = when {
+                        isError -> taskyColors.error
+                        isFocused -> taskyColors.textFieldFocusBorder
+                        else -> Color.Transparent
+                    }
+                )
                 .semantics {
                     contentType = androidx.compose.ui.autofill.ContentType.PersonFullName +
                             androidx.compose.ui.autofill.ContentType.EmailAddress
@@ -136,7 +145,7 @@ fun BaseInputField(
 fun AuthCtaButton(
     modifier: Modifier = Modifier,
     buttonText: String,
-    isButtonEnabled: Boolean = true,
+    isButtonEnabled: Boolean,
     isLoading: Boolean,
     onButtonClick: () -> Unit,
 ) {
@@ -151,7 +160,9 @@ fun AuthCtaButton(
         colors = ButtonDefaults.buttonColors(
             containerColor = taskyColors.primary,
             contentColor = taskyColors.onPrimary,
-            disabledContainerColor = taskyColors.primary,
+            disabledContainerColor = taskyColors.onSurfaceVariant.copy(
+                alpha = 0.7f,
+            )
         )
     ) {
         Box(
@@ -166,14 +177,14 @@ fun AuthCtaButton(
                 strokeWidth = 1.5.dp,
                 color = taskyColors.onPrimary
             )
+            Text(
+                modifier = Modifier
+                    .alpha(if (isLoading) 0f else 1f),
+                text = buttonText.uppercase(),
+                color = taskyColors.onPrimary,
+                style = TaskyTypography.labelMedium
+            )
         }
-        Text(
-            modifier = Modifier
-                .alpha(if (isLoading) 0f else 1f),
-            text = buttonText.uppercase(),
-            color = taskyColors.onPrimary,
-            style = TaskyTypography.labelMedium
-        )
     }
 }
 
@@ -243,7 +254,8 @@ fun PlaygroundPreview() {
 fun CtaButtonPreview() {
     AuthCtaButton(
         buttonText = "Sign In",
-        isLoading = true,
+        isLoading = false,
+        isButtonEnabled = true,
         onButtonClick = {},
     )
 }

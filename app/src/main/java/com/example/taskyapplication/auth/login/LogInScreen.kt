@@ -106,7 +106,7 @@ fun LoginScreen(
             modifier = Modifier
                 .padding(top = 16.dp),
             buttonText = "Log in",
-            isButtonEnabled = true,
+            isButtonEnabled = state.canLogin && !state.isLoggingIn,
             isLoading = state.isLoggingIn,
             onButtonClick = {
                 onAction(LoginAction.OnLoginClick)
