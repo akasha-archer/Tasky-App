@@ -6,9 +6,11 @@ import androidx.datastore.core.DataStore
 import androidx.datastore.preferences.core.Preferences
 import androidx.datastore.preferences.preferencesDataStore
 import com.example.taskyapplication.BuildConfig
+import com.example.taskyapplication.auth.data.EmailPatternValidator
 import com.example.taskyapplication.auth.data.TaskyAppPreferences
 import com.example.taskyapplication.auth.domain.AuthRepository
 import com.example.taskyapplication.auth.domain.AuthRepositoryImpl
+import com.example.taskyapplication.auth.domain.PatternValidator
 import com.example.taskyapplication.network.TaskyApiService
 import com.jakewharton.retrofit2.converter.kotlinx.serialization.asConverterFactory
 import dagger.Module
@@ -74,6 +76,10 @@ object NetworkModule {
             taskyApiService,
             appPreferences
         )
+
+    @Singleton
+    @Provides
+    fun providePatternValidator(): PatternValidator = EmailPatternValidator
 }
 
 class AuthInterceptor(private val taskyAppPreferences: TaskyAppPreferences) : Interceptor {

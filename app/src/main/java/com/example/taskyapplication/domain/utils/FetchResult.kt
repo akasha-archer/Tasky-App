@@ -1,12 +1,8 @@
-package com.example.taskyapplication.domain
-
-import com.example.taskyapplication.domain.util.Error
-
-typealias EmptyResult<E> = Result<Unit, E>
+package com.example.taskyapplication.domain.utils
 
 sealed interface Result<out D, out E: Error> {
     data class Success<out D>(val data: D): Result<D, Nothing>
-    data class Error<out E: com.example.taskyapplication.domain.util.Error>(val error: E): Result<Nothing, E>
+    data class Error<out E: com.example.taskyapplication.domain.utils.Error>(val error: E): Result<Nothing, E>
 }
 
 inline fun <T, E: Error, R> Result<T, E>.map(map: (T) -> R): Result<R, E> {
@@ -38,3 +34,5 @@ inline fun <T, E: Error> Result<T, E>.onError(action: (E) -> Unit): Result<T, E>
         is Result.Success -> this
     }
 }
+
+typealias EmptyResult<E> = Result<Unit, E>
