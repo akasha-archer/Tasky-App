@@ -13,6 +13,7 @@ data class RegisterUserState(
     val isRegistering: Boolean = false,
     val canRegister: Boolean = false
 )
+
 data class LoginUserState(
     val email: TextFieldState = TextFieldState(),
     val password: TextFieldState = TextFieldState(),

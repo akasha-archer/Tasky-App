@@ -7,7 +7,8 @@ import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import com.example.taskyapplication.agenda.presentation.AgendaScreen
-import com.example.taskyapplication.auth.register.RegisterRoot
+import com.example.taskyapplication.auth.login.LoginScreenRoot
+import com.example.taskyapplication.auth.register.RegisterScreenRoot
 import kotlinx.serialization.Serializable
 
 @Composable
@@ -39,11 +40,28 @@ fun NavigationRoot(
         }
 
         composable<NavigationRoutes.LoginScreen> {
-//            LogInScreen()
+            LoginScreenRoot(
+                onSignUpClick = {
+                    navController.navigate(NavigationRoutes.RegisterScreen) {
+                        popUpTo(NavigationRoutes.LoginScreen) {
+                            inclusive = true
+                            saveState = true
+                        }
+                        restoreState = true
+                    }
+                },
+                onLoginSuccess = {
+                    navController.navigate(NavigationRoutes.AgendaScreen) {
+                        popUpTo(NavigationRoutes.LoginScreen) {
+                            inclusive = true
+                        }
+                    }
+                }
+            )
         }
 
         composable<NavigationRoutes.RegisterScreen> {
-            RegisterRoot(
+            RegisterScreenRoot(
                 onLoginClick = {
                     navController.navigate(NavigationRoutes.LoginScreen) {
                         popUpTo(NavigationRoutes.RegisterScreen) {

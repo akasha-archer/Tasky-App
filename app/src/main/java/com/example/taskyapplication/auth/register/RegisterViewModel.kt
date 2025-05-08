@@ -1,5 +1,6 @@
 package com.example.taskyapplication.auth.register
 
+import android.util.Log
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
@@ -9,7 +10,6 @@ import androidx.lifecycle.viewModelScope
 import com.example.taskyapplication.auth.domain.AuthRepository
 import com.example.taskyapplication.auth.domain.RegisterUserState
 import com.example.taskyapplication.auth.domain.UserInputValidator
-import com.example.taskyapplication.auth.login.LoginEvent
 import com.example.taskyapplication.auth.presentation.utils.textAsFlow
 import com.example.taskyapplication.domain.utils.Result
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -42,6 +42,7 @@ class RegisterViewModel @Inject constructor(
                     canRegister = nameValidationState.isValid && state.isEmailValid
                             && state.passwordValidationState.isValidPassword && !state.isRegistering
                 )
+                Log.d("RegisterViewModel", "Name validation state: $nameValidationState")
             }
 
         state.email.textAsFlow()
@@ -52,6 +53,7 @@ class RegisterViewModel @Inject constructor(
                     canRegister = isEmailValid && state.nameValidationState.isValid
                             && state.passwordValidationState.isValidPassword && !state.isRegistering
                 )
+                Log.d("RegisterViewModel", "Email validation state: $isEmailValid")
             }
 
         state.password.textAsFlow()
@@ -62,6 +64,7 @@ class RegisterViewModel @Inject constructor(
                     canRegister = passwordValidationState.isValidPassword && state.isEmailValid
                             && state.nameValidationState.isValid && !state.isRegistering
                 )
+                Log.d("RegisterViewModel", "Password validation state: $passwordValidationState")
             }
     }
 
@@ -89,7 +92,7 @@ class RegisterViewModel @Inject constructor(
 
     fun registerActions(action: RegisterAction) {
         when (action) {
-            RegisterAction.OnRegisterClick -> {} //register
+            RegisterAction.OnRegisterClick -> registerNewUser()
             else -> Unit
         }
     }

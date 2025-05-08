@@ -20,14 +20,14 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import com.example.taskyapplication.TaskyBaseScreen
 import com.example.taskyapplication.auth.domain.RegisterUserState
 import com.example.taskyapplication.auth.presentation.components.AuthScreenFooter
-import com.example.taskyapplication.auth.presentation.components.AuthorizationCtaButton
+import com.example.taskyapplication.auth.presentation.components.AuthCtaButton
 import com.example.taskyapplication.auth.presentation.components.BaseInputField
 import com.example.taskyapplication.auth.presentation.components.PasswordTextField
 import com.example.taskyapplication.auth.presentation.utils.AuthScreenTitle
 import com.example.taskyapplication.ui.theme.TaskyDesignSystem.Companion.taskyColors
 
 @Composable
-fun RegisterRoot(
+fun RegisterScreenRoot(
     modifier: Modifier = Modifier,
     onLoginClick: () -> Unit = {},
     onRegisterSuccess: () -> Unit,
@@ -95,11 +95,9 @@ fun RegisterUserScreen(
         verticalArrangement = Arrangement.Top,
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
-        // user name input
         BaseInputField(
             state = state.fullName,
-            isError = !state.nameValidationState.isValid,
-            supportingText = "Please enter a valid name",
+            isError = state.nameValidationState.isValid,
             hintText = "Name",
             textFieldIcon = {
                 if (state.nameValidationState.isValid) {
@@ -113,11 +111,9 @@ fun RegisterUserScreen(
                 }
             },
         )
-        // email input
         BaseInputField(
             state = state.email,
-            isError = !state.isEmailValid,
-            supportingText = "Please enter a valid email",
+            isError = state.isEmailValid,
             hintText = "Email",
             textFieldIcon = {
                 if (state.isEmailValid) {
@@ -135,11 +131,12 @@ fun RegisterUserScreen(
             state = state.password,
             isPasswordValid = state.passwordValidationState.isValidPassword,
         )
-        AuthorizationCtaButton(
+        AuthCtaButton(
             modifier = Modifier
                 .padding(top = 16.dp),
             buttonText = "GET STARTED",
-            isButtonEnabled = true,
+            isButtonEnabled = state.canRegister && !state.isRegistering,
+            isLoading = state.isRegistering,
             onButtonClick = {
                 onAction(RegisterAction.OnRegisterClick)
                 autofillManager?.commit()

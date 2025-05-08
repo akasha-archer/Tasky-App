@@ -1,6 +1,7 @@
 package com.example.taskyapplication.auth.presentation.components
 
 import androidx.compose.foundation.background
+import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -9,6 +10,7 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.BasicText
 import androidx.compose.foundation.text.BasicTextField
@@ -19,6 +21,7 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.rounded.Check
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -28,8 +31,10 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.focus.onFocusChanged
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.SolidColor
 import androidx.compose.ui.semantics.contentType
 import androidx.compose.ui.semantics.semantics
@@ -49,9 +54,8 @@ fun BaseInputField(
     modifier: Modifier = Modifier,
     state: TextFieldState,
     isError: Boolean,
-    supportingText: String,
     hintText: String = "",
-    textFieldIcon: @Composable (() -> Unit),
+    textFieldIcon: @Composable (() -> Unit)?,
     keyboardType: KeyboardType = KeyboardType.Text,
     imeAction: ImeAction = ImeAction.Next,
 ) {
@@ -73,6 +77,14 @@ fun BaseInputField(
                 .clip(shape = RoundedCornerShape(10.dp))
                 .onFocusChanged { isFocused = it.isFocused }
                 .background(color = taskyColors.inputFieldGray)
+                .border(
+                    width = 1.dp,
+                    color = when {
+                        isError && state.text.isNotEmpty() -> taskyColors.error
+                        isFocused -> taskyColors.textFieldFocusBorder
+                        else -> Color.Transparent
+                    }
+                )
                 .semantics {
                     contentType = androidx.compose.ui.autofill.ContentType.PersonFullName +
                             androidx.compose.ui.autofill.ContentType.EmailAddress
@@ -82,7 +94,7 @@ fun BaseInputField(
             ),
             keyboardOptions = KeyboardOptions(
                 keyboardType = keyboardType,
-                imeAction = imeAction
+                 imeAction = imeAction
             ),
             lineLimits = TextFieldLineLimits.SingleLine,
             cursorBrush = SolidColor(taskyColors.inputText),
@@ -107,31 +119,23 @@ fun BaseInputField(
                         }
                         innerTextField()
                     }
-                    if (!isError) {
+                    if (textFieldIcon != null) {
                         textFieldIcon()
                     }
                 }
             }
         )
         Spacer(modifier = Modifier.height(8.dp))
-        if (isError && isFocused && state.text.isNotEmpty()) {
-            Text(
-                modifier = Modifier
-                    .padding(start = 16.dp),
-                text = supportingText,
-                style = TaskyTypography.bodySmall,
-                color = taskyColors.error,
-            )
-        }
     }
 }
 
 @Composable
-fun AuthorizationCtaButton(
+fun AuthCtaButton(
     modifier: Modifier = Modifier,
     buttonText: String,
-    isButtonEnabled: Boolean = false,
-    onButtonClick: () -> Unit = { },
+    isButtonEnabled: Boolean,
+    isLoading: Boolean,
+    onButtonClick: () -> Unit,
 ) {
     Button(
         modifier = modifier
@@ -144,14 +148,31 @@ fun AuthorizationCtaButton(
         colors = ButtonDefaults.buttonColors(
             containerColor = taskyColors.primary,
             contentColor = taskyColors.onPrimary,
-            disabledContainerColor = taskyColors.primary,
+            disabledContainerColor = taskyColors.onSurfaceVariant.copy(
+                alpha = 0.7f,
+            )
         )
     ) {
-        Text(
-            text = buttonText.uppercase(),
-            color = taskyColors.onPrimary,
-            style = TaskyTypography.labelMedium
-        )
+        Box(
+            modifier = Modifier
+                .fillMaxWidth(),
+            contentAlignment = Alignment.Center
+        ) {
+            CircularProgressIndicator(
+                modifier = Modifier
+                    .size(36.dp)
+                    .alpha(if (isLoading) 1f else 0f),
+                strokeWidth = 1.5.dp,
+                color = taskyColors.onPrimary
+            )
+            Text(
+                modifier = Modifier
+                    .alpha(if (isLoading) 0f else 1f),
+                text = buttonText.uppercase(),
+                color = taskyColors.onPrimary,
+                style = TaskyTypography.labelMedium
+            )
+        }
     }
 }
 
@@ -186,7 +207,7 @@ fun AuthScreenFooter(
                         linkInteractionListener = { navigateToScreen() }
                     ),
                 ) {
-                    append(loginOrSignupPrompt)
+                    append(loginOrSignupPrompt.uppercase())
                 }
             },
             style = TaskyTypography.labelSmall.copy(
@@ -203,7 +224,6 @@ fun PlaygroundPreview() {
         state = remember { TextFieldState() },
         hintText = "Name",
         isError = false,
-        supportingText = "Please enter a valid name",
         textFieldIcon = {
             Icon(
                 imageVector = Icons.Rounded.Check,
@@ -219,7 +239,10 @@ fun PlaygroundPreview() {
 @Preview(showBackground = true, backgroundColor = 0xFF00FF00)
 @Composable
 fun CtaButtonPreview() {
-    AuthorizationCtaButton(
-        buttonText = "Sign In"
+    AuthCtaButton(
+        buttonText = "Sign In",
+        isLoading = false,
+        isButtonEnabled = true,
+        onButtonClick = {},
     )
 }
