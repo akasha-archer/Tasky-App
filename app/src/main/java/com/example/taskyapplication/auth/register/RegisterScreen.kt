@@ -140,6 +140,7 @@ fun RegisterUserScreen(
                 .padding(top = 16.dp),
             buttonText = "GET STARTED",
             isButtonEnabled = true,
+            isLoading = state.isRegistering,
             onButtonClick = {
                 onAction(RegisterAction.OnRegisterClick)
                 autofillManager?.commit()

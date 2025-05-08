@@ -107,6 +107,7 @@ fun LoginScreen(
                 .padding(top = 16.dp),
             buttonText = "Log in",
             isButtonEnabled = true,
+            isLoading = state.isLoggingIn,
             onButtonClick = {
                 onAction(LoginAction.OnLoginClick)
             }

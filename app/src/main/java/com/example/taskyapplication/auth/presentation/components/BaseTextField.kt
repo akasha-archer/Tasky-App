@@ -9,6 +9,7 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.BasicText
 import androidx.compose.foundation.text.BasicTextField
@@ -19,7 +20,9 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.rounded.Check
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Icon
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -28,6 +31,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.focus.onFocusChanged
 import androidx.compose.ui.graphics.SolidColor
@@ -132,8 +136,9 @@ fun BaseInputField(
 fun AuthCtaButton(
     modifier: Modifier = Modifier,
     buttonText: String,
-    isButtonEnabled: Boolean = false,
-    onButtonClick: () -> Unit = { },
+    isButtonEnabled: Boolean = true,
+    isLoading: Boolean,
+    onButtonClick: () -> Unit,
 ) {
     Button(
         modifier = modifier
@@ -149,7 +154,22 @@ fun AuthCtaButton(
             disabledContainerColor = taskyColors.primary,
         )
     ) {
+        Box(
+            modifier = Modifier
+                .fillMaxWidth(),
+            contentAlignment = Alignment.Center
+        ) {
+            CircularProgressIndicator(
+                modifier = Modifier
+                    .size(36.dp)
+                    .alpha(if (isLoading) 1f else 0f),
+                strokeWidth = 1.5.dp,
+                color = taskyColors.onPrimary
+            )
+        }
         Text(
+            modifier = Modifier
+                .alpha(if (isLoading) 0f else 1f),
             text = buttonText.uppercase(),
             color = taskyColors.onPrimary,
             style = TaskyTypography.labelMedium
@@ -222,6 +242,8 @@ fun PlaygroundPreview() {
 @Composable
 fun CtaButtonPreview() {
     AuthCtaButton(
-        buttonText = "Sign In"
+        buttonText = "Sign In",
+        isLoading = true,
+        onButtonClick = {},
     )
 }
