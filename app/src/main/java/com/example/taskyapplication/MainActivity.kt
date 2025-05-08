@@ -15,7 +15,7 @@ import androidx.core.animation.doOnEnd
 import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.compose.rememberNavController
-import com.example.taskyapplication.auth.presentation.AuthViewModel
+import com.example.taskyapplication.auth.register.RegisterViewModel
 import com.example.taskyapplication.ui.theme.TaskyApplicationTheme
 import dagger.hilt.android.AndroidEntryPoint
 
@@ -25,11 +25,11 @@ class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
-        val authViewModel: AuthViewModel by viewModels()
-        authViewModel.isTokenExpired()
+        val registerViewModel: RegisterViewModel by viewModels()
+        registerViewModel.isTokenExpired()
         installSplashScreen().apply {
             setKeepOnScreenCondition {
-                authViewModel.isTokenValid.value
+                registerViewModel.isTokenValid.value
             }
 
             setOnExitAnimationListener { screen ->
@@ -61,9 +61,8 @@ class MainActivity : ComponentActivity() {
         setContent {
             TaskyApplicationTheme {
                 Surface(color = MaterialTheme.colorScheme.background) {
-                    val isTokenValid by authViewModel.isTokenValid.collectAsStateWithLifecycle()
-                    val isUserRegistered =
-                        authViewModel.lceAuthUserData.value.data?.userId?.isNotEmpty() ?: false
+                    val isTokenValid by registerViewModel.isTokenValid.collectAsStateWithLifecycle()
+                    val isUserRegistered = false
                     val navController = rememberNavController()
                     // Composable that has NavHost as the root composable to handle navigation logic
                     NavigationRoot(

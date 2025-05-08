@@ -4,56 +4,93 @@ import android.util.Log
 import com.example.taskyapplication.auth.data.AccessTokenResponse
 import com.example.taskyapplication.auth.data.LoggedInUserResponse
 import com.example.taskyapplication.auth.data.TaskyAppPreferences
+import com.example.taskyapplication.domain.utils.BaseRepository
+import com.example.taskyapplication.domain.utils.DataError
+import com.example.taskyapplication.domain.utils.EmptyResult
+import com.example.taskyapplication.domain.utils.asEmptyDataResult
+import com.example.taskyapplication.domain.utils.onSuccess
 import com.example.taskyapplication.network.TaskyApiService
 import javax.inject.Inject
 import javax.inject.Singleton
 
+interface AuthRepository {
+    suspend fun registerNewUser(
+        fullName: String,
+        email: String,
+        password: String
+    ): EmptyResult<DataError>
+
+    suspend fun loginUser(email: String, password: String): EmptyResult<DataError>
+    suspend fun requestAccessToken(accessTokenRequest: AccessTokenRequest): AccessTokenResponse?
+    suspend fun isTokenExpired(): Boolean
+    suspend fun logoutUser()
+    suspend fun saveRefreshToken(tokenResponse: LoggedInUserResponse)
+    suspend fun saveRegisteredUser(isRegistered: Boolean)
+}
+
 @Singleton
-class AuthRepository @Inject constructor(
+class AuthRepositoryImpl @Inject constructor(
     private val taskyApiService: TaskyApiService,
     private val appPreferences: TaskyAppPreferences
-) {
-    suspend fun registerNewUser(
-        userRegistrationData: RegisterUserState
-    ) {
-        taskyApiService.registerUser(userRegistrationData)
+) : BaseRepository(), AuthRepository {
+
+    override suspend fun registerNewUser(
+        fullName: String,
+        email: String,
+        password: String
+    ): EmptyResult<DataError> {
+        return executeApi {
+            taskyApiService.registerUser(
+                fullName = fullName,
+                email = email,
+                password = password
+            )
+        }
     }
 
-    suspend fun loginUser(
-        userLoginData: UserLoginData
-    ): LoggedInUserResponse? {
-        return taskyApiService.loginUser(userLoginData).body()
+    override suspend fun loginUser(
+        email: String,
+        password: String
+    ): EmptyResult<DataError> {
+        val result = executeApi {
+            taskyApiService.loginUser(
+                email = email,
+                password = password
+            )
+        }.onSuccess {
+            TODO("save tokens and user info")
+        }
+        return result.asEmptyDataResult()
     }
 
-    suspend fun requestAccessToken(
-        accessTokenRequest: AccessTokenRequest
-    ): AccessTokenResponse? {
+    override suspend fun requestAccessToken(accessTokenRequest: AccessTokenRequest): AccessTokenResponse? {
         return taskyApiService.getNewAccessToken(accessTokenRequest).body()
     }
 
-    suspend fun isTokenExpired(): Boolean {
+    override suspend fun isTokenExpired(): Boolean {
         var responseCode: Int
         try {
-             responseCode = taskyApiService.authenticateUser().code()
+            responseCode = taskyApiService.authenticateUser().code()
         } catch (e: Exception) {
-            Log.e("Parse exception in AuthRepository", "Failed to read authentication response code: ${e.message}")
+            Log.e(
+                "Parse exception in AuthRepository",
+                "Failed to read authentication response code: ${e.message}"
+            )
             throw e
         }
         return responseCode == 401
     }
 
-    suspend fun logoutUser() {
+    override suspend fun logoutUser() {
         taskyApiService.logoutUser()
         appPreferences.deleteRefreshToken()
     }
 
-    suspend fun saveRefreshToken(tokenResponse: LoggedInUserResponse) {
+    override suspend fun saveRefreshToken(tokenResponse: LoggedInUserResponse) {
         appPreferences.saveAccessToken(tokenResponse.refreshToken)
     }
 
-    suspend fun saveRegisteredUser(isRegistered: Boolean) {
+    override suspend fun saveRegisteredUser(isRegistered: Boolean) {
         appPreferences.saveUserRegisteredState(isRegistered)
     }
-
-
 }

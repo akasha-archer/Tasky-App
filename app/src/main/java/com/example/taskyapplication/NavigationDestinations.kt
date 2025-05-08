@@ -7,7 +7,8 @@ import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import com.example.taskyapplication.agenda.presentation.AgendaScreen
-import com.example.taskyapplication.auth.presentation.AccountCreationScreen
+import com.example.taskyapplication.auth.login.LoginScreenRoot
+import com.example.taskyapplication.auth.register.RegisterScreenRoot
 import kotlinx.serialization.Serializable
 
 @Composable
@@ -20,61 +21,83 @@ fun NavigationRoot(
     NavHost(
         modifier = modifier,
         navController = navController,
-        startDestination = UserStateScreen
+        startDestination = NavigationRoutes.UserStateScreen
     ) {
-        composable<UserStateScreen> {
+        composable<NavigationRoutes.UserStateScreen> {
             LaunchedEffect(isLoggedIn, isUserRegistered) {
                 val route = when {
-                    isLoggedIn -> AgendaScreen
-                    isUserRegistered -> LoginScreen
-                    else -> RegisterScreen
+                    isLoggedIn -> NavigationRoutes.AgendaScreen
+                    isUserRegistered -> NavigationRoutes.LoginScreen
+                    else -> NavigationRoutes.RegisterScreen
                 }
                 navController.navigate(route) {
-                    popUpTo(UserStateScreen) { inclusive = true }
+                    popUpTo(NavigationRoutes.UserStateScreen) { inclusive = true }
                 }
             }
         }
-        composable<AgendaScreen> {
+        composable<NavigationRoutes.AgendaScreen> {
             AgendaScreen()
         }
 
-        composable<LoginScreen> {
-//            LogInScreen()
+        composable<NavigationRoutes.LoginScreen> {
+            LoginScreenRoot(
+                onSignUpClick = {
+                    navController.navigate(NavigationRoutes.RegisterScreen) {
+                        popUpTo(NavigationRoutes.LoginScreen) {
+                            inclusive = true
+                            saveState = true
+                        }
+                        restoreState = true
+                    }
+                },
+                onLoginSuccess = {
+                    navController.navigate(NavigationRoutes.AgendaScreen) {
+                        popUpTo(NavigationRoutes.LoginScreen) {
+                            inclusive = true
+                        }
+                    }
+                }
+            )
         }
 
-        composable<RegisterScreen> {
-            AccountCreationScreen(
-                navigateToLogin = { navController.navigate(LoginScreen) },
+        composable<NavigationRoutes.RegisterScreen> {
+            RegisterScreenRoot(
+                onLoginClick = {
+                    navController.navigate(NavigationRoutes.LoginScreen) {
+                        popUpTo(NavigationRoutes.RegisterScreen) {
+                            inclusive = true
+                            saveState = true
+                        }
+                        restoreState = true
+                    }
+                },
+                onRegisterSuccess = {
+                    navController.navigate(NavigationRoutes.LoginScreen)
+                }
             )
         }
     }
 }
 
+sealed interface NavigationRoutes {
+    @Serializable
+    data object UserStateScreen : NavigationRoutes
 
-// navigation screen destinations
-@Serializable
-object UserStateScreen
+    @Serializable
+    data object LoginScreen : NavigationRoutes
 
-@Serializable
-object LoginScreen
+    @Serializable
+    data object RegisterScreen : NavigationRoutes
 
-@Serializable
-object RegisterScreen
+    @Serializable
+    data object AgendaScreen : NavigationRoutes
 
-@Serializable
-object AgendaScreen
+    @Serializable
+    data object EventScreen : NavigationRoutes
 
-@Serializable
-object EventScreen
+    @Serializable
+    data object TaskScreen : NavigationRoutes
 
-@Serializable
-object TaskScreen
-
-@Serializable
-object ReminderScreen
-
-
-
-
-
-
+    @Serializable
+    data object ReminderScreen : NavigationRoutes
+}
