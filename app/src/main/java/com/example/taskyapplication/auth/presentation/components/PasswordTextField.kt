@@ -59,7 +59,7 @@ fun PasswordTextField(
                 .border(
                     width = 1.dp,
                     color = when {
-                        isPasswordValid -> taskyColors.error
+                        (!isPasswordValid && !isFocused && state.text.isNotEmpty()) -> taskyColors.error
                         isFocused -> taskyColors.textFieldFocusBorder
                         else -> Color.Transparent
                     }
@@ -107,15 +107,6 @@ fun PasswordTextField(
             )
         )
         Spacer(modifier = Modifier.height(8.dp))
-        if (!isPasswordValid && isFocused && state.text.isNotEmpty()) {
-            Text(
-                modifier = Modifier
-                    .padding(start = 16.dp),
-                text = "Please enter a valid password",
-                style = TaskyTypography.bodySmall,
-                color = taskyColors.error,
-            )
-        }
     }
 }
 

@@ -37,13 +37,6 @@ class LoginViewModel @Inject constructor(
         }.launchIn(viewModelScope)
     }
 
-    fun onAction(action: LoginAction) {
-        when(action) {
-            LoginAction.OnLoginClick -> loginUser()
-            else -> Unit
-        }
-    }
-
     private fun loginUser() {
         viewModelScope.launch {
             state = state.copy(isLoggingIn = true) //LoginState object isLoggingIn = true

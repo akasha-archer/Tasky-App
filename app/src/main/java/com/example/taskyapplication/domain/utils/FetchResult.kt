@@ -1,13 +1,5 @@
 package com.example.taskyapplication.domain.utils
 
-//sealed class NetworkResult<T>(
-//    val data: T? = null,
-//    val message: String? = null
-//) {
-//    class Success<T>(data: T) : NetworkResult<T>(data = data)
-//    class Error<T>(errorMessage: String) : NetworkResult<T>(message = errorMessage)
-//}
-
 sealed interface Result<out D, out E: Error> {
     data class Success<out D>(val data: D): Result<D, Nothing>
     data class Error<out E: com.example.taskyapplication.domain.utils.Error>(val error: E): Result<Nothing, E>

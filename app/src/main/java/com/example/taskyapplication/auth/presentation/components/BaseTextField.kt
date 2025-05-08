@@ -54,9 +54,8 @@ fun BaseInputField(
     modifier: Modifier = Modifier,
     state: TextFieldState,
     isError: Boolean,
-    supportingText: String = "",
     hintText: String = "",
-    textFieldIcon: (@Composable (() -> Unit))? = null,
+    textFieldIcon: @Composable (() -> Unit)?,
     keyboardType: KeyboardType = KeyboardType.Text,
     imeAction: ImeAction = ImeAction.Next,
 ) {
@@ -81,7 +80,7 @@ fun BaseInputField(
                 .border(
                     width = 1.dp,
                     color = when {
-                        isError -> taskyColors.error
+                        isError && state.text.isNotEmpty() -> taskyColors.error
                         isFocused -> taskyColors.textFieldFocusBorder
                         else -> Color.Transparent
                     }
@@ -95,7 +94,7 @@ fun BaseInputField(
             ),
             keyboardOptions = KeyboardOptions(
                 keyboardType = keyboardType,
-                imeAction = imeAction
+                 imeAction = imeAction
             ),
             lineLimits = TextFieldLineLimits.SingleLine,
             cursorBrush = SolidColor(taskyColors.inputText),
@@ -120,24 +119,13 @@ fun BaseInputField(
                         }
                         innerTextField()
                     }
-                    if (!isError) {
-                        if (textFieldIcon != null) {
-                            textFieldIcon()
-                        }
+                    if (textFieldIcon != null) {
+                        textFieldIcon()
                     }
                 }
             }
         )
         Spacer(modifier = Modifier.height(8.dp))
-        if (isError && isFocused && state.text.isNotEmpty()) {
-            Text(
-                modifier = Modifier
-                    .padding(start = 16.dp),
-                text = supportingText,
-                style = TaskyTypography.bodySmall,
-                color = taskyColors.error,
-            )
-        }
     }
 }
 
@@ -236,7 +224,6 @@ fun PlaygroundPreview() {
         state = remember { TextFieldState() },
         hintText = "Name",
         isError = false,
-        supportingText = "Please enter a valid name",
         textFieldIcon = {
             Icon(
                 imageVector = Icons.Rounded.Check,

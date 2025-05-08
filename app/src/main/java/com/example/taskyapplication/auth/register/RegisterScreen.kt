@@ -95,12 +95,9 @@ fun RegisterUserScreen(
         verticalArrangement = Arrangement.Top,
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
-        // user name input
         BaseInputField(
             state = state.fullName,
-            isError = false,
-            //!state.nameValidationState.isValid,
-            supportingText = "Please enter a valid name",
+            isError = state.nameValidationState.isValid,
             hintText = "Name",
             textFieldIcon = {
                 if (state.nameValidationState.isValid) {
@@ -114,12 +111,9 @@ fun RegisterUserScreen(
                 }
             },
         )
-        // email input
         BaseInputField(
             state = state.email,
-            isError = false,
-            //!state.isEmailValid,
-            supportingText = "Please enter a valid email",
+            isError = state.isEmailValid,
             hintText = "Email",
             textFieldIcon = {
                 if (state.isEmailValid) {
