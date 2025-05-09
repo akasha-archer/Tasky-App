@@ -6,7 +6,7 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.livedata.observeAsState
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
@@ -14,6 +14,7 @@ import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.example.taskyapplication.TaskyBaseScreen
 import com.example.taskyapplication.auth.domain.LoginUserState
 import com.example.taskyapplication.auth.presentation.components.AuthCtaButton
@@ -21,6 +22,7 @@ import com.example.taskyapplication.auth.presentation.components.AuthScreenFoote
 import com.example.taskyapplication.auth.presentation.components.BaseInputField
 import com.example.taskyapplication.auth.presentation.components.PasswordTextField
 import com.example.taskyapplication.auth.presentation.utils.AuthScreenTitle
+import com.example.taskyapplication.domain.utils.ObserveAsEvents
 
 @Composable
 fun LoginScreenRoot(
@@ -31,9 +33,9 @@ fun LoginScreenRoot(
 ) {
     val context = LocalContext.current
     val keyboardController = LocalSoftwareKeyboardController.current
-    val events = loginViewModel.loginEvents.observeAsState()
+    val loginState by loginViewModel.state.collectAsStateWithLifecycle()
 
-    events.value?.let { event ->
+    ObserveAsEvents(loginViewModel.events) { event ->
         when (event) {
             is LoginEvent.LoginSuccess -> {
                 keyboardController?.hide()
@@ -42,6 +44,7 @@ fun LoginScreenRoot(
                     "Login Successful!",
                     Toast.LENGTH_SHORT
                 ).show()
+                onLoginSuccess()
             }
 
             is LoginEvent.LoginError -> {
@@ -51,7 +54,6 @@ fun LoginScreenRoot(
                     event.errorMessage,
                     Toast.LENGTH_SHORT
                 ).show()
-                onLoginSuccess()
             }
         }
     }
@@ -65,7 +67,7 @@ fun LoginScreenRoot(
         },
         mainContent = {
             LoginScreen(
-                state = loginViewModel.state,
+                state = loginState,
                 onAction = { action ->
                     when (action) {
                         LoginAction.OnSignUpClick -> onSignUpClick()
@@ -94,13 +96,14 @@ fun LoginScreen(
     ) {
         BaseInputField(
             state = state.email,
-            isValid = false,
+            isValid = state.canLogin,
             hintText = "Email address",
             keyboardType = KeyboardType.Email,
             textFieldIcon = null,
         )
         PasswordTextField(
             state = state.password,
+            isPasswordValid = state.canLogin,
         )
         AuthCtaButton(
             modifier = Modifier

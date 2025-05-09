@@ -2,6 +2,8 @@ package com.example.taskyapplication.domain.utils
 
 sealed interface DataError : Error {
     enum class Network : DataError {
+        UNAUTHORIZED,
+        CONFLICT,
         REQUEST_TIMEOUT,
         NO_INTERNET,
         PAYLOAD_TOO_LARGE,

@@ -7,12 +7,15 @@ import com.example.taskyapplication.auth.domain.AuthRepository
 import com.example.taskyapplication.auth.domain.RegisterUserState
 import com.example.taskyapplication.auth.domain.UserInputValidator
 import com.example.taskyapplication.auth.presentation.utils.textAsFlow
+import com.example.taskyapplication.domain.utils.DataError
 import com.example.taskyapplication.domain.utils.Result
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.onStart
+import kotlinx.coroutines.flow.receiveAsFlow
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 import javax.inject.Inject
@@ -26,9 +29,8 @@ class RegisterViewModel @Inject constructor(
     private val _isTokenValid = MutableStateFlow(false)
     val isTokenValid = _isTokenValid.asStateFlow()
 
-    val registrationEvents = MutableLiveData<RegistrationEvent>()
-//    var state by mutableStateOf(RegisterUserState())
-//        private set
+    private val eventChannel = Channel<RegistrationEvent>()
+    val events = eventChannel.receiveAsFlow()
 
     private val _state = MutableStateFlow(RegisterUserState())
     val state = _state
@@ -97,12 +99,19 @@ class RegisterViewModel @Inject constructor(
 
             when (result) {
                 is Result.Error -> {
-                    registrationEvents.value =
-                        RegistrationEvent.RegistrationError(result.error.toString())
+                    if(result.error == DataError.Network.CONFLICT) {
+                        eventChannel.send(RegistrationEvent.RegistrationError(
+                            errorMessage = "User with this email already exists"
+                        ))
+                    } else {
+                        eventChannel.send(RegistrationEvent.RegistrationError(
+                            "Something went wrong. Please try again later."
+                        )
+                        )
+                    }
                 }
-
                 is Result.Success -> {
-                    registrationEvents.value = RegistrationEvent.RegistrationSuccess
+                    eventChannel.send(RegistrationEvent.RegistrationSuccess)
                 }
             }
         }

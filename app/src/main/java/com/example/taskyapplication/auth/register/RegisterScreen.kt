@@ -10,7 +10,6 @@ import androidx.compose.material.icons.rounded.Check
 import androidx.compose.material3.Icon
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalAutofillManager
@@ -26,6 +25,7 @@ import com.example.taskyapplication.auth.presentation.components.AuthCtaButton
 import com.example.taskyapplication.auth.presentation.components.BaseInputField
 import com.example.taskyapplication.auth.presentation.components.PasswordTextField
 import com.example.taskyapplication.auth.presentation.utils.AuthScreenTitle
+import com.example.taskyapplication.domain.utils.ObserveAsEvents
 import com.example.taskyapplication.ui.theme.TaskyDesignSystem.Companion.taskyColors
 
 @Composable
@@ -37,10 +37,9 @@ fun RegisterScreenRoot(
 ) {
     val context = LocalContext.current
     val keyboardController = LocalSoftwareKeyboardController.current
-    val events = registerViewModel.registrationEvents.observeAsState()
     val registerState by registerViewModel.state.collectAsStateWithLifecycle()
 
-    events.value?.let { event ->
+    ObserveAsEvents(registerViewModel.events) { event ->
         when (event) {
             is RegistrationEvent.RegistrationSuccess -> {
                 keyboardController?.hide()
