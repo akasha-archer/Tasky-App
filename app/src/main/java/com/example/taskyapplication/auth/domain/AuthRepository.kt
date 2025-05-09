@@ -9,6 +9,7 @@ import com.example.taskyapplication.domain.utils.DataError
 import com.example.taskyapplication.domain.utils.EmptyResult
 import com.example.taskyapplication.domain.utils.asEmptyDataResult
 import com.example.taskyapplication.domain.utils.onSuccess
+import com.example.taskyapplication.domain.utils.safeApiCall
 import com.example.taskyapplication.network.TaskyApiService
 import javax.inject.Inject
 import javax.inject.Singleton
@@ -39,7 +40,7 @@ class AuthRepositoryImpl @Inject constructor(
         email: String,
         password: String
     ): EmptyResult<DataError> {
-        return executeApi {
+        return safeApiCall {
             taskyApiService.registerUser(
                 fullName = fullName,
                 email = email,
@@ -52,7 +53,7 @@ class AuthRepositoryImpl @Inject constructor(
         email: String,
         password: String
     ): EmptyResult<DataError> {
-        val result = executeApi {
+        val result = safeApiCall {
             taskyApiService.loginUser(
                 email = email,
                 password = password
