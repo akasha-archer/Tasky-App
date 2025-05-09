@@ -1,14 +1,11 @@
 package com.example.taskyapplication.auth.login
 
-import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.taskyapplication.auth.domain.AuthRepository
 import com.example.taskyapplication.auth.domain.LoginUserState
-import com.example.taskyapplication.auth.domain.RegisterUserState
 import com.example.taskyapplication.auth.domain.UserInputValidator
 import com.example.taskyapplication.auth.presentation.utils.textAsFlow
-import com.example.taskyapplication.auth.register.RegistrationEvent
 import com.example.taskyapplication.domain.utils.DataError
 import com.example.taskyapplication.domain.utils.Result
 import dagger.hilt.android.lifecycle.HiltViewModel

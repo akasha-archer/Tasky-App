@@ -1,6 +1,5 @@
 package com.example.taskyapplication.auth.register
 
-import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.taskyapplication.auth.domain.AuthRepository
