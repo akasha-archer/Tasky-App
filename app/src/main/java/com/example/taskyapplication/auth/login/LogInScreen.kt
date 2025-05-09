@@ -94,7 +94,7 @@ fun LoginScreen(
     ) {
         BaseInputField(
             state = state.email,
-            isError = false,
+            isValid = false,
             hintText = "Email address",
             keyboardType = KeyboardType.Email,
             textFieldIcon = null,

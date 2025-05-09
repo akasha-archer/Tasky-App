@@ -1,6 +1,5 @@
 package com.example.taskyapplication.auth.domain
 
-import android.util.Log
 import javax.inject.Inject
 
 class UserInputValidator @Inject constructor(
