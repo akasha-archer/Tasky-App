@@ -26,7 +26,7 @@ suspend inline fun <reified T> safeApiCall(execute: () -> Response<T>): Result<T
     return responseToResult(response)
 }
 
-suspend inline fun <reified T> responseToResult(response: Response<T>): Result<T, DataError.Network> {
+inline fun <reified T> responseToResult(response: Response<T>): Result<T, DataError.Network> {
     return when(response.code()) {
         in 200..299 -> if (response.body() != null) Result.Success(response.body()!!) else Result.Error(DataError.Network.UNKNOWN)
         401 -> Result.Error(DataError.Network.UNAUTHORIZED)

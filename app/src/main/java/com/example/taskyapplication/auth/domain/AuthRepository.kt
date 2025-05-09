@@ -4,7 +4,6 @@ import android.util.Log
 import com.example.taskyapplication.auth.data.AccessTokenResponse
 import com.example.taskyapplication.auth.data.LoggedInUserResponse
 import com.example.taskyapplication.auth.data.TaskyAppPreferences
-import com.example.taskyapplication.domain.utils.BaseRepository
 import com.example.taskyapplication.domain.utils.DataError
 import com.example.taskyapplication.domain.utils.EmptyResult
 import com.example.taskyapplication.domain.utils.asEmptyDataResult
@@ -33,7 +32,7 @@ interface AuthRepository {
 class AuthRepositoryImpl @Inject constructor(
     private val taskyApiService: TaskyApiService,
     private val appPreferences: TaskyAppPreferences
-) : BaseRepository(), AuthRepository {
+) : AuthRepository {
 
     override suspend fun registerNewUser(
         fullName: String,
