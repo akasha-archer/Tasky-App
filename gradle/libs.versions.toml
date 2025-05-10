@@ -22,7 +22,7 @@ dataStore = "1.1.6"
 retrofit2KotlinxSerializationConverter = "1.0.0"
 retrofitgson = "2.7.2"
 splashscreen = "1.0.1"
-composeNavigation = "2.8.9"
+composeNavigation = "2.9.0"
 hiltNavigation = "1.2.0"
 composeRuntime = "1.8.0"
 

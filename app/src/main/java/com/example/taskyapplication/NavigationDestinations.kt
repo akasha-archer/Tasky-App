@@ -1,7 +1,6 @@
 package com.example.taskyapplication
 
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.Modifier
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
@@ -15,30 +14,34 @@ import kotlinx.serialization.Serializable
 fun NavigationRoot(
     modifier: Modifier = Modifier,
     navController: NavHostController,
-    isLoggedIn: Boolean = false,
-    isUserRegistered: Boolean = false
+    isLoggedIn: Boolean,
+    isUserRegistered: Boolean
 ) {
     NavHost(
         modifier = modifier,
         navController = navController,
-        startDestination = NavigationRoutes.UserStateScreen
+        startDestination = when {
+            isLoggedIn -> NavigationRoutes.AgendaScreen
+            isUserRegistered -> NavigationRoutes.LoginScreen
+            else -> NavigationRoutes.RegisterScreen
+        }
     ) {
-        composable<NavigationRoutes.UserStateScreen> {
-            LaunchedEffect(isLoggedIn, isUserRegistered) {
-                val route = when {
-                    isLoggedIn -> NavigationRoutes.AgendaScreen
-                    isUserRegistered -> NavigationRoutes.LoginScreen
-                    else -> NavigationRoutes.RegisterScreen
+        composable<NavigationRoutes.RegisterScreen> {
+            RegisterScreenRoot(
+                onLoginClick = {
+                    navController.navigate(NavigationRoutes.LoginScreen) {
+                        popUpTo(NavigationRoutes.RegisterScreen) {
+                            inclusive = true
+                            saveState = true
+                        }
+                        restoreState = true
+                    }
+                },
+                onRegisterSuccess = {
+                    navController.navigate(NavigationRoutes.LoginScreen)
                 }
-                navController.navigate(route) {
-                    popUpTo(NavigationRoutes.UserStateScreen) { inclusive = true }
-                }
-            }
+            )
         }
-        composable<NavigationRoutes.AgendaScreen> {
-            AgendaScreen()
-        }
-
         composable<NavigationRoutes.LoginScreen> {
             LoginScreenRoot(
                 onSignUpClick = {
@@ -60,29 +63,14 @@ fun NavigationRoot(
             )
         }
 
-        composable<NavigationRoutes.RegisterScreen> {
-            RegisterScreenRoot(
-                onLoginClick = {
-                    navController.navigate(NavigationRoutes.LoginScreen) {
-                        popUpTo(NavigationRoutes.RegisterScreen) {
-                            inclusive = true
-                            saveState = true
-                        }
-                        restoreState = true
-                    }
-                },
-                onRegisterSuccess = {
-                    navController.navigate(NavigationRoutes.LoginScreen)
-                }
-            )
+        composable<NavigationRoutes.AgendaScreen> {
+            AgendaScreen()
         }
+
     }
 }
 
 sealed interface NavigationRoutes {
-    @Serializable
-    data object UserStateScreen : NavigationRoutes
-
     @Serializable
     data object LoginScreen : NavigationRoutes
 

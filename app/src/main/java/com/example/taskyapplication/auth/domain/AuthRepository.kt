@@ -13,14 +13,15 @@ import javax.inject.Singleton
 
 interface AuthRepository {
     suspend fun registerNewUser(
-        fullName: String,
-        email: String,
-        password: String
+        registerData: RegisterData
     ): EmptyResult<DataError>
 
-    suspend fun loginUser(email: String, password: String): EmptyResult<DataError>
-    suspend fun requestAccessToken(refreshToken: String, userId: String): EmptyResult<DataError>
-    suspend fun isTokenExpired(): EmptyResult<DataError>
+    suspend fun loginUser(
+        loginData: LoginData
+    ): EmptyResult<DataError>
+
+    suspend fun requestAccessToken(tokenRequest: AccessTokenRequest): EmptyResult<DataError>
+    suspend fun authenticateToken(): EmptyResult<DataError>
     suspend fun logoutUser(): EmptyResult<DataError>
 }
 
@@ -31,27 +32,21 @@ class AuthRepositoryImpl @Inject constructor(
 ) : AuthRepository {
 
     override suspend fun registerNewUser(
-        fullName: String,
-        email: String,
-        password: String
+        registerData: RegisterData
     ): EmptyResult<DataError> {
         return safeApiCall {
             taskyApiService.registerUser(
-                fullName = fullName,
-                email = email,
-                password = password
+               registerData = registerData
             )
-        }
+        }.asEmptyDataResult()
     }
 
     override suspend fun loginUser(
-        email: String,
-        password: String
+       loginData: LoginData
     ): EmptyResult<DataError> {
         val result = safeApiCall {
             taskyApiService.loginUser(
-                email = email,
-                password = password
+                loginData = loginData
             )
         }.onSuccess { response ->
             authTokenManager.saveAuthInfo(
@@ -67,28 +62,27 @@ class AuthRepositoryImpl @Inject constructor(
     }
 
     override suspend fun requestAccessToken(
-        refreshToken: String,
-        userId: String
+        tokenRequest: AccessTokenRequest
     ): EmptyResult<DataError> {
         val result = safeApiCall {
             taskyApiService.getNewAccessToken(
-                refreshToken = refreshToken,
-                userId = userId
+               accessTokenRequest = tokenRequest
             )
         }.onSuccess { response ->
             authTokenManager.updateAccessToken(
                 AccessTokenResponse(
-                    accessToken = response.accessToken,
+                    newAccessToken = response.newAccessToken,
                 )
             )
         }
         return result.asEmptyDataResult()
     }
 
-    override suspend fun isTokenExpired(): EmptyResult<DataError> {
-        return safeApiCall {
+    override suspend fun authenticateToken(): EmptyResult<DataError> {
+        val result = safeApiCall {
             taskyApiService.authenticateUser()
-        }.asEmptyDataResult()
+        }
+        return result.asEmptyDataResult()
     }
 
     override suspend fun logoutUser(): EmptyResult<DataError> {

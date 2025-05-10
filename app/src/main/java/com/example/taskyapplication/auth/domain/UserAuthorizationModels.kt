@@ -1,6 +1,26 @@
 package com.example.taskyapplication.auth.domain
 
 import androidx.compose.foundation.text.input.TextFieldState
+import kotlinx.serialization.Serializable
+
+@Serializable
+data class RegisterData(
+    val fullName: String,
+    val email: String,
+    val password: String
+)
+
+@Serializable
+data class LoginData(
+    val email: String,
+    val password: String
+)
+
+@Serializable
+data class AccessTokenRequest(
+    val refreshToken: String,
+    val userId: String
+)
 
 data class RegisterUserState(
     val fullName: TextFieldState = TextFieldState(),

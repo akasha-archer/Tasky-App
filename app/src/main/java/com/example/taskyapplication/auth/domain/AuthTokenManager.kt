@@ -38,7 +38,7 @@ class AuthTokenManagerImpl @Inject constructor(
     override suspend fun updateAccessToken(accessTokenResponse: AccessTokenResponse) {
         context.dataStore.updateData { info ->
             info.copy(
-                accessToken = accessTokenResponse.accessToken
+                accessToken = accessTokenResponse.newAccessToken
             )
         }
     }

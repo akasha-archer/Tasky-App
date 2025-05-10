@@ -96,14 +96,14 @@ fun LoginScreen(
     ) {
         BaseInputField(
             state = state.email,
-            isValid = state.canLogin,
+            isValid = true,
             hintText = "Email address",
             keyboardType = KeyboardType.Email,
             textFieldIcon = null,
         )
         PasswordTextField(
             state = state.password,
-            isPasswordValid = state.canLogin,
+            isPasswordValid = true,
         )
         AuthCtaButton(
             modifier = Modifier
