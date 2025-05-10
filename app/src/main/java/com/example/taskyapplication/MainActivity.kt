@@ -26,9 +26,10 @@ class MainActivity : ComponentActivity() {
         super.onCreate(savedInstanceState)
 
         val loginViewModel: LoginViewModel by viewModels()
-        loginViewModel.isTokenExpired()
+//        loginViewModel.isTokenExpired()
         installSplashScreen().apply {
             setKeepOnScreenCondition {
+                loginViewModel.isTokenExpired()
                 loginViewModel.isTokenValid.value
             }
 

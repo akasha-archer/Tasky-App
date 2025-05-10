@@ -13,9 +13,11 @@ data class LoggedInUserResponse(
 
 @Serializable
 data class AccessTokenResponse(
-    val accessToken: String,
+    val newAccessToken: String,
     val expirationTimestamp: Long? = null
 )
 
-
-
+@Serializable
+data class AuthenticationResponse(
+    val responseCode: Int,
+)

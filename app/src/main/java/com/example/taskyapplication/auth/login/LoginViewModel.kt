@@ -88,12 +88,11 @@ class LoginViewModel @Inject constructor(
 
     fun isTokenExpired() {
         viewModelScope.launch {
-            val result = authRepository.isTokenExpired()
+            val result = authRepository.authenticateToken()
             when (result) {
                 is Result.Error -> {
                     _isTokenValid.value = false
                 }
-
                 is Result.Success -> {
                     _isTokenValid.value = true
                 }

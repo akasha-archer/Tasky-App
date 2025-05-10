@@ -32,18 +32,20 @@ object NetworkModule {
 
     @Provides
     @Singleton
-    fun provideOkHttpClient(): OkHttpClient {
+    fun provideOkHttpClient(
+        authTokenManager: AuthTokenManager
+    ): OkHttpClient {
         return OkHttpClient.Builder()
-            .addInterceptor(AuthInterceptor())
+            .addInterceptor(AuthInterceptor(authTokenManager))
             .build()
     }
 
     @Singleton
     @Provides
-    fun provideTaskyApi(): TaskyApiService {
+    fun provideTaskyApi(authTokenManager: AuthTokenManager): TaskyApiService {
         return Retrofit.Builder()
             .baseUrl(BuildConfig.BASE_URL)
-            .client(provideOkHttpClient())
+            .client(provideOkHttpClient(authTokenManager))
             .addConverterFactory(
                 json.asConverterFactory(
                     "application/json".toMediaType()
@@ -65,11 +67,15 @@ object NetworkModule {
         )
 }
 
-class AuthInterceptor : Interceptor {
+class AuthInterceptor(val authTokenManager: AuthTokenManager) : Interceptor {
     override fun intercept(chain: Interceptor.Chain): Response {
         val request: Request = chain.request()
+        val token = runBlocking {
+            authTokenManager.readAccessToken()
+        }
         val newRequest = request.newBuilder()
             .header("x-api-key", BuildConfig.API_KEY)
+            .header("Authorization", "Bearer $token")
             .build()
 
         val response = chain.proceed(newRequest)

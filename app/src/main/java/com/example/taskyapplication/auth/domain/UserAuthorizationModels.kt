@@ -16,6 +16,12 @@ data class LoginData(
     val password: String
 )
 
+@Serializable
+data class AccessTokenRequest(
+    val refreshToken: String,
+    val userId: String
+)
+
 data class RegisterUserState(
     val fullName: TextFieldState = TextFieldState(),
     val email: TextFieldState = TextFieldState(),
