@@ -1,22 +1,15 @@
 package com.example.taskyapplication.di
 
-import android.content.Context
 import android.util.Log
-import androidx.datastore.core.DataStore
-import androidx.datastore.preferences.core.Preferences
-import androidx.datastore.preferences.preferencesDataStore
 import com.example.taskyapplication.BuildConfig
-import com.example.taskyapplication.auth.data.EmailPatternValidator
-import com.example.taskyapplication.auth.data.TaskyAppPreferences
 import com.example.taskyapplication.auth.domain.AuthRepository
 import com.example.taskyapplication.auth.domain.AuthRepositoryImpl
-import com.example.taskyapplication.auth.domain.PatternValidator
+import com.example.taskyapplication.auth.domain.AuthTokenManager
 import com.example.taskyapplication.network.TaskyApiService
 import com.jakewharton.retrofit2.converter.kotlinx.serialization.asConverterFactory
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
-import dagger.hilt.android.qualifiers.ApplicationContext
 import dagger.hilt.components.SingletonComponent
 import kotlinx.coroutines.runBlocking
 import okhttp3.OkHttpClient
@@ -33,30 +26,27 @@ private val json = Json {
     coerceInputValues = true
 }
 
-val Context.dataStore: DataStore<Preferences> by preferencesDataStore(name = "tasky_preferences")
-
 @InstallIn(SingletonComponent::class)
 @Module
 object NetworkModule {
 
-    @Singleton
     @Provides
-    fun provideTaskyAppPreferences(@ApplicationContext context: Context): TaskyAppPreferences = TaskyAppPreferences(context)
+    @Singleton
+    fun provideOkHttpClient(
+        tokenManager: AuthTokenManager,
 
-    @Provides
-    @Singleton
-    fun provideOkHttpClient(appPreferences: TaskyAppPreferences): OkHttpClient {
+    ): OkHttpClient {
         return OkHttpClient.Builder()
-            .addInterceptor(AuthInterceptor(appPreferences))
+            .addInterceptor(AuthInterceptor(tokenManager))
             .build()
     }
 
     @Singleton
     @Provides
-    fun provideTaskyApi(appPreferences: TaskyAppPreferences): TaskyApiService {
+    fun provideTaskyApi(tokenManager: AuthTokenManager): TaskyApiService {
         return Retrofit.Builder()
             .baseUrl(BuildConfig.BASE_URL)
-            .client(provideOkHttpClient(appPreferences))
+            .client(provideOkHttpClient(tokenManager))
             .addConverterFactory(
                 json.asConverterFactory(
                     "application/json".toMediaType()
@@ -70,23 +60,19 @@ object NetworkModule {
     @Provides
     fun provideAuthRepository(
         taskyApiService: TaskyApiService,
-        appPreferences: TaskyAppPreferences
+        authTokenManager: AuthTokenManager
     ): AuthRepository =
         AuthRepositoryImpl(
             taskyApiService,
-            appPreferences
+            authTokenManager
         )
-
-    @Singleton
-    @Provides
-    fun providePatternValidator(): PatternValidator = EmailPatternValidator
 }
 
-class AuthInterceptor(private val taskyAppPreferences: TaskyAppPreferences) : Interceptor {
+class AuthInterceptor(private val tokenManager: AuthTokenManager) : Interceptor {
     override fun intercept(chain: Interceptor.Chain): Response {
         val request: Request = chain.request()
         val accessToken = runBlocking {
-            taskyAppPreferences.readAccessToken()
+            tokenManager.readAccessToken()
         }
         val newRequest = request.newBuilder()
             .header("Authorization", "Bearer $accessToken")

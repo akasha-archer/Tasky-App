@@ -53,7 +53,7 @@ import com.example.taskyapplication.ui.theme.TaskyTypography
 fun BaseInputField(
     modifier: Modifier = Modifier,
     state: TextFieldState,
-    isError: Boolean,
+    isValid: Boolean = false,
     hintText: String = "",
     textFieldIcon: @Composable (() -> Unit)?,
     keyboardType: KeyboardType = KeyboardType.Text,
@@ -80,7 +80,7 @@ fun BaseInputField(
                 .border(
                     width = 1.dp,
                     color = when {
-                        isError && state.text.isNotEmpty() -> taskyColors.error
+                        !isValid && !isFocused && state.text.isNotEmpty() -> taskyColors.error
                         isFocused -> taskyColors.textFieldFocusBorder
                         else -> Color.Transparent
                     }
@@ -223,7 +223,7 @@ fun PlaygroundPreview() {
     BaseInputField(
         state = remember { TextFieldState() },
         hintText = "Name",
-        isError = false,
+        isValid = false,
         textFieldIcon = {
             Icon(
                 imageVector = Icons.Rounded.Check,
