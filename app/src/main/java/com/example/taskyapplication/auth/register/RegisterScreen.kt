@@ -141,7 +141,7 @@ fun RegisterUserScreen(
             isLoading = state.isRegistering,
             onButtonClick = {
                 onAction(RegisterAction.OnRegisterClick)
-//                autofillManager?.commit()
+                autofillManager?.commit()
             }
         )
         AuthScreenFooter(
