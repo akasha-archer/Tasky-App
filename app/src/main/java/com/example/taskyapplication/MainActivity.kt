@@ -15,7 +15,6 @@ import androidx.core.animation.doOnEnd
 import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.compose.rememberNavController
-import com.example.taskyapplication.auth.login.LoginViewModel
 import com.example.taskyapplication.ui.theme.TaskyApplicationTheme
 import dagger.hilt.android.AndroidEntryPoint
 
@@ -25,12 +24,11 @@ class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
-        val loginViewModel: LoginViewModel by viewModels()
-//        loginViewModel.isTokenExpired()
+        val mainViewModel: MainViewModel by viewModels()
+        val viewState = mainViewModel.mainState
         installSplashScreen().apply {
             setKeepOnScreenCondition {
-                loginViewModel.isTokenExpired()
-                loginViewModel.isTokenValid.value
+                viewState.value.isLoggedIn
             }
 
             setOnExitAnimationListener { screen ->
@@ -62,14 +60,13 @@ class MainActivity : ComponentActivity() {
         setContent {
             TaskyApplicationTheme {
                 Surface(color = MaterialTheme.colorScheme.background) {
-                    val isTokenValid by loginViewModel.isTokenValid.collectAsStateWithLifecycle()
-                    val isUserRegistered = false
+                    val mainState by mainViewModel.mainState.collectAsStateWithLifecycle()
                     val navController = rememberNavController()
                     // Composable that has NavHost as the root composable to handle navigation logic
                     NavigationRoot(
                         navController = navController,
-                        isLoggedIn = isTokenValid,
-                        isUserRegistered = isUserRegistered
+                        isLoggedIn = mainState.isLoggedIn,
+                        isUserRegistered = mainState.isRegistered
                     )
                 }
             }

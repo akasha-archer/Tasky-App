@@ -5,6 +5,8 @@ import com.example.taskyapplication.BuildConfig
 import com.example.taskyapplication.auth.domain.AuthRepository
 import com.example.taskyapplication.auth.domain.AuthRepositoryImpl
 import com.example.taskyapplication.auth.domain.AuthTokenManager
+import com.example.taskyapplication.MainRepository
+import com.example.taskyapplication.MainRepositoryImpl
 import com.example.taskyapplication.network.TaskyApiService
 import com.jakewharton.retrofit2.converter.kotlinx.serialization.asConverterFactory
 import dagger.Module
@@ -64,6 +66,15 @@ object NetworkModule {
         AuthRepositoryImpl(
             taskyApiService,
             authTokenManager
+        )
+
+    @Singleton
+    @Provides
+    fun provideMainRepository(
+        taskyApiService: TaskyApiService
+    ): MainRepository =
+        MainRepositoryImpl(
+            taskyApiService
         )
 }
 
