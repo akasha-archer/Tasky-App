@@ -2,7 +2,6 @@ package com.example.taskyapplication.network
 
 import com.example.taskyapplication.auth.data.AccessTokenResponse
 import com.example.taskyapplication.auth.data.LoggedInUserResponse
-import com.example.taskyapplication.auth.domain.AccessTokenRequest
 import retrofit2.Response
 import retrofit2.http.Body
 import retrofit2.http.GET
@@ -26,13 +25,13 @@ interface TaskyApiService {
 
     @POST("/accessToken")
     suspend fun getNewAccessToken(
-        @Body userAccessTokenRequest: AccessTokenRequest,
+        @Body refreshToken: String,
+        @Body userId: String,
     ): Response<AccessTokenResponse>
 
     @GET("/authenticate")
-    suspend fun authenticateUser(): Response<Int>
-
+    suspend fun authenticateUser(): Response<Unit>
 
     @GET("/logout")
-    suspend fun logoutUser()
+    suspend fun logoutUser(): Response<Unit>
 }

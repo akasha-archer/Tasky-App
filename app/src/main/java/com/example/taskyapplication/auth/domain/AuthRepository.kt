@@ -1,9 +1,7 @@
 package com.example.taskyapplication.auth.domain
 
-import android.util.Log
 import com.example.taskyapplication.auth.data.AccessTokenResponse
 import com.example.taskyapplication.auth.data.LoggedInUserResponse
-import com.example.taskyapplication.auth.data.TaskyAppPreferences
 import com.example.taskyapplication.domain.utils.DataError
 import com.example.taskyapplication.domain.utils.EmptyResult
 import com.example.taskyapplication.domain.utils.asEmptyDataResult
@@ -21,17 +19,15 @@ interface AuthRepository {
     ): EmptyResult<DataError>
 
     suspend fun loginUser(email: String, password: String): EmptyResult<DataError>
-    suspend fun requestAccessToken(accessTokenRequest: AccessTokenRequest): AccessTokenResponse?
-    suspend fun isTokenExpired(): Boolean
-    suspend fun logoutUser()
-    suspend fun saveRefreshToken(tokenResponse: LoggedInUserResponse)
-    suspend fun saveRegisteredUser(isRegistered: Boolean)
+    suspend fun requestAccessToken(refreshToken: String, userId: String): EmptyResult<DataError>
+    suspend fun isTokenExpired(): EmptyResult<DataError>
+    suspend fun logoutUser(): EmptyResult<DataError>
 }
 
 @Singleton
 class AuthRepositoryImpl @Inject constructor(
     private val taskyApiService: TaskyApiService,
-    private val appPreferences: TaskyAppPreferences
+    private val authTokenManager: AuthTokenManager
 ) : AuthRepository {
 
     override suspend fun registerNewUser(
@@ -57,40 +53,49 @@ class AuthRepositoryImpl @Inject constructor(
                 email = email,
                 password = password
             )
-        }.onSuccess {
-            TODO("save tokens and user info")
+        }.onSuccess { response ->
+            authTokenManager.saveAuthInfo(
+                LoggedInUserResponse(
+                    fullName = response.fullName,
+                    accessToken = response.accessToken,
+                    refreshToken = response.refreshToken,
+                    userId = response.userId,
+                )
+            )
         }
         return result.asEmptyDataResult()
     }
 
-    override suspend fun requestAccessToken(accessTokenRequest: AccessTokenRequest): AccessTokenResponse? {
-        return taskyApiService.getNewAccessToken(accessTokenRequest).body()
-    }
-
-    override suspend fun isTokenExpired(): Boolean {
-        var responseCode: Int
-        try {
-            responseCode = taskyApiService.authenticateUser().code()
-        } catch (e: Exception) {
-            Log.e(
-                "Parse exception in AuthRepository",
-                "Failed to read authentication response code: ${e.message}"
+    override suspend fun requestAccessToken(
+        refreshToken: String,
+        userId: String
+    ): EmptyResult<DataError> {
+        val result = safeApiCall {
+            taskyApiService.getNewAccessToken(
+                refreshToken = refreshToken,
+                userId = userId
             )
-            throw e
+        }.onSuccess { response ->
+            authTokenManager.updateAccessToken(
+                AccessTokenResponse(
+                    accessToken = response.accessToken,
+                )
+            )
         }
-        return responseCode == 401
+        return result.asEmptyDataResult()
     }
 
-    override suspend fun logoutUser() {
-        taskyApiService.logoutUser()
-        appPreferences.deleteRefreshToken()
+    override suspend fun isTokenExpired(): EmptyResult<DataError> {
+        return safeApiCall {
+            taskyApiService.authenticateUser()
+        }.asEmptyDataResult()
     }
 
-    override suspend fun saveRefreshToken(tokenResponse: LoggedInUserResponse) {
-        appPreferences.saveAccessToken(tokenResponse.refreshToken)
-    }
-
-    override suspend fun saveRegisteredUser(isRegistered: Boolean) {
-        appPreferences.saveUserRegisteredState(isRegistered)
+    override suspend fun logoutUser(): EmptyResult<DataError> {
+        return safeApiCall {
+            taskyApiService.logoutUser()
+        }.onSuccess {
+            authTokenManager.clearRefreshToken()
+        }
     }
 }

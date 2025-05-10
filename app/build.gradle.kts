@@ -76,7 +76,7 @@ dependencies {
     implementation(libs.androidx.ui.graphics)
     implementation(libs.androidx.ui.tooling.preview)
     implementation(libs.androidx.material3)
-    implementation(libs.androidx.datastore)
+    implementation(libs.androidx.datastore.preferences)
     implementation(libs.squareup.retrofit2)
     implementation(libs.squareup.okhttp)
     implementation(libs.squareup.okhttp.interceptor)
@@ -92,6 +92,7 @@ dependencies {
     implementation(libs.androidx.material)
     implementation(libs.androidx.compose.runtime)
     implementation(libs.androidx.compose.runtime.livedata)
+    implementation(libs.androidx.datastore)
 
     ksp(libs.hilt.compiler)
 

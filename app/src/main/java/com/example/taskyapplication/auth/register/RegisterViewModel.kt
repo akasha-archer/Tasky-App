@@ -12,7 +12,6 @@ import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
-import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.onStart
 import kotlinx.coroutines.flow.receiveAsFlow
 import kotlinx.coroutines.flow.stateIn
@@ -24,9 +23,6 @@ class RegisterViewModel @Inject constructor(
     private val authRepository: AuthRepository,
     private val inputValidator: UserInputValidator
 ) : ViewModel() {
-
-    private val _isTokenValid = MutableStateFlow(false)
-    val isTokenValid = _isTokenValid.asStateFlow()
 
     private val eventChannel = Channel<RegistrationEvent>()
     val events = eventChannel.receiveAsFlow()
@@ -121,15 +117,5 @@ class RegisterViewModel @Inject constructor(
             RegisterAction.OnRegisterClick -> registerNewUser()
             else -> Unit
         }
-    }
-
-    fun isTokenExpired() {
-        viewModelScope.launch {
-            _isTokenValid.value = authRepository.isTokenExpired()
-        }
-    }
-
-    suspend fun logOut() {
-        authRepository.logoutUser()
     }
 }

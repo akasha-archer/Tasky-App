@@ -12,6 +12,7 @@ import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
+import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onStart
@@ -25,6 +26,9 @@ class LoginViewModel @Inject constructor(
     private val authRepository: AuthRepository,
     private val inputValidator: UserInputValidator
 ) : ViewModel() {
+
+    private val _isTokenValid = MutableStateFlow(false)
+    val isTokenValid = _isTokenValid.asStateFlow()
 
     private val eventChannel = Channel<LoginEvent>()
     val events = eventChannel.receiveAsFlow()
@@ -77,6 +81,25 @@ class LoginViewModel @Inject constructor(
                 }
             }
         }
+    }
+
+    fun isTokenExpired() {
+        viewModelScope.launch {
+            val result = authRepository.isTokenExpired()
+            when (result) {
+                is Result.Error -> {
+                    _isTokenValid.value = false
+                }
+
+                is Result.Success -> {
+                    _isTokenValid.value = true
+                }
+            }
+        }
+    }
+
+    suspend fun logOut() {
+        authRepository.logoutUser()
     }
 
     fun loginActions(action: LoginAction) {
