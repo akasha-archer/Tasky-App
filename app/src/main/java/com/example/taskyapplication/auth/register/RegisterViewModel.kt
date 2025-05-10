@@ -3,6 +3,7 @@ package com.example.taskyapplication.auth.register
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.taskyapplication.auth.domain.AuthRepository
+import com.example.taskyapplication.auth.domain.RegisterData
 import com.example.taskyapplication.auth.domain.RegisterUserState
 import com.example.taskyapplication.auth.domain.UserInputValidator
 import com.example.taskyapplication.auth.presentation.utils.textAsFlow
@@ -86,12 +87,13 @@ class RegisterViewModel @Inject constructor(
         viewModelScope.launch {
             _state.value = _state.value.copy(isRegistering = true)
             val result = authRepository.registerNewUser(
-                fullName = _state.value.fullName.text.toString().trim(),
-                email = _state.value.email.text.toString().trim(),
-                password = _state.value.password.text.toString().trim()
+                registerData = RegisterData(
+                    fullName = _state.value.fullName.text.toString().trim(),
+                    email = _state.value.email.text.toString().trim(),
+                    password = _state.value.password.text.toString().trim()
+                ),
             )
             _state.value = _state.value.copy(isRegistering = false)
-
             when (result) {
                 is Result.Error -> {
                     if(result.error == DataError.Network.CONFLICT) {

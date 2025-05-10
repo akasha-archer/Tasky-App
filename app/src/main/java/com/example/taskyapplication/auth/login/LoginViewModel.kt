@@ -3,6 +3,7 @@ package com.example.taskyapplication.auth.login
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.taskyapplication.auth.domain.AuthRepository
+import com.example.taskyapplication.auth.domain.LoginData
 import com.example.taskyapplication.auth.domain.LoginUserState
 import com.example.taskyapplication.auth.domain.UserInputValidator
 import com.example.taskyapplication.auth.presentation.utils.textAsFlow
@@ -60,8 +61,10 @@ class LoginViewModel @Inject constructor(
         viewModelScope.launch {
             _state.value = _state.value.copy(isLoggingIn = true) //LoginState object isLoggingIn = true
             val result = authRepository.loginUser(
-                email = _state.value.email.text.toString().trim(),
-                password = _state.value.password.text.toString().trim()
+                loginData = LoginData(
+                    email = _state.value.email.text.toString().trim(),
+                    password = _state.value.password.text.toString().trim()
+                )
             )
             _state.value = _state.value.copy(isLoggingIn = false) //isLoggingIn = false
             when (result) {

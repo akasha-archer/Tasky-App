@@ -32,21 +32,18 @@ object NetworkModule {
 
     @Provides
     @Singleton
-    fun provideOkHttpClient(
-        tokenManager: AuthTokenManager,
-
-    ): OkHttpClient {
+    fun provideOkHttpClient(): OkHttpClient {
         return OkHttpClient.Builder()
-            .addInterceptor(AuthInterceptor(tokenManager))
+            .addInterceptor(AuthInterceptor())
             .build()
     }
 
     @Singleton
     @Provides
-    fun provideTaskyApi(tokenManager: AuthTokenManager): TaskyApiService {
+    fun provideTaskyApi(): TaskyApiService {
         return Retrofit.Builder()
             .baseUrl(BuildConfig.BASE_URL)
-            .client(provideOkHttpClient(tokenManager))
+            .client(provideOkHttpClient())
             .addConverterFactory(
                 json.asConverterFactory(
                     "application/json".toMediaType()
@@ -68,14 +65,10 @@ object NetworkModule {
         )
 }
 
-class AuthInterceptor(private val tokenManager: AuthTokenManager) : Interceptor {
+class AuthInterceptor : Interceptor {
     override fun intercept(chain: Interceptor.Chain): Response {
         val request: Request = chain.request()
-        val accessToken = runBlocking {
-            tokenManager.readAccessToken()
-        }
         val newRequest = request.newBuilder()
-            .header("Authorization", "Bearer $accessToken")
             .header("x-api-key", BuildConfig.API_KEY)
             .build()
 
@@ -86,6 +79,9 @@ class AuthInterceptor(private val tokenManager: AuthTokenManager) : Interceptor 
             }
             400, 401, 403, 404 -> {
                 Log.e("Tasky API ${response.code} error", "$response")
+            }
+            in 500..599 -> {
+                Log.e("Tasky API server error: ${response.code}", "$response")
             }
         }
         return response

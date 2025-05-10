@@ -13,12 +13,13 @@ import javax.inject.Singleton
 
 interface AuthRepository {
     suspend fun registerNewUser(
-        fullName: String,
-        email: String,
-        password: String
+        registerData: RegisterData
     ): EmptyResult<DataError>
 
-    suspend fun loginUser(email: String, password: String): EmptyResult<DataError>
+    suspend fun loginUser(
+        loginData: LoginData
+    ): EmptyResult<DataError>
+
     suspend fun requestAccessToken(refreshToken: String, userId: String): EmptyResult<DataError>
     suspend fun isTokenExpired(): EmptyResult<DataError>
     suspend fun logoutUser(): EmptyResult<DataError>
@@ -31,27 +32,21 @@ class AuthRepositoryImpl @Inject constructor(
 ) : AuthRepository {
 
     override suspend fun registerNewUser(
-        fullName: String,
-        email: String,
-        password: String
+        registerData: RegisterData
     ): EmptyResult<DataError> {
         return safeApiCall {
             taskyApiService.registerUser(
-                fullName = fullName,
-                email = email,
-                password = password
+               registerData = registerData
             )
-        }
+        }.asEmptyDataResult()
     }
 
     override suspend fun loginUser(
-        email: String,
-        password: String
+       loginData: LoginData
     ): EmptyResult<DataError> {
         val result = safeApiCall {
             taskyApiService.loginUser(
-                email = email,
-                password = password
+                loginData = loginData
             )
         }.onSuccess { response ->
             authTokenManager.saveAuthInfo(
