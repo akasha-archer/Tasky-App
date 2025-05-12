@@ -1,4 +1,4 @@
-package com.example.taskyapplication.agenda.presentation
+package com.example.taskyapplication.agenda.presentation.components
 
 import android.os.Build
 import androidx.annotation.RequiresApi
@@ -8,8 +8,6 @@ import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Favorite
-import androidx.compose.material.icons.filled.FavoriteBorder
 import androidx.compose.material.icons.outlined.Notifications
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
@@ -20,29 +18,21 @@ import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.draw.drawBehind
 import androidx.compose.ui.geometry.CornerRadius
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
+import com.example.taskyapplication.R
+import com.example.taskyapplication.agenda.presentation.AgendaItem
 import com.example.taskyapplication.main.components.TaskyBaseScreen
-import com.example.taskyapplication.main.components.TaskyScaffold
 import com.example.taskyapplication.ui.theme.TaskyDesignSystem.Companion.taskyColors
 import com.example.taskyapplication.ui.theme.TaskyTypography
 
 @RequiresApi(Build.VERSION_CODES.O)
 @Composable
-fun ReminderDetailRoot(
-    modifier: Modifier = Modifier
-) {
-    TaskyScaffold(
-        mainContent = {
-            ReminderDetailScreen(modifier)
-        }
-    )
-}
-
-@RequiresApi(Build.VERSION_CODES.O)
-@Composable
-fun ReminderDetailScreen(
-    modifier: Modifier = Modifier
+fun BaseEditScreen(
+    modifier: Modifier = Modifier,
+    agendaItemType: String = "",
+    agendaItemTitle: String = "",
+    agendaItemDescription: String = ""
 ) {
     Column(
         modifier = modifier
@@ -50,7 +40,9 @@ fun ReminderDetailScreen(
     ) {
         TaskyBaseScreen(
             screenHeader = {
-               DetailScreenHeader()
+                DetailScreenHeader(
+                    onClickEdit = {}
+                )
             },
             mainContent = {
                 Box(
@@ -71,15 +63,15 @@ fun ReminderDetailScreen(
                                 AgendaIconTextRow(
                                     itemIcon = {
                                         Icon(
-                                            imageVector = Icons.Default.Favorite,
+                                            painter = painterResource(R.drawable.agenda_type_square),
                                             tint = taskyColors.primary,
-                                            contentDescription = "Edit Icon"
+                                            contentDescription = ""
                                         )
                                     },
                                     textItem = {
                                         Text(
                                             modifier = Modifier.padding(start = 8.dp),
-                                            text = "Reminder".uppercase(),
+                                            text = agendaItemType.uppercase(),
                                             style = TaskyTypography.labelMedium,
                                             color = taskyColors.onSurface
                                         )
@@ -90,15 +82,15 @@ fun ReminderDetailScreen(
                                 AgendaIconTextRow(
                                     itemIcon = {
                                         Icon(
-                                            imageVector = Icons.Filled.FavoriteBorder,
+                                            painter = painterResource(R.drawable.agenda_title_icon),
                                             tint = taskyColors.primary,
-                                            contentDescription = "Edit Icon"
+                                            contentDescription = ""
                                         )
                                     },
                                     textItem = {
                                         Text(
                                             modifier = Modifier.padding(start = 12.dp),
-                                            text = "Project Name",
+                                            text = agendaItemTitle,
                                             style = TaskyTypography.headlineLarge,
                                             color = taskyColors.onSurface
                                         )
@@ -131,7 +123,7 @@ fun ReminderDetailScreen(
                                     textItem = {
                                         Text(
                                             modifier = Modifier.padding(start = 8.dp),
-                                            text = "Reminder Time",
+                                            text = "30 minutes before",
                                             style = TaskyTypography.bodyMedium,
                                             color = taskyColors.onSurface
                                         )
@@ -150,11 +142,4 @@ fun ReminderDetailScreen(
             }
         )
     }
-}
-
-@RequiresApi(Build.VERSION_CODES.O)
-@Preview(showBackground = true)
-@Composable
-fun ReminderScreenPreview() {
-    ReminderDetailRoot()
 }

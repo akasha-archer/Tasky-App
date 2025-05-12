@@ -1,7 +1,8 @@
-package com.example.taskyapplication.agenda.presentation
+package com.example.taskyapplication.agenda.presentation.components
 
 import android.os.Build
 import androidx.annotation.RequiresApi
+import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Row
@@ -37,6 +38,7 @@ fun AgendaItemScreenHeader(
     Row(
         modifier = modifier
             .fillMaxWidth()
+            .padding(top = 12.dp, bottom = 4.dp)
             .padding(horizontal = 12.dp),
         horizontalArrangement = Arrangement.SpaceBetween,
         verticalAlignment = Alignment.CenterVertically
@@ -48,11 +50,50 @@ fun AgendaItemScreenHeader(
     Spacer(modifier = Modifier.height(16.dp))
 }
 
+@Composable
+fun EditInputHeader(
+    modifier: Modifier = Modifier,
+    itemToEdit: String,
+    onClickSave: () -> Unit,
+    onClickCancel: () -> Unit
+) {
+    AgendaItemScreenHeader(
+        modifier = modifier
+            .background(taskyColors.surface),
+        firstItem = {
+            Text(
+                modifier = Modifier
+                    .clickable { onClickCancel() },
+                text = "Cancel",
+                color = taskyColors.onSurface,
+                style = TaskyTypography.labelSmall
+            )
+        },
+        secondItem = {
+            Text(
+                text ="Edit $itemToEdit".uppercase(),
+                color = taskyColors.onSurface,
+                style = TaskyTypography.labelMedium
+            )
+        },
+        thirdItem = {
+            Text(
+                modifier = Modifier
+                    .clickable { onClickSave() },
+                text = "Save",
+                color = taskyColors.validInput,
+                style = TaskyTypography.labelSmall
+            )
+        }
+    )
+}
+
 // detail screen header
 @RequiresApi(Build.VERSION_CODES.O)
 @Composable
 fun DetailScreenHeader(
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
+    onClickEdit: () -> Unit
 ) {
     AgendaItemScreenHeader(
         modifier = modifier,
@@ -80,6 +121,8 @@ fun DetailScreenHeader(
         },
         thirdItem = {
             Icon(
+                modifier = Modifier
+                    .clickable { onClickEdit() },
                 imageVector = Icons.Outlined.Edit,
                 contentDescription = "Edit reminder",
                 tint = taskyColors.onPrimary
@@ -93,13 +136,15 @@ fun DetailScreenHeader(
 fun EditScreenHeader(
     modifier: Modifier = Modifier,
     itemToEdit: String,
+    onClickSave: () -> Unit,
+    onClickCancel: () -> Unit
 ) {
     AgendaItemScreenHeader(
         modifier = modifier,
         firstItem = {
             Text(
                 modifier = Modifier
-                    .clickable {},
+                    .clickable { onClickCancel() },
                 text = "Cancel",
                 color = taskyColors.onPrimary,
                 style = TaskyTypography.labelSmall
@@ -115,7 +160,7 @@ fun EditScreenHeader(
         thirdItem = {
             Text(
                 modifier = Modifier
-                    .clickable {},
+                    .clickable { onClickSave() },
                 text = "Save",
                 color = taskyColors.validInput,
                 style = TaskyTypography.labelSmall
@@ -128,13 +173,27 @@ fun EditScreenHeader(
 @Preview
 @Composable
 fun AgendaItemScreenHeaderPreview() {
-    DetailScreenHeader()
+    DetailScreenHeader(
+        onClickEdit = {}
+    )
 }
 
 @Preview
 @Composable
 fun EditScreenHeaderPreview() {
     EditScreenHeader(
-        itemToEdit = "Reminder"
+        itemToEdit = "Reminder",
+        onClickSave = {},
+        onClickCancel = {}
+    )
+}
+
+@Preview
+@Composable
+fun EditInputHeaderPreview() {
+    EditInputHeader(
+        itemToEdit = "Reminder",
+        onClickSave = {},
+        onClickCancel = {}
     )
 }

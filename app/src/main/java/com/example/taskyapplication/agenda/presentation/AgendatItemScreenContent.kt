@@ -6,6 +6,7 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
+import com.example.taskyapplication.agenda.presentation.components.AgendaScreenDivider
 
 // Template for all screens
 @Composable

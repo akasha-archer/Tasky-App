@@ -8,4 +8,5 @@
     <color name="black">#FF000000</color>
     <color name="white">#FFFFFFFF</color>
     <color name="splash_background">#FF279f70</color>
+    <color name="date_time_background">#FFF2F3F7</color>
 </resources>
