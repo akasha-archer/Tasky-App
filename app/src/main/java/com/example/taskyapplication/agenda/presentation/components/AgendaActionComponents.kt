@@ -44,55 +44,6 @@ import java.time.LocalTime
 import java.time.format.DateTimeFormatter
 import java.time.format.FormatStyle
 
-@Composable
-fun ReminderTimeRow(
-    modifier: Modifier = Modifier,
-    isEditing: Boolean = false
-) {
-    Row(
-        modifier = modifier
-            .fillMaxWidth(),
-        verticalAlignment = Alignment.CenterVertically,
-        horizontalArrangement = Arrangement.SpaceBetween,
-    ) {
-        AgendaIconTextRow(
-            itemIcon = {
-                Icon(
-                    modifier = modifier
-                        .alpha(0.7f)
-                        .drawBehind {
-                            drawRoundRect(
-                                color = Color(0xFFF2F3F7),
-                                cornerRadius = CornerRadius(3.dp.toPx())
-                            )
-                        }
-                        .padding(horizontal = 4.dp, vertical = 4.dp),
-                    imageVector = Icons.Outlined.Notifications,
-                    tint = taskyColors.onSurfaceVariant,
-                    contentDescription = "Reminder Icon"
-                )
-            },
-            textItem = {
-                Text(
-                    modifier = Modifier.padding(start = 8.dp),
-                    text = "30 minutes before",
-                    style = TaskyTypography.bodyMedium,
-                    color = taskyColors.onSurface
-                )
-            }
-        )
-        if (isEditing) {
-            Icon(
-                modifier = Modifier
-                    .padding(end = 8.dp),
-                painter = painterResource(R.drawable.dropdown),
-                tint = taskyColors.primary,
-                contentDescription = ""
-            )
-        }
-    }
-}
-
 // delete text button
 @Composable
 fun AgendaItemDeleteButton(
@@ -327,13 +278,5 @@ fun EditDateTimePreview() {
     DateTimeFieldWithIcon(
         isEditing = true,
         onClickItem = {},
-    )
-}
-
-@Composable
-@Preview(showBackground = true)
-fun ReminderPreview() {
-    ReminderTimeRow(
-        isEditing = true,
     )
 }
