@@ -50,8 +50,7 @@ fun AgendaDescriptionText(
 ) {
     Row(
         modifier = modifier
-            .fillMaxWidth()
-            .padding(bottom = 20.dp),
+            .fillMaxWidth(),
         verticalAlignment = Alignment.CenterVertically,
         horizontalArrangement = Arrangement.SpaceBetween,
     ) {

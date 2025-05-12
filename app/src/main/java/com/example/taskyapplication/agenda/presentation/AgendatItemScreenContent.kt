@@ -29,6 +29,7 @@ fun AgendaItem(
         if (agendaItemDescription != null) {
             Spacer(Modifier.height(20.dp))
             agendaItemDescription()
+            Spacer(Modifier.height(20.dp))
         }
         if (eventMedia == null) {
             AgendaScreenDivider()
