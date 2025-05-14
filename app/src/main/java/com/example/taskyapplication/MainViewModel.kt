@@ -2,6 +2,7 @@ package com.example.taskyapplication
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.example.taskyapplication.auth.domain.AuthRepository
 import com.example.taskyapplication.auth.domain.AuthTokenManager
 import com.example.taskyapplication.domain.utils.Result
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -15,7 +16,7 @@ import javax.inject.Inject
 @HiltViewModel
 class MainViewModel @Inject constructor(
     private val authTokenManager: AuthTokenManager,
-    private val mainRepository: MainRepository
+    private val authRepository: AuthRepository
 ) : ViewModel() {
 
     private val _mainState = MutableStateFlow(MainViewState())
@@ -41,7 +42,7 @@ class MainViewModel @Inject constructor(
 
     private fun authenticateUser() {
         viewModelScope.launch {
-            val result = mainRepository.authenticateToken()
+            val result = authRepository.authenticateToken()
             _mainState.value = when (result) {
                 is Result.Error -> {
                     _mainState.value.copy(isLoggedIn = false)

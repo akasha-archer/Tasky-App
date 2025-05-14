@@ -1,5 +1,6 @@
 package com.example.taskyapplication.auth.data
 
+import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 
 @Serializable
@@ -13,8 +14,9 @@ data class LoggedInUserResponse(
 
 @Serializable
 data class AccessTokenResponse(
+    @SerialName("accessToken")
     val newAccessToken: String,
-    val expirationTimestamp: Long? = null
+    val expirationTimestamp: Long
 )
 
 @Serializable
