@@ -10,10 +10,6 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.saveable.rememberSaveable
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.painterResource
@@ -27,37 +23,33 @@ import com.example.taskyapplication.ui.theme.TaskyTypography
 
 @RequiresApi(Build.VERSION_CODES.O)
 @Composable
-fun BaseDetailScreen(
+fun BaseEditDateTimeScreen(
     modifier: Modifier = Modifier,
     agendaItemType: String = "",
     agendaItemTitle: String = "",
     agendaItemDescription: String = "",
-    onClickEdit: () -> Unit = {},
+    onSelectTitleEdit: () -> Unit = {},
+    onSelectDescriptionEdit: () -> Unit = {},
+    onEditDate: () -> Unit = {},
+    onEditTime: () -> Unit = {},
+    onSelectReminderTime: () -> Unit = {},
+    onSelectDelete: () -> Unit = {}
 ) {
-    var isInEditMode by rememberSaveable {
-        mutableStateOf(false)
-    }
     Column(
         modifier = modifier
             .padding(top = 48.dp)
     ) {
         TaskyBaseScreen(
             screenHeader = {
-                if (isInEditMode) {
-                    EditScreenHeader(
-                        itemToEdit = "Reminder",
-                        onClickSave = {
-                            isInEditMode = !isInEditMode
-                        },
-                        onClickCancel = {
-                            isInEditMode = !isInEditMode
-                        }
-                    )
-                } else {
-                    DetailScreenHeader(
-                        onClickEdit = { isInEditMode = !isInEditMode }
-                    )
-                }
+                EditScreenHeader(
+                    itemToEdit = "Reminder",
+                    onClickSave = {
+                        // save date and time updates
+                    },
+                    onClickCancel = {
+                        // back to detail screen
+                    }
+                )
             },
             mainContent = {
                 Box(
@@ -96,28 +88,36 @@ fun BaseDetailScreen(
                             agendaItemTitle = {
                                 AgendaTitleRow(
                                     agendaItemTitle = agendaItemTitle,
+                                    isEditing = true,
+                                    onClickEdit = {
+                                        onSelectTitleEdit()
+                                    }
                                 )
                             },
                             agendaItemDescription = {
                                 AgendaDescriptionText(
                                     agendaItemDescription = agendaItemDescription,
+                                    isEditing = true,
                                     onClickEdit = {
-                                        //navigate to Edit UI
+                                        onSelectDescriptionEdit()
                                     }
                                 )
                             },
                             agendaItemStartTime = {
-                                AgendaItemDateTimeRow(
-                                    isEditing = isInEditMode,
-                                    onClickDate = {},
-                                    onClickTime = {},
+                                EditItemDateTime(
+                                    onClickDate = {
+                                        onEditDate()
+                                    },
+                                    onClickTime = {
+                                        onEditTime()
+                                    },
                                 )
                             },
                             agendaItemReminderTime = {
                                 ReminderTimeRow(
-                                    isEditing = isInEditMode,
+                                    isEditing = true,
                                     onEditReminderTime = {
-                                        // Handle reminder time edit
+                                        onSelectReminderTime()
                                     }
                                 )
                             },
@@ -126,7 +126,9 @@ fun BaseDetailScreen(
                             modifier = Modifier
                                 .padding(bottom = 24.dp)
                                 .align(Alignment.BottomCenter),
-                            onClick = {}
+                            onClick = {
+                                onSelectDelete()
+                            }
                         )
                     }
                 }
@@ -138,8 +140,8 @@ fun BaseDetailScreen(
 @RequiresApi(Build.VERSION_CODES.O)
 @Preview(showBackground = true)
 @Composable
-fun BaseDetailScreenPreview() {
-    BaseDetailScreen(
+fun BaseDateTimeEditScreenPreview() {
+    BaseEditDateTimeScreen(
         agendaItemType = "Task",
         agendaItemTitle = "Sample Task",
         agendaItemDescription = "This is a sample task description" +

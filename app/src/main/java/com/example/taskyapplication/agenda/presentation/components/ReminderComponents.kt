@@ -1,12 +1,16 @@
 package com.example.taskyapplication.agenda.presentation.components
 
+import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Check
 import androidx.compose.material.icons.outlined.Notifications
+import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MenuItemColors
@@ -25,11 +29,11 @@ import com.example.taskyapplication.R
 import com.example.taskyapplication.ui.theme.TaskyDesignSystem.Companion.taskyColors
 import com.example.taskyapplication.ui.theme.TaskyTypography
 
-
 @Composable
 fun ReminderTimeRow(
     modifier: Modifier = Modifier,
-    isEditing: Boolean = false
+    isEditing: Boolean = false,
+    onEditReminderTime: () -> Unit
 ) {
     Row(
         modifier = modifier
@@ -66,6 +70,7 @@ fun ReminderTimeRow(
         if (isEditing) {
             Icon(
                 modifier = Modifier
+                    .clickable { onEditReminderTime() }
                     .padding(end = 8.dp),
                 painter = painterResource(R.drawable.dropdown),
                 tint = taskyColors.primary,
@@ -73,6 +78,38 @@ fun ReminderTimeRow(
             )
         }
     }
+}
+
+@Composable
+fun ReminderDropDownMenu(
+    modifier: Modifier = Modifier
+) {
+    DropdownMenu(
+        modifier = modifier
+            .background(color = Color.Green)
+            .fillMaxSize(),
+        expanded = false,
+        onDismissRequest = { /*TODO*/ },
+        shadowElevation = 8.dp,
+        containerColor = taskyColors.surface,
+        content = {
+            ReminderDropDownItem(
+                reminderText = "10 minutes before",
+            )
+            ReminderDropDownItem(
+                reminderText = "30 minutes before",
+            )
+            ReminderDropDownItem(
+                reminderText = "1 hour before",
+            )
+            ReminderDropDownItem(
+                reminderText = "6 hours before",
+            )
+            ReminderDropDownItem(
+                reminderText = "1 day before",
+            )
+        }
+    )
 }
 
 @Composable
@@ -96,7 +133,7 @@ fun ReminderDropDownItem(
             .padding(top = 16.dp)
             .drawBehind {
                 drawRect(
-                    color = Color.Green,
+                    color = background
                 )
             },
         trailingIcon = {
@@ -126,11 +163,12 @@ fun ReminderDropDownItem(
 fun ReminderPreview() {
     ReminderTimeRow(
         isEditing = true,
+        onEditReminderTime = {}
     )
 }
 
 @Preview(showBackground = true)
 @Composable
 fun ReminderDropDownPreview() {
-    ReminderDropDownItem()
+    ReminderDropDownMenu()
 }

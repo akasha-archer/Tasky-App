@@ -16,8 +16,6 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.outlined.Notifications
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Card
 import androidx.compose.material3.HorizontalDivider
@@ -28,7 +26,6 @@ import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.draw.drawBehind
 import androidx.compose.ui.geometry.CornerRadius
 import androidx.compose.ui.graphics.Color
@@ -168,7 +165,7 @@ fun TaskDeleteBottomSheet(
 // start and end time
 @RequiresApi(Build.VERSION_CODES.O)
 @Composable
-fun AgendaItemTimeRow(
+fun AgendaItemDateTimeRow(
     modifier: Modifier = Modifier,
     onClickTime: () -> Unit = {},
     onClickDate: () -> Unit = {},
@@ -178,7 +175,7 @@ fun AgendaItemTimeRow(
     ),
     timeText: String = LocalTime.now().format(
         DateTimeFormatter.ofLocalizedTime(FormatStyle.SHORT)
-    ),
+    )
 ) {
     Row(
         modifier = modifier
@@ -260,7 +257,7 @@ fun DeleteButtonPreview() {
 @Preview(showBackground = true)
 @Composable
 fun AgendaItemTimeRowPreview() {
-    AgendaItemTimeRow(
+    AgendaItemDateTimeRow(
         isEditing = true,
     )
 }

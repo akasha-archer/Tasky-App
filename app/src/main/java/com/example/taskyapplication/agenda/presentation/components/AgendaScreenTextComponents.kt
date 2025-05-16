@@ -1,5 +1,6 @@
 package com.example.taskyapplication.agenda.presentation.components
 
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -46,7 +47,8 @@ fun AgendaIconTextRow(
 fun AgendaDescriptionText(
     modifier: Modifier = Modifier,
     agendaItemDescription: String = "",
-    isEditing: Boolean = false
+    isEditing: Boolean = false,
+    onClickEdit: () -> Unit = {},
 ) {
     Row(
         modifier = modifier
@@ -67,6 +69,7 @@ fun AgendaDescriptionText(
         if (isEditing) {
             Icon(
                 modifier = Modifier
+                    .clickable { onClickEdit() }
                     .padding(end = 8.dp),
                 painter = painterResource(R.drawable.chevron_right),
                 tint = taskyColors.primary,
@@ -81,7 +84,8 @@ fun AgendaDescriptionText(
 fun AgendaTitleRow(
     modifier: Modifier = Modifier,
     agendaItemTitle: String,
-    isEditing: Boolean = false
+    isEditing: Boolean = false,
+    onClickEdit: () -> Unit = {},
 ) {
     Row(
         modifier = modifier
@@ -91,11 +95,13 @@ fun AgendaTitleRow(
     ) {
         AgendaIconTextRow(
             itemIcon = {
-                Icon(
-                    painter = painterResource(R.drawable.agenda_title_icon),
-                    tint = taskyColors.primary,
-                    contentDescription = ""
-                )
+                if (agendaItemTitle.isNotEmpty()) {
+                    Icon(
+                        painter = painterResource(R.drawable.agenda_title_icon),
+                        tint = taskyColors.primary,
+                        contentDescription = ""
+                    )
+                }
             },
             textItem = {
                 Text(
@@ -109,13 +115,13 @@ fun AgendaTitleRow(
         if (isEditing) {
             Icon(
                 modifier = Modifier
+                    .clickable { onClickEdit() }
                     .padding(end = 8.dp),
                 painter = painterResource(R.drawable.chevron_right),
                 tint = taskyColors.primary,
                 contentDescription = ""
             )
         }
-
     }
 }
 
@@ -135,7 +141,6 @@ fun AgendaScreenDivider(
 @Composable
 fun AgendaDescriptionPreview() {
     AgendaDescriptionText(
-        isEditing = true,
         agendaItemDescription = "This is a sample description for the agenda item. It can be quite long and should be truncated if it exceeds the available space."
     )
 }
@@ -171,6 +176,5 @@ fun AgendaItemTypePreview() {
 fun AgendaItemTitlePreview() {
     AgendaTitleRow(
         agendaItemTitle = "This is a sample title.",
-        isEditing = true
     )
 }
