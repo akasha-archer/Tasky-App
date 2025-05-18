@@ -1,4 +1,4 @@
-package com.example.taskyapplication
+package com.example.taskyapplication.main.components
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Column
@@ -32,7 +32,8 @@ import androidx.compose.ui.unit.sp
 fun TaskyBaseScreen(
     modifier: Modifier = Modifier,
     screenHeader: @Composable () -> Unit,
-    mainContent: @Composable () -> Unit
+    mainContent: @Composable () -> Unit,
+    isAgendaEditScreen: Boolean = false
 ) {
     Column(
         modifier = modifier
@@ -54,7 +55,11 @@ fun TaskyBaseScreen(
                 disabledContainerColor = Color.Transparent
             ),
             modifier = Modifier
-                .background(color = Color.Black)
+                .background(color =
+                if(isAgendaEditScreen)
+                    Color.White
+                else
+                    Color.Black)
                 .fillMaxWidth()
                 .fillMaxHeight()
         ) {

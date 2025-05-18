@@ -7,6 +7,7 @@ plugins {
     alias(libs.plugins.hilt.android)
     alias(libs.plugins.ksp)
     alias(libs.plugins.kotlin.serialization)
+    alias(libs.plugins.kotlin.parcelize)
 }
 
 android {
@@ -50,6 +51,7 @@ android {
         }
     }
     compileOptions {
+        isCoreLibraryDesugaringEnabled  = true
         sourceCompatibility = JavaVersion.VERSION_11
         targetCompatibility = JavaVersion.VERSION_11
     }
@@ -67,7 +69,6 @@ android {
 }
 
 dependencies {
-
     implementation(libs.androidx.core.ktx)
     implementation(libs.androidx.lifecycle.runtime.ktx)
     implementation(libs.androidx.activity.compose)
@@ -93,6 +94,8 @@ dependencies {
     implementation(libs.androidx.compose.runtime)
     implementation(libs.androidx.compose.runtime.livedata)
     implementation(libs.androidx.datastore)
+    implementation(libs.jetbrains.kotlinx.datetime)
+    coreLibraryDesugaring(libs.desugar.jdk.libs)
 
     ksp(libs.hilt.compiler)
 

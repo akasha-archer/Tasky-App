@@ -50,7 +50,7 @@ data class TaskyColors(
     val surfaceBright: Color = Link_Light,
     val error: Color = Error_Light,
     val outline: Color = Outline_Light,
-    val secondaryBackground: Color = SecondaryBackground_Dark,
+    val secondaryBackground: Color = SecondaryBackground,
     val inputText: Color = InputText,
     val inputHintGray: Color = InputHintGray,
     val inputFieldGray: Color = InputFieldGray,

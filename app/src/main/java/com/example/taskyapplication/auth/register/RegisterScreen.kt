@@ -18,7 +18,7 @@ import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import com.example.taskyapplication.TaskyBaseScreen
+import com.example.taskyapplication.main.components.TaskyBaseScreen
 import com.example.taskyapplication.auth.domain.RegisterUserState
 import com.example.taskyapplication.auth.presentation.components.AuthScreenFooter
 import com.example.taskyapplication.auth.presentation.components.AuthCtaButton

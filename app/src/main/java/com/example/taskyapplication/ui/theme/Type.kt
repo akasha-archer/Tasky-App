@@ -34,7 +34,7 @@ val TaskyTypography = Typography(
     bodyMedium = TextStyle(
         fontFamily = interFamily400,
         fontSize = 16.sp,
-        lineHeight = 24.sp,
+        lineHeight = 22.sp,
         letterSpacing = 0.1.sp
     ),
     labelMedium = TextStyle(
@@ -53,6 +53,18 @@ val TaskyTypography = Typography(
         fontFamily = interFamily700,
         fontSize = 28.sp,
         lineHeight = 30.sp,
+        letterSpacing = 0.0.sp
+    ),
+    headlineMedium = TextStyle(
+        fontFamily = interFamily700,
+        fontSize = 24.sp,
+        lineHeight = 28.sp,
+        letterSpacing = 0.0.sp
+    ),
+    headlineSmall = TextStyle(
+        fontFamily = interFamily600,
+        fontSize = 20.sp,
+        lineHeight = 24.sp,
         letterSpacing = 0.0.sp
     ),
     bodySmall = TextStyle(
