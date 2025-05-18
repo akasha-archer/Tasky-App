@@ -1,8 +1,5 @@
 package com.example.taskyapplication.agenda.task.domain.model
 
-import kotlinx.serialization.Serializable
-
-@Serializable
 data class GetTaskResponse(
     val id: String,
     val title: String,

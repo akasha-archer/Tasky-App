@@ -4,7 +4,6 @@ import com.example.taskyapplication.agenda.task.data.local.entity.TaskEntity
 import com.example.taskyapplication.agenda.task.data.network.models.TaskNetworkModel
 import com.example.taskyapplication.agenda.task.domain.model.TaskUiState
 
-
 fun TaskNetworkModel.asEntity() = TaskEntity(
     id = eventId,
     title = title,

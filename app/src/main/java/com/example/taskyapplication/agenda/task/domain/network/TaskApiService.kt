@@ -11,7 +11,7 @@ import retrofit2.http.POST
 import retrofit2.http.PUT
 import retrofit2.http.Query
 
-interface TaskApi {
+interface TaskApiService {
     @POST("/task")
     suspend fun createNewTask(
         @Body request: TaskNetworkModel
@@ -24,7 +24,7 @@ interface TaskApi {
 
     @GET("/task")
     suspend fun getTaskById(
-       @Query("taskId") taskId: String
+        @Query("taskId") taskId: String
     ): Response<GetTaskResponse>
 
     @DELETE("/task")

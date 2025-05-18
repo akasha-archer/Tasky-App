@@ -7,7 +7,7 @@ import com.example.taskyapplication.auth.domain.AuthRepositoryImpl
 import com.example.taskyapplication.auth.domain.AuthTokenManager
 import com.example.taskyapplication.MainRepository
 import com.example.taskyapplication.MainRepositoryImpl
-import com.example.taskyapplication.network.TaskyApiService
+import com.example.taskyapplication.network.AuthApiService
 import com.jakewharton.retrofit2.converter.kotlinx.serialization.asConverterFactory
 import dagger.Module
 import dagger.Provides
@@ -44,7 +44,7 @@ object NetworkModule {
 
     @Singleton
     @Provides
-    fun provideTaskyApi(authTokenManager: AuthTokenManager): TaskyApiService {
+    fun provideTaskyApi(authTokenManager: AuthTokenManager): AuthApiService {
         return Retrofit.Builder()
             .baseUrl(BuildConfig.BASE_URL)
             .client(provideOkHttpClient(authTokenManager))
@@ -54,27 +54,27 @@ object NetworkModule {
                 )
             )
             .build()
-            .create(TaskyApiService::class.java)
+            .create(AuthApiService::class.java)
     }
 
     @Singleton
     @Provides
     fun provideAuthRepository(
-        taskyApiService: TaskyApiService,
+        authApiService: AuthApiService,
         authTokenManager: AuthTokenManager
     ): AuthRepository =
         AuthRepositoryImpl(
-            taskyApiService,
+            authApiService,
             authTokenManager
         )
 
     @Singleton
     @Provides
     fun provideMainRepository(
-        taskyApiService: TaskyApiService
+        authApiService: AuthApiService
     ): MainRepository =
         MainRepositoryImpl(
-            taskyApiService
+            authApiService
         )
 }
 
