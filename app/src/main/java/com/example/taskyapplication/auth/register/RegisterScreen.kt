@@ -9,7 +9,7 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.rounded.Check
 import androidx.compose.material3.Icon
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.livedata.observeAsState
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalAutofillManager
@@ -17,6 +17,7 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.example.taskyapplication.TaskyBaseScreen
 import com.example.taskyapplication.auth.domain.RegisterUserState
 import com.example.taskyapplication.auth.presentation.components.AuthScreenFooter
@@ -24,6 +25,7 @@ import com.example.taskyapplication.auth.presentation.components.AuthCtaButton
 import com.example.taskyapplication.auth.presentation.components.BaseInputField
 import com.example.taskyapplication.auth.presentation.components.PasswordTextField
 import com.example.taskyapplication.auth.presentation.utils.AuthScreenTitle
+import com.example.taskyapplication.domain.utils.ObserveAsEvents
 import com.example.taskyapplication.ui.theme.TaskyDesignSystem.Companion.taskyColors
 
 @Composable
@@ -35,9 +37,9 @@ fun RegisterScreenRoot(
 ) {
     val context = LocalContext.current
     val keyboardController = LocalSoftwareKeyboardController.current
-    val events = registerViewModel.registrationEvents.observeAsState()
+    val registerState by registerViewModel.state.collectAsStateWithLifecycle()
 
-    events.value?.let { event ->
+    ObserveAsEvents(registerViewModel.events) { event ->
         when (event) {
             is RegistrationEvent.RegistrationSuccess -> {
                 keyboardController?.hide()
@@ -46,6 +48,7 @@ fun RegisterScreenRoot(
                     "Registration Successful! You can now log in.",
                     Toast.LENGTH_SHORT
                 ).show()
+                onRegisterSuccess()
             }
             is RegistrationEvent.RegistrationError -> {
                 keyboardController?.hide()
@@ -54,7 +57,6 @@ fun RegisterScreenRoot(
                     event.errorMessage,
                     Toast.LENGTH_SHORT
                 ).show()
-                onRegisterSuccess()
             }
         }
     }
@@ -68,7 +70,7 @@ fun RegisterScreenRoot(
         },
         mainContent = {
             RegisterUserScreen(
-                state = registerViewModel.state,
+                state = registerState,
                 onAction = { action ->
                     when (action) {
                         RegisterAction.OnLoginClick -> onLoginClick()
@@ -97,10 +99,10 @@ fun RegisterUserScreen(
     ) {
         BaseInputField(
             state = state.fullName,
-            isError = state.nameValidationState.isValid,
+            isValid = state.isNameValid,
             hintText = "Name",
             textFieldIcon = {
-                if (state.nameValidationState.isValid) {
+                if (state.isNameValid) {
                     Icon(
                         imageVector = Icons.Rounded.Check,
                         contentDescription = "valid input",
@@ -113,7 +115,7 @@ fun RegisterUserScreen(
         )
         BaseInputField(
             state = state.email,
-            isError = state.isEmailValid,
+            isValid = state.isEmailValid,
             hintText = "Email",
             textFieldIcon = {
                 if (state.isEmailValid) {
@@ -129,7 +131,7 @@ fun RegisterUserScreen(
         )
         PasswordTextField(
             state = state.password,
-            isPasswordValid = state.passwordValidationState.isValidPassword,
+            isPasswordValid = state.isPasswordValid,
         )
         AuthCtaButton(
             modifier = Modifier

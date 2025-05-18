@@ -1,22 +1,17 @@
 package com.example.taskyapplication.di
 
-import android.content.Context
 import android.util.Log
-import androidx.datastore.core.DataStore
-import androidx.datastore.preferences.core.Preferences
-import androidx.datastore.preferences.preferencesDataStore
 import com.example.taskyapplication.BuildConfig
-import com.example.taskyapplication.auth.data.EmailPatternValidator
-import com.example.taskyapplication.auth.data.TaskyAppPreferences
 import com.example.taskyapplication.auth.domain.AuthRepository
 import com.example.taskyapplication.auth.domain.AuthRepositoryImpl
-import com.example.taskyapplication.auth.domain.PatternValidator
+import com.example.taskyapplication.auth.domain.AuthTokenManager
+import com.example.taskyapplication.MainRepository
+import com.example.taskyapplication.MainRepositoryImpl
 import com.example.taskyapplication.network.TaskyApiService
 import com.jakewharton.retrofit2.converter.kotlinx.serialization.asConverterFactory
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
-import dagger.hilt.android.qualifiers.ApplicationContext
 import dagger.hilt.components.SingletonComponent
 import kotlinx.coroutines.runBlocking
 import okhttp3.OkHttpClient
@@ -33,30 +28,26 @@ private val json = Json {
     coerceInputValues = true
 }
 
-val Context.dataStore: DataStore<Preferences> by preferencesDataStore(name = "tasky_preferences")
-
 @InstallIn(SingletonComponent::class)
 @Module
 object NetworkModule {
 
-    @Singleton
-    @Provides
-    fun provideTaskyAppPreferences(@ApplicationContext context: Context): TaskyAppPreferences = TaskyAppPreferences(context)
-
     @Provides
     @Singleton
-    fun provideOkHttpClient(appPreferences: TaskyAppPreferences): OkHttpClient {
+    fun provideOkHttpClient(
+        authTokenManager: AuthTokenManager
+    ): OkHttpClient {
         return OkHttpClient.Builder()
-            .addInterceptor(AuthInterceptor(appPreferences))
+            .addInterceptor(AuthInterceptor(authTokenManager))
             .build()
     }
 
     @Singleton
     @Provides
-    fun provideTaskyApi(appPreferences: TaskyAppPreferences): TaskyApiService {
+    fun provideTaskyApi(authTokenManager: AuthTokenManager): TaskyApiService {
         return Retrofit.Builder()
             .baseUrl(BuildConfig.BASE_URL)
-            .client(provideOkHttpClient(appPreferences))
+            .client(provideOkHttpClient(authTokenManager))
             .addConverterFactory(
                 json.asConverterFactory(
                     "application/json".toMediaType()
@@ -70,27 +61,32 @@ object NetworkModule {
     @Provides
     fun provideAuthRepository(
         taskyApiService: TaskyApiService,
-        appPreferences: TaskyAppPreferences
+        authTokenManager: AuthTokenManager
     ): AuthRepository =
         AuthRepositoryImpl(
             taskyApiService,
-            appPreferences
+            authTokenManager
         )
 
     @Singleton
     @Provides
-    fun providePatternValidator(): PatternValidator = EmailPatternValidator
+    fun provideMainRepository(
+        taskyApiService: TaskyApiService
+    ): MainRepository =
+        MainRepositoryImpl(
+            taskyApiService
+        )
 }
 
-class AuthInterceptor(private val taskyAppPreferences: TaskyAppPreferences) : Interceptor {
+class AuthInterceptor(val authTokenManager: AuthTokenManager) : Interceptor {
     override fun intercept(chain: Interceptor.Chain): Response {
         val request: Request = chain.request()
-        val accessToken = runBlocking {
-            taskyAppPreferences.readAccessToken()
+        val token = runBlocking {
+            authTokenManager.readAccessToken()
         }
         val newRequest = request.newBuilder()
-            .header("Authorization", "Bearer $accessToken")
             .header("x-api-key", BuildConfig.API_KEY)
+            .header("Authorization", "Bearer $token")
             .build()
 
         val response = chain.proceed(newRequest)
@@ -100,6 +96,9 @@ class AuthInterceptor(private val taskyAppPreferences: TaskyAppPreferences) : In
             }
             400, 401, 403, 404 -> {
                 Log.e("Tasky API ${response.code} error", "$response")
+            }
+            in 500..599 -> {
+                Log.e("Tasky API server error: ${response.code}", "$response")
             }
         }
         return response

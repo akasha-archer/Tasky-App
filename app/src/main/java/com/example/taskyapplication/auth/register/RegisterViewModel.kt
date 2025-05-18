@@ -1,21 +1,21 @@
 package com.example.taskyapplication.auth.register
 
-import android.util.Log
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.setValue
-import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.taskyapplication.auth.domain.AuthRepository
+import com.example.taskyapplication.auth.domain.RegisterData
 import com.example.taskyapplication.auth.domain.RegisterUserState
 import com.example.taskyapplication.auth.domain.UserInputValidator
 import com.example.taskyapplication.auth.presentation.utils.textAsFlow
+import com.example.taskyapplication.domain.utils.DataError
 import com.example.taskyapplication.domain.utils.Result
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.asStateFlow
-import kotlinx.coroutines.flow.onEach
+import kotlinx.coroutines.flow.SharingStarted
+import kotlinx.coroutines.flow.onStart
+import kotlinx.coroutines.flow.receiveAsFlow
+import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
@@ -25,66 +25,90 @@ class RegisterViewModel @Inject constructor(
     private val inputValidator: UserInputValidator
 ) : ViewModel() {
 
-    private val _isTokenValid = MutableStateFlow(false)
-    val isTokenValid = _isTokenValid.asStateFlow()
+    private val eventChannel = Channel<RegistrationEvent>()
+    val events = eventChannel.receiveAsFlow()
 
-    val registrationEvents = MutableLiveData<RegistrationEvent>()
-    var state by mutableStateOf(RegisterUserState())
-        private set
+    private val _state = MutableStateFlow(RegisterUserState())
+    val state = _state
+        .onStart {
+            collectNameUpdates()
+            collectEmailUpdates()
+            collectPasswordUpdates()
+        }
+        .stateIn(
+            viewModelScope,
+            started = SharingStarted.WhileSubscribed(5000L),
+            initialValue = RegisterUserState()
+        )
 
-    init {
-        // save input values as snapshot flows
-        state.fullName.textAsFlow()
-            .onEach { name ->
-                val nameValidationState = inputValidator.validateFullName(name.toString())
-                state = state.copy(
-                    nameValidationState = nameValidationState,
-                    canRegister = nameValidationState.isValid && state.isEmailValid
-                            && state.passwordValidationState.isValidPassword && !state.isRegistering
-                )
-                Log.d("RegisterViewModel", "Name validation state: $nameValidationState")
-            }
+    private fun collectNameUpdates() {
+        viewModelScope.launch {
+            _state.value.fullName.textAsFlow()
+                .collect { name ->
+                    val isNameValid = inputValidator.isNameValid(name.toString())
+                    _state.value = _state.value.copy(
+                        isNameValid = isNameValid,
+                        canRegister = isNameValid && _state.value.isEmailValid
+                                && _state.value.isPasswordValid && !_state.value.isRegistering
+                    )
+                }
+        }
+    }
 
-        state.email.textAsFlow()
-            .onEach { email ->
-                val isEmailValid = inputValidator.isValidEmail(email.toString())
-                state = state.copy(
-                    isEmailValid = isEmailValid,
-                    canRegister = isEmailValid && state.nameValidationState.isValid
-                            && state.passwordValidationState.isValidPassword && !state.isRegistering
-                )
-                Log.d("RegisterViewModel", "Email validation state: $isEmailValid")
-            }
+    private fun collectEmailUpdates() {
+        viewModelScope.launch {
+            _state.value.email.textAsFlow()
+                .collect { email ->
+                    val isEmailValid = inputValidator.isValidEmail(email.toString())
+                    _state.value = _state.value.copy(
+                        isEmailValid = isEmailValid,
+                        canRegister = isEmailValid && _state.value.isNameValid
+                                && _state.value.isPasswordValid && !_state.value.isRegistering
+                    )
+                }
+        }
+    }
 
-        state.password.textAsFlow()
-            .onEach { password ->
-                val passwordValidationState = inputValidator.validatePassword(password.toString())
-                state = state.copy(
-                    passwordValidationState = passwordValidationState,
-                    canRegister = passwordValidationState.isValidPassword && state.isEmailValid
-                            && state.nameValidationState.isValid && !state.isRegistering
-                )
-                Log.d("RegisterViewModel", "Password validation state: $passwordValidationState")
-            }
+    private fun collectPasswordUpdates() {
+        viewModelScope.launch {
+            _state.value.password.textAsFlow()
+                .collect { password ->
+                    val isPasswordValid = inputValidator.isPasswordValid(password.toString())
+                    _state.value = _state.value.copy(
+                        isPasswordValid = isPasswordValid,
+                        canRegister = isPasswordValid && _state.value.isEmailValid
+                                && _state.value.isNameValid && !_state.value.isRegistering
+                    )
+                }
+        }
     }
 
     private fun registerNewUser() {
         viewModelScope.launch {
-            state = state.copy(isRegistering = true)
+            _state.value = _state.value.copy(isRegistering = true)
             val result = authRepository.registerNewUser(
-                fullName = state.fullName.text.toString().trim(),
-                email = state.email.text.toString().trim(),
-                password = state.password.text.toString().trim()
+                registerData = RegisterData(
+                    fullName = _state.value.fullName.text.toString().trim(),
+                    email = _state.value.email.text.toString().trim(),
+                    password = _state.value.password.text.toString().trim()
+                ),
             )
-            state = state.copy(isRegistering = false)
-
+            _state.value = _state.value.copy(isRegistering = false)
             when (result) {
                 is Result.Error -> {
-                    registrationEvents.value =
-                        RegistrationEvent.RegistrationError(result.error.toString())
+                    if(result.error == DataError.Network.CONFLICT) {
+                        eventChannel.send(RegistrationEvent.RegistrationError(
+                            errorMessage = "User with this email already exists"
+                        ))
+                    } else {
+                        eventChannel.send(RegistrationEvent.RegistrationError(
+                            "Something went wrong. Please try again later."
+                        )
+                        )
+                    }
                 }
                 is Result.Success -> {
-                    registrationEvents.value = RegistrationEvent.RegistrationSuccess
+                    eventChannel.send(RegistrationEvent.RegistrationSuccess)
                 }
             }
         }
@@ -95,15 +119,5 @@ class RegisterViewModel @Inject constructor(
             RegisterAction.OnRegisterClick -> registerNewUser()
             else -> Unit
         }
-    }
-
-    fun isTokenExpired() {
-        viewModelScope.launch {
-            _isTokenValid.value = authRepository.isTokenExpired()
-        }
-    }
-
-    suspend fun logOut() {
-        authRepository.logoutUser()
     }
 }

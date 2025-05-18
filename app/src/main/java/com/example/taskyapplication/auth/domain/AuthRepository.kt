@@ -1,96 +1,127 @@
 package com.example.taskyapplication.auth.domain
 
-import android.util.Log
-import com.example.taskyapplication.auth.data.AccessTokenResponse
 import com.example.taskyapplication.auth.data.LoggedInUserResponse
-import com.example.taskyapplication.auth.data.TaskyAppPreferences
-import com.example.taskyapplication.domain.utils.BaseRepository
 import com.example.taskyapplication.domain.utils.DataError
 import com.example.taskyapplication.domain.utils.EmptyResult
 import com.example.taskyapplication.domain.utils.asEmptyDataResult
+import com.example.taskyapplication.domain.utils.onError
 import com.example.taskyapplication.domain.utils.onSuccess
+import com.example.taskyapplication.domain.utils.safeApiCall
 import com.example.taskyapplication.network.TaskyApiService
 import javax.inject.Inject
 import javax.inject.Singleton
 
 interface AuthRepository {
     suspend fun registerNewUser(
-        fullName: String,
-        email: String,
-        password: String
+        registerData: RegisterData
     ): EmptyResult<DataError>
 
-    suspend fun loginUser(email: String, password: String): EmptyResult<DataError>
-    suspend fun requestAccessToken(accessTokenRequest: AccessTokenRequest): AccessTokenResponse?
-    suspend fun isTokenExpired(): Boolean
-    suspend fun logoutUser()
-    suspend fun saveRefreshToken(tokenResponse: LoggedInUserResponse)
-    suspend fun saveRegisteredUser(isRegistered: Boolean)
+    suspend fun loginUser(
+        loginData: LoginData
+    ): EmptyResult<DataError>
+
+    suspend fun requestAccessToken(tokenRequest: AccessTokenRequest): EmptyResult<DataError>
+    suspend fun authenticateToken(): EmptyResult<DataError>
+    suspend fun logoutUser(): EmptyResult<DataError>
 }
 
 @Singleton
 class AuthRepositoryImpl @Inject constructor(
     private val taskyApiService: TaskyApiService,
-    private val appPreferences: TaskyAppPreferences
-) : BaseRepository(), AuthRepository {
+    private val authTokenManager: AuthTokenManager
+) : AuthRepository {
 
     override suspend fun registerNewUser(
-        fullName: String,
-        email: String,
-        password: String
+        registerData: RegisterData
     ): EmptyResult<DataError> {
-        return executeApi {
+        return safeApiCall {
             taskyApiService.registerUser(
-                fullName = fullName,
-                email = email,
-                password = password
+               registerData = registerData
             )
-        }
+        }.asEmptyDataResult()
     }
 
     override suspend fun loginUser(
-        email: String,
-        password: String
+       loginData: LoginData
     ): EmptyResult<DataError> {
-        val result = executeApi {
+        val result = safeApiCall {
             taskyApiService.loginUser(
-                email = email,
-                password = password
+                loginData = loginData
             )
-        }.onSuccess {
-            TODO("save tokens and user info")
+        }.onSuccess { response ->
+            authTokenManager.saveAuthInfo(
+                LoggedInUserResponse(
+                    fullName = response.fullName,
+                    accessToken = response.accessToken,
+                    refreshToken = response.refreshToken,
+                    userId = response.userId,
+                )
+            )
         }
         return result.asEmptyDataResult()
     }
 
-    override suspend fun requestAccessToken(accessTokenRequest: AccessTokenRequest): AccessTokenResponse? {
-        return taskyApiService.getNewAccessToken(accessTokenRequest).body()
-    }
+//    override suspend fun requestAccessToken(
+//        tokenRequest: AccessTokenRequest
+//    ): EmptyResult<DataError> {
+//        val result = safeApiCall {
+//            taskyApiService.getNewAccessToken(
+//               accessTokenRequest = tokenRequest
+//            )
+//        }.onSuccess { response ->
+//            authTokenManager.updateAccessToken(
+//                AccessTokenResponse(
+//                    newAccessToken = response.newAccessToken,
+//                )
+//            )
+//        }
+//        return result.asEmptyDataResult()
+//    }
 
-    override suspend fun isTokenExpired(): Boolean {
-        var responseCode: Int
-        try {
-            responseCode = taskyApiService.authenticateUser().code()
-        } catch (e: Exception) {
-            Log.e(
-                "Parse exception in AuthRepository",
-                "Failed to read authentication response code: ${e.message}"
+    override suspend fun requestAccessToken(
+        tokenRequest: AccessTokenRequest
+    ): EmptyResult<DataError> {
+        val result = safeApiCall {
+            taskyApiService.getNewAccessToken(
+                accessTokenRequest = tokenRequest
             )
-            throw e
+        }.onSuccess {
+            authTokenManager.updateAccessToken(
+                it.newAccessToken,
+                it.expirationTimestamp
+            )
+        }.onSuccess {
+            authenticateToken()
         }
-        return responseCode == 401
+        return result.asEmptyDataResult()
     }
 
-    override suspend fun logoutUser() {
-        taskyApiService.logoutUser()
-        appPreferences.deleteRefreshToken()
+    override suspend fun authenticateToken(): EmptyResult<DataError> {
+        val result = safeApiCall {
+            taskyApiService.authenticateUser()
+        }.onError {
+            requestAccessToken(
+                AccessTokenRequest(
+                    userId = authTokenManager.readUserId(),
+                    refreshToken = authTokenManager.readRefreshToken()
+                )
+            )
+        }
+        return result.asEmptyDataResult()
     }
 
-    override suspend fun saveRefreshToken(tokenResponse: LoggedInUserResponse) {
-        appPreferences.saveAccessToken(tokenResponse.refreshToken)
-    }
+//    override suspend fun authenticateToken(): EmptyResult<DataError> {
+//        val result = safeApiCall {
+//            taskyApiService.authenticateUser()
+//        }
+//        return result.asEmptyDataResult()
+//    }
 
-    override suspend fun saveRegisteredUser(isRegistered: Boolean) {
-        appPreferences.saveUserRegisteredState(isRegistered)
+    override suspend fun logoutUser(): EmptyResult<DataError> {
+        return safeApiCall {
+            taskyApiService.logoutUser()
+        }.onSuccess {
+            authTokenManager.clearRefreshToken()
+        }
     }
 }
