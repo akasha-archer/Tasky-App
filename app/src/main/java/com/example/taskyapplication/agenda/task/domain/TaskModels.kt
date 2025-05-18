@@ -1,4 +1,4 @@
-package com.example.taskyapplication.agenda.task.data
+package com.example.taskyapplication.agenda.task.domain
 
 import com.example.taskyapplication.agenda.data.AgendaItem
 import kotlinx.serialization.SerialName
