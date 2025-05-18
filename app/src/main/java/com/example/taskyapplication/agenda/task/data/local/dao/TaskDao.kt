@@ -2,9 +2,9 @@ package com.example.taskyapplication.agenda.task.data.local.dao
 
 import androidx.room.Dao
 import androidx.room.Delete
-import androidx.room.Insert
 import androidx.room.Query
-import com.example.taskyapplication.agenda.task.data.local.entities.TaskEntity
+import androidx.room.Upsert
+import com.example.taskyapplication.agenda.task.data.local.entity.TaskEntity
 
 @Dao
 interface TaskDao {
@@ -13,16 +13,16 @@ interface TaskDao {
     fun getAllTasks(): List<TaskEntity>
 
     @Query("SELECT * FROM tasks WHERE id = :taskId")
-    fun getTaskById(taskId: String): TaskEntity // to identify task being updated
+    fun getTaskById(taskId: String): TaskEntity
 
     @Query("DELETE FROM tasks WHERE id = :taskId")
     fun deleteTaskById(taskId: String)
 
-    @Insert
-    fun insertTask(taskEntity: TaskEntity)
+    @Upsert
+    fun upsertTask(taskEntity: TaskEntity)
 
-    @Insert
-    fun insertAllTasks(tasks: List<TaskEntity>)
+    @Upsert
+    fun upsertAllTasks(tasks: List<TaskEntity>)
 
     @Delete
     fun deleteAllTasks(tasks: List<TaskEntity>) // to delete all tasks when user logs out

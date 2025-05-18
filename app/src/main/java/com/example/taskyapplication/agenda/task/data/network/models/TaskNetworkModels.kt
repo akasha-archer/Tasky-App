@@ -1,7 +1,6 @@
 package com.example.taskyapplication.agenda.task.data.network.models
 
 import com.example.taskyapplication.agenda.data.AgendaItem
-import com.example.taskyapplication.agenda.task.data.local.entities.TaskEntity
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 
@@ -30,12 +29,3 @@ data class UpdateTaskBody(
     override val reminderTime: Long,
     val isDone: Boolean
 ): AgendaItem
-
-fun TaskNetworkModel.asEntity() = TaskEntity(
-    id = eventId,
-    title = title,
-    description = description,
-    time = startTime,
-    remindAt = reminderTime,
-    isDone = isDone
-)
