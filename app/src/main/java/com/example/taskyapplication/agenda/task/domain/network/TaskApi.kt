@@ -1,8 +1,8 @@
 package com.example.taskyapplication.agenda.task.domain.network
 
-import com.example.taskyapplication.agenda.task.domain.GetTaskResponse
-import com.example.taskyapplication.agenda.task.domain.TaskRequestBody
-import com.example.taskyapplication.agenda.task.domain.UpdateTaskBody
+import com.example.taskyapplication.agenda.task.domain.model.GetTaskResponse
+import com.example.taskyapplication.agenda.task.data.network.models.TaskNetworkModel
+import com.example.taskyapplication.agenda.task.data.network.models.UpdateTaskBody
 import retrofit2.Response
 import retrofit2.http.Body
 import retrofit2.http.DELETE
@@ -14,7 +14,7 @@ import retrofit2.http.Query
 interface TaskApi {
     @POST("/task")
     suspend fun createNewTask(
-        @Body request: TaskRequestBody
+        @Body request: TaskNetworkModel
     ): Response<Unit>
 
     @PUT("/task")

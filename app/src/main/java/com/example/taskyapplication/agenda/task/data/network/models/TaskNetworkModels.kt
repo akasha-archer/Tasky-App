@@ -1,19 +1,20 @@
-package com.example.taskyapplication.agenda.task.domain
+package com.example.taskyapplication.agenda.task.data.network.models
 
 import com.example.taskyapplication.agenda.data.AgendaItem
+import com.example.taskyapplication.agenda.task.data.local.entities.TaskEntity
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 
 @Serializable
-data class TaskRequestBody(
+data class TaskNetworkModel(
     @SerialName("id")
     override val eventId: String,
     override val title: String,
     override val description: String,
     @SerialName("time")
-    override val startTime: String,
+    override val startTime: Long,
     @SerialName("remindAt")
-    override val reminderTime: String,
+    override val reminderTime: Long,
     val isDone: Boolean
 ): AgendaItem
 
@@ -24,9 +25,17 @@ data class UpdateTaskBody(
     override val title: String,
     override val description: String,
     @SerialName("time")
-    override val startTime: String,
+    override val startTime: Long,
     @SerialName("remindAt")
-    override val reminderTime: String,
+    override val reminderTime: Long,
     val isDone: Boolean
 ): AgendaItem
 
+fun TaskNetworkModel.asEntity() = TaskEntity(
+    id = eventId,
+    title = title,
+    description = description,
+    time = startTime,
+    remindAt = reminderTime,
+    isDone = isDone
+)

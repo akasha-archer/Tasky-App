@@ -25,6 +25,7 @@ splashscreen = "1.0.1"
 composeNavigation = "2.9.0"
 hiltNavigation = "1.2.0"
 composeRuntime = "1.8.0"
+roomVersion = "2.7.1"
 
 [libraries]
 androidx-activity = { module = "androidx.activity:activity", version.ref = "activity" }
@@ -59,6 +60,8 @@ androidx-core-splashscreen = { group = "androidx.core", name = "core-splashscree
 androidx-navigation-compose = { module = "androidx.navigation:navigation-compose",   version.ref="composeNavigation"}
 androidx-compose-runtime = { group = "androidx.compose.runtime", name = "runtime", version.ref="composeRuntime"}
 androidx-compose-runtime-livedata = { group = "androidx.compose.runtime", name = "runtime-livedata", version.ref="composeRuntime"}
+room-compiler = { group = "androidx.room", name = "room-compiler", version.ref="roomVersion"}
+androidx-room = { group = "androidx.room", name = "room-ktx", version.ref="roomVersion"}
 
 [plugins]
 android-application = { id = "com.android.application", version.ref = "agp" }
