@@ -33,6 +33,7 @@ import com.example.taskyapplication.ui.theme.TaskyTypography
 fun ReminderTimeRow(
     modifier: Modifier = Modifier,
     isEditing: Boolean = false,
+    reminderTime: String = "30 minutes before",
     onEditReminderTime: () -> Unit
 ) {
     Row(
@@ -61,7 +62,7 @@ fun ReminderTimeRow(
             textItem = {
                 Text(
                     modifier = Modifier.padding(start = 8.dp),
-                    text = "30 minutes before",
+                    text = reminderTime,
                     style = TaskyTypography.bodyMedium,
                     color = taskyColors.onSurface
                 )

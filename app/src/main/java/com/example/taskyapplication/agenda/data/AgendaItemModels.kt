@@ -1,5 +1,7 @@
 package com.example.taskyapplication.agenda.data
 
+import android.os.Parcelable
+import kotlinx.parcelize.Parcelize
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 import java.util.UUID
@@ -38,12 +40,13 @@ data class UpdateTaskData(
     val isDone: Boolean
 ): AgendaItem
 
+@Parcelize
 data class TaskState(
     val taskId: String? =  UUID.randomUUID().toString(),
     val taskTitle: String = "",
     val taskDescription: String = "",
-    val taskStartTime: String = "",
-    val taskStartDate: String = "",
+    val taskStartTime: Long = 0L,
+    val taskStartDate: Long = 0L,
     val taskReminderTime: String = "",
     val isTaskDone: Boolean = false,
-)
+): Parcelable

@@ -63,8 +63,8 @@ fun AgendaDescriptionText(
             text = agendaItemDescription,
             textAlign = TextAlign.Left,
             overflow = TextOverflow.Ellipsis,
-            style = TaskyTypography.bodyMedium,
-            color = taskyColors.primary
+            style = TaskyTypography.bodyMedium
+                .copy(color = taskyColors.primary),
         )
         if (isEditing) {
             Icon(

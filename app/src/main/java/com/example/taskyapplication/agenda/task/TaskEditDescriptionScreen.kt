@@ -4,6 +4,7 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
+import androidx.compose.material.TextField
 import androidx.compose.material.TextFieldDefaults.textFieldColors
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -13,10 +14,10 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import com.example.taskyapplication.agenda.data.TaskState
 import com.example.taskyapplication.agenda.presentation.components.AgendaScreenDivider
 import com.example.taskyapplication.agenda.presentation.components.EditInputHeader
 import com.example.taskyapplication.main.components.TaskyBaseScreen
+import com.example.taskyapplication.main.components.TaskyScaffold
 import com.example.taskyapplication.ui.theme.TaskyDesignSystem.Companion.taskyColors
 import com.example.taskyapplication.ui.theme.TaskyTypography
 
@@ -29,12 +30,16 @@ fun EditDescriptionRoot(
 ) {
     val taskState by viewModel.taskState.collectAsStateWithLifecycle()
 
-    EditTaskDescription(
+    TaskyScaffold(
         modifier = modifier,
-        taskState = taskState,
-        onUpdateDescription = { viewModel.updateDescriptionText(it) },
-        onClickSave = { onClickSave(taskState.taskDescription) },
-        onClickCancel = onClickCancel
+        mainContent = { padding ->
+            EditTaskDescription(
+                modifier = modifier
+                    .padding(padding),
+                onClickSave = { onClickSave(taskState.taskDescription) },
+                onClickCancel = onClickCancel
+            )
+        }
     )
 }
 
@@ -42,11 +47,12 @@ fun EditDescriptionRoot(
 fun EditTaskDescription(
     modifier: Modifier = Modifier,
     itemToEdit: String = "Description",
-    taskState: TaskState,
-    onUpdateDescription: (String) -> Unit = {},
     onClickSave: (String) -> Unit = {},
-    onClickCancel: () -> Unit = {}
+    onClickCancel: () -> Unit = {},
+    viewModel: TaskViewModel = hiltViewModel()
 ) {
+    val taskState by viewModel.taskState.collectAsStateWithLifecycle()
+
     TaskyBaseScreen(
         modifier = modifier,
         isAgendaEditScreen = true,
@@ -61,7 +67,6 @@ fun EditTaskDescription(
                     itemToEdit = itemToEdit.uppercase(),
                     onClickSave = {
                         onClickSave(taskState.taskTitle)
-                        // save text and reflect changes in title text view
                     },
                     onClickCancel = {
                         onClickCancel()
@@ -77,13 +82,13 @@ fun EditTaskDescription(
                     .padding()
                     .background(color = Color.White),
             ) {
-                androidx.compose.material.TextField(
+                TextField(
                     modifier = Modifier
                         .padding(horizontal = 24.dp, vertical = 32.dp)
                         .fillMaxSize(),
                     value = taskState.taskDescription,
                     onValueChange = {
-                        onUpdateDescription(it)
+                       viewModel.updateDescriptionText(it)
                     },
                     textStyle = TaskyTypography.bodyLarge.copy(color = taskyColors.onPrimary),
                     colors = textFieldColors(
@@ -101,7 +106,5 @@ fun EditTaskDescription(
 @Preview(showBackground = true)
 @Composable
 fun EditTaskDescriptionPreview() {
-    EditTaskDescription(
-        taskState = TaskState(),
-    )
+    EditTaskDescription()
 }

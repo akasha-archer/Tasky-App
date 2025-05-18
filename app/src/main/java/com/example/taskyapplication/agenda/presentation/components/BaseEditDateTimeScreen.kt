@@ -20,6 +20,10 @@ import com.example.taskyapplication.agenda.presentation.AgendaItem
 import com.example.taskyapplication.main.components.TaskyBaseScreen
 import com.example.taskyapplication.ui.theme.TaskyDesignSystem.Companion.taskyColors
 import com.example.taskyapplication.ui.theme.TaskyTypography
+import java.time.LocalDate
+import java.time.LocalTime
+import java.time.format.DateTimeFormatter
+import java.time.format.FormatStyle
 
 @RequiresApi(Build.VERSION_CODES.O)
 @Composable
@@ -30,10 +34,19 @@ fun BaseEditDateTimeScreen(
     agendaItemDescription: String = "",
     onSelectTitleEdit: () -> Unit = {},
     onSelectDescriptionEdit: () -> Unit = {},
-    onEditDate: () -> Unit = {},
-    onEditTime: () -> Unit = {},
+    onSelectEditDate: () -> Unit = {},
+    onSelectEditTime: () -> Unit = {},
     onSelectReminderTime: () -> Unit = {},
-    onSelectDelete: () -> Unit = {}
+    onSelectDelete: () -> Unit = {},
+    onClickSave: () -> Unit = {},
+    onClickCancel: () -> Unit = {},
+    selectedDate: String = LocalDate.now().format(
+        DateTimeFormatter.ofLocalizedDate(FormatStyle.MEDIUM)
+    ),
+    selectedTime: String = LocalTime.now().format(
+        DateTimeFormatter.ofLocalizedTime(FormatStyle.SHORT)),
+    launchDatePicker: (@Composable () -> Unit)? = null,
+    launchTimePicker: (@Composable () -> Unit)? = null,
 ) {
     Column(
         modifier = modifier
@@ -44,10 +57,10 @@ fun BaseEditDateTimeScreen(
                 EditScreenHeader(
                     itemToEdit = "Reminder",
                     onClickSave = {
-                        // save date and time updates
+                        onClickSave()
                     },
                     onClickCancel = {
-                        // back to detail screen
+                        onClickCancel()
                     }
                 )
             },
@@ -106,11 +119,13 @@ fun BaseEditDateTimeScreen(
                             agendaItemStartTime = {
                                 EditItemDateTime(
                                     onClickDate = {
-                                        onEditDate()
+                                        onSelectEditDate()
                                     },
                                     onClickTime = {
-                                        onEditTime()
+                                        onSelectEditTime()
                                     },
+                                    date = selectedDate,
+                                    time = selectedTime
                                 )
                             },
                             agendaItemReminderTime = {
@@ -134,6 +149,12 @@ fun BaseEditDateTimeScreen(
                 }
             }
         )
+        if (launchDatePicker != null) {
+            launchDatePicker()
+        }
+        if (launchTimePicker != null) {
+            launchTimePicker()
+        }
     }
 }
 
@@ -146,6 +167,12 @@ fun BaseDateTimeEditScreenPreview() {
         agendaItemTitle = "Sample Task",
         agendaItemDescription = "This is a sample task description" +
                 " \n Second line of description" +
-                "\n Third line of description"
+                "\n Third line of description",
+        selectedDate = LocalDate.now().format(
+            DateTimeFormatter.ofLocalizedDate(FormatStyle.MEDIUM)
+        ),
+        selectedTime = LocalTime.now().format(
+            DateTimeFormatter.ofLocalizedTime(FormatStyle.SHORT)
+        )
     )
 }

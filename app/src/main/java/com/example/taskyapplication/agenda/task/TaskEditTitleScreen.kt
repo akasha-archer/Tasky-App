@@ -14,7 +14,6 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import com.example.taskyapplication.agenda.data.TaskState
 import com.example.taskyapplication.agenda.presentation.components.AgendaScreenDivider
 import com.example.taskyapplication.agenda.presentation.components.EditInputHeader
 import com.example.taskyapplication.main.components.TaskyBaseScreen
@@ -29,16 +28,17 @@ fun EditTaskTitleRoot(
     onClickCancel: () -> Unit = {},
     viewModel: TaskViewModel = hiltViewModel()
 ) {
-    val taskState by viewModel.taskState.collectAsStateWithLifecycle()
     TaskyScaffold(
         modifier = modifier,
-        mainContent = {
+        mainContent = { padding ->
             EditTaskTitle(
-                modifier = modifier,
-                taskState = taskState,
-                onUpdateTitle = { viewModel.updateTitleText(it) },
-                onClickSave = { onClickSave(taskState.taskTitle) },
-                onClickCancel = onClickCancel
+                modifier = modifier
+                    .padding(padding),
+                onClickSave = { title ->
+                    onClickSave(title)
+                    viewModel.updateTitleText(title)
+                },
+                onClickCancel = onClickCancel,
             )
         }
     )
@@ -48,11 +48,12 @@ fun EditTaskTitleRoot(
 fun EditTaskTitle(
     modifier: Modifier = Modifier,
     itemToEdit: String = "Title",
-    taskState: TaskState,
-    onUpdateTitle: (String) -> Unit = {},
     onClickSave: (String) -> Unit = {},
     onClickCancel: () -> Unit = {},
+    viewModel: TaskViewModel = hiltViewModel()
 ) {
+    val taskState by viewModel.taskState.collectAsStateWithLifecycle()
+
     TaskyBaseScreen(
         modifier = modifier,
         isAgendaEditScreen = true,
@@ -66,8 +67,7 @@ fun EditTaskTitle(
                 EditInputHeader(
                     itemToEdit = itemToEdit.uppercase(),
                     onClickSave = {
-                        onClickSave(taskState.taskTitle)
-                        // save text and reflect changes in title text view
+                        onClickSave(it)
                     },
                     onClickCancel = {
                         onClickCancel()
@@ -88,8 +88,8 @@ fun EditTaskTitle(
                         .padding(horizontal = 24.dp, vertical = 32.dp)
                         .fillMaxSize(),
                     value = taskState.taskTitle,
-                    onValueChange = {
-                        onUpdateTitle(it)
+                    onValueChange = { title ->
+                        viewModel.updateTitleText(title)
                     },
                     textStyle = TaskyTypography.bodyLarge.copy(color = taskyColors.primary),
                     colors = textFieldColors(
@@ -108,6 +108,6 @@ fun EditTaskTitle(
 @Composable
 fun EditTaskTitlePreview() {
     EditTaskTitle(
-        taskState = TaskState(),
+//        taskState = TaskState(),
     )
 }

@@ -54,7 +54,7 @@ fun AgendaItemScreenHeader(
 fun EditInputHeader(
     modifier: Modifier = Modifier,
     itemToEdit: String,
-    onClickSave: () -> Unit,
+    onClickSave: (String) -> Unit,
     onClickCancel: () -> Unit
 ) {
     AgendaItemScreenHeader(
@@ -79,7 +79,7 @@ fun EditInputHeader(
         thirdItem = {
             Text(
                 modifier = Modifier
-                    .clickable { onClickSave() },
+                    .clickable { onClickSave },
                 text = "Save",
                 color = taskyColors.validInput,
                 style = TaskyTypography.labelSmall
