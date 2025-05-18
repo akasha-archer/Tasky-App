@@ -5,6 +5,8 @@ import com.example.taskyapplication.BuildConfig
 import com.example.taskyapplication.auth.domain.AuthRepository
 import com.example.taskyapplication.auth.domain.AuthRepositoryImpl
 import com.example.taskyapplication.auth.domain.AuthTokenManager
+import com.example.taskyapplication.MainRepository
+import com.example.taskyapplication.MainRepositoryImpl
 import com.example.taskyapplication.network.TaskyApiService
 import com.jakewharton.retrofit2.converter.kotlinx.serialization.asConverterFactory
 import dagger.Module
@@ -33,20 +35,19 @@ object NetworkModule {
     @Provides
     @Singleton
     fun provideOkHttpClient(
-        tokenManager: AuthTokenManager,
-
+        authTokenManager: AuthTokenManager
     ): OkHttpClient {
         return OkHttpClient.Builder()
-            .addInterceptor(AuthInterceptor(tokenManager))
+            .addInterceptor(AuthInterceptor(authTokenManager))
             .build()
     }
 
     @Singleton
     @Provides
-    fun provideTaskyApi(tokenManager: AuthTokenManager): TaskyApiService {
+    fun provideTaskyApi(authTokenManager: AuthTokenManager): TaskyApiService {
         return Retrofit.Builder()
             .baseUrl(BuildConfig.BASE_URL)
-            .client(provideOkHttpClient(tokenManager))
+            .client(provideOkHttpClient(authTokenManager))
             .addConverterFactory(
                 json.asConverterFactory(
                     "application/json".toMediaType()
@@ -66,17 +67,26 @@ object NetworkModule {
             taskyApiService,
             authTokenManager
         )
+
+    @Singleton
+    @Provides
+    fun provideMainRepository(
+        taskyApiService: TaskyApiService
+    ): MainRepository =
+        MainRepositoryImpl(
+            taskyApiService
+        )
 }
 
-class AuthInterceptor(private val tokenManager: AuthTokenManager) : Interceptor {
+class AuthInterceptor(val authTokenManager: AuthTokenManager) : Interceptor {
     override fun intercept(chain: Interceptor.Chain): Response {
         val request: Request = chain.request()
-        val accessToken = runBlocking {
-            tokenManager.readAccessToken()
+        val token = runBlocking {
+            authTokenManager.readAccessToken()
         }
         val newRequest = request.newBuilder()
-            .header("Authorization", "Bearer $accessToken")
             .header("x-api-key", BuildConfig.API_KEY)
+            .header("Authorization", "Bearer $token")
             .build()
 
         val response = chain.proceed(newRequest)
@@ -86,6 +96,9 @@ class AuthInterceptor(private val tokenManager: AuthTokenManager) : Interceptor 
             }
             400, 401, 403, 404 -> {
                 Log.e("Tasky API ${response.code} error", "$response")
+            }
+            in 500..599 -> {
+                Log.e("Tasky API server error: ${response.code}", "$response")
             }
         }
         return response

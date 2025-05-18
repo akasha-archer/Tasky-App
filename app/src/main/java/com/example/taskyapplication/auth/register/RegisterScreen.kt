@@ -48,6 +48,7 @@ fun RegisterScreenRoot(
                     "Registration Successful! You can now log in.",
                     Toast.LENGTH_SHORT
                 ).show()
+                onRegisterSuccess()
             }
             is RegistrationEvent.RegistrationError -> {
                 keyboardController?.hide()
@@ -56,7 +57,6 @@ fun RegisterScreenRoot(
                     event.errorMessage,
                     Toast.LENGTH_SHORT
                 ).show()
-                onRegisterSuccess()
             }
         }
     }
