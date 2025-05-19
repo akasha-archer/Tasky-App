@@ -1,8 +1,10 @@
 package com.example.taskyapplication.agenda.task.data
 
 import com.example.taskyapplication.agenda.task.data.network.models.TaskNetworkModel
-import com.example.taskyapplication.agenda.task.data.network.models.TaskRemoteDataSource
 import com.example.taskyapplication.agenda.task.data.network.models.UpdateTaskBody
+import com.example.taskyapplication.agenda.task.domain.TaskLocalDataSource
+import com.example.taskyapplication.agenda.task.domain.TaskRemoteDataSource
+import com.example.taskyapplication.agenda.task.domain.TaskRepository
 import com.example.taskyapplication.agenda.task.domain.network.TaskApiService
 import com.example.taskyapplication.domain.utils.DataError
 import com.example.taskyapplication.domain.utils.EmptyResult
