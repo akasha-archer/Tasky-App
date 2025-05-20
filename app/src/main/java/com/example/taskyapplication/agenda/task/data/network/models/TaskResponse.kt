@@ -1,4 +1,4 @@
-package com.example.taskyapplication.agenda.task.domain.model
+package com.example.taskyapplication.agenda.task.data.network.models
 
 data class GetTaskResponse(
     val id: String,

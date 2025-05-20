@@ -1,4 +1,4 @@
-package com.example.taskyapplication.agenda.task.domain.model
+package com.example.taskyapplication.agenda.task.presentation
 
 data class TaskUiState(
     val id: String,

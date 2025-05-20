@@ -1,7 +1,7 @@
 package com.example.taskyapplication.agenda.task.domain
 
 import com.example.taskyapplication.agenda.task.data.network.models.TaskNetworkModel
-import com.example.taskyapplication.agenda.task.domain.model.GetTaskResponse
+import com.example.taskyapplication.agenda.task.data.network.models.GetTaskResponse
 import com.example.taskyapplication.agenda.task.domain.network.TaskApiService
 import com.example.taskyapplication.domain.utils.DataError
 import com.example.taskyapplication.domain.utils.EmptyResult

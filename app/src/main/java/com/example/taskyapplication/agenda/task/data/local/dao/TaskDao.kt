@@ -10,20 +10,20 @@ import com.example.taskyapplication.agenda.task.data.local.entity.TaskEntity
 interface TaskDao {
 
     @Query("SELECT * FROM tasks")
-    fun getAllTasks(): List<TaskEntity>
+    suspend fun getAllTasks(): List<TaskEntity>
 
     @Query("SELECT * FROM tasks WHERE id = :taskId")
-    fun getTaskById(taskId: String): TaskEntity
+    suspend fun getTaskById(taskId: String): TaskEntity
 
     @Query("DELETE FROM tasks WHERE id = :taskId")
-    fun deleteTaskById(taskId: String)
+    suspend fun deleteTaskById(taskId: String)
 
     @Upsert
-    fun upsertTask(taskEntity: TaskEntity)
+    suspend fun upsertTask(taskEntity: TaskEntity)
 
     @Upsert
-    fun upsertAllTasks(tasks: List<TaskEntity>)
+    suspend fun upsertAllTasks(tasks: List<TaskEntity>)
 
-    @Delete
-    fun deleteAllTasks(tasks: List<TaskEntity>) // to delete all tasks when user logs out
+    @Query("DELETE FROM tasks")
+    suspend fun deleteAllTasks() // to delete all tasks when user logs out
 }

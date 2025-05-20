@@ -1,6 +1,6 @@
 package com.example.taskyapplication.agenda.task.data.network.models
 
-import com.example.taskyapplication.agenda.data.AgendaItem
+import com.example.taskyapplication.agenda.data.model.AgendaItem
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 

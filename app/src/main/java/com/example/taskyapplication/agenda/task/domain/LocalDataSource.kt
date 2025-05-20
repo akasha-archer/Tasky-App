@@ -1,7 +1,7 @@
 package com.example.taskyapplication.agenda.task.domain
 
 import com.example.taskyapplication.agenda.task.data.local.dao.TaskDao
-import com.example.taskyapplication.agenda.task.domain.model.TaskUiState
+import com.example.taskyapplication.agenda.task.presentation.TaskUiState
 import kotlinx.coroutines.flow.Flow
 import javax.inject.Inject
 

@@ -1,4 +1,4 @@
-package com.example.taskyapplication.agenda.data
+package com.example.taskyapplication.agenda.data.model
 
 interface AgendaItem {
     val eventId: String
