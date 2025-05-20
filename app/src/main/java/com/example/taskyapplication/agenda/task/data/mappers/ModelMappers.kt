@@ -5,6 +5,7 @@ import androidx.annotation.RequiresApi
 import com.example.taskyapplication.agenda.task.data.local.entity.TaskEntity
 import com.example.taskyapplication.agenda.task.data.network.models.GetTaskResponse
 import com.example.taskyapplication.agenda.task.data.network.models.TaskNetworkModel
+import com.example.taskyapplication.agenda.task.data.network.models.UpdateTaskBody
 import com.example.taskyapplication.agenda.task.presentation.TaskUiState
 import java.time.Instant
 import java.time.LocalDateTime
@@ -33,7 +34,17 @@ fun TaskEntity.asTask() = TaskUiState(
 
 @RequiresApi(Build.VERSION_CODES.O)
 fun TaskUiState.asTaskNetworkModel() = TaskNetworkModel(
-    eventId = id,
+    itemId = id,
+    title = title,
+    description = description,
+    startTime = convertDateAndTimeStringsToLong(time, date),
+    reminderTime = 0L,
+    isDone = isDone
+)
+
+@RequiresApi(Build.VERSION_CODES.O)
+fun TaskUiState.asUpdateTaskModel() = UpdateTaskBody(
+    itemId = id,
     title = title,
     description = description,
     startTime = convertDateAndTimeStringsToLong(time, date),

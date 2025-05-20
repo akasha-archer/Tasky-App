@@ -17,9 +17,6 @@ interface LocalDataSource {
 class TaskLocalDataSource @Inject constructor(
     private val dao: TaskDao
 ) : LocalDataSource {
-    override fun getTasks(): Flow<List<TaskUiState>> {
-        TODO("Not yet implemented")
-    }
 
     override suspend fun upsertTask(task: TaskUiState) {
         TODO("Not yet implemented")
@@ -30,6 +27,10 @@ class TaskLocalDataSource @Inject constructor(
     }
 
     override suspend fun getTask(taskId: String): TaskUiState {
+        TODO("Not yet implemented")
+    }
+
+    override fun getTasks(): Flow<List<TaskUiState>> {
         TODO("Not yet implemented")
     }
 

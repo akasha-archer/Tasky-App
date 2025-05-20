@@ -37,14 +37,12 @@ class TaskViewModel @Inject constructor(
                if (newTitle.isBlank() || newDescription.isBlank()) {
                    return
                }
-
                val newTaskId: String = UUID.randomUUID().toString()
                _uiState.update {
                    it.copy(
                        id = newTaskId
                    )
                }
-
                val taskUiState = TaskUiState(
                    id = newTaskId,
                    title = newTitle,
@@ -53,93 +51,84 @@ class TaskViewModel @Inject constructor(
                    date = taskDate,
                    remindAt = reminderTime
                )
-
                viewModelScope.launch {
                    repository.createNewTask(
                        taskUiState.asTaskNetworkModel()
                    )
                }
                _uiState.update {
-                   it.copy(
-                       isEditingItem = false
-                   )
+                   it.copy(isEditingItem = false)
                }
             }
             is AgendaItemAction.SetTitle -> {
-                _uiState.update {
-                    it.copy(
-                        title = action.title
-                    )
+                _uiState.update { it.copy(title = action.title)
                 }
             }
             is AgendaItemAction.SetDate -> {
-                _uiState.update {
-                    it.copy(
-                        date = action.date
-                    )
+                _uiState.update { it.copy(date = action.date)
                 }
             }
             is AgendaItemAction.SetDescription -> {
-                _uiState.update {
-                    it.copy(
-                        description = action.description
-                    )
+                _uiState.update { it.copy(description = action.description)
                 }
             }
             is AgendaItemAction.SetReminderTime -> {
                 _uiState.update {
-                    it.copy(
-                        remindAt = action.reminder
-                    )
+                    it.copy(remindAt = action.reminder)
                 }
             }
             is AgendaItemAction.SetTime -> {
                 _uiState.update {
-                    it.copy(
-                        time = action.time
-                    )
+                    it.copy(time = action.time)
                 }
             }
             AgendaItemAction.ShowDatePicker -> {
                 _uiState.update {
-                    it.copy(
-                        isEditingItem = true
-                    )
+                    it.copy(isEditingItem = true)
                 }
             }
             AgendaItemAction.HideDatePicker -> {
                 _uiState.update {
-                    it.copy(
-                        isEditingItem = false
-                    )
+                    it.copy(isEditingItem = false)
                 }
             }
             AgendaItemAction.ShowReminderDropDown -> {
                 _uiState.update {
-                    it.copy(
-                        isEditingItem = true
-                    )
-                }
+                    it.copy(isEditingItem = true) }
             }
             AgendaItemAction.HideReminderDropDown -> {
                 _uiState.update {
-                    it.copy(
-                        isEditingItem = false
-                    )
+                    it.copy(isEditingItem = false)
                 }
             }
             AgendaItemAction.ShowTimePicker -> {
                 _uiState.update {
-                    it.copy(
-                        isEditingItem = true
-                    )
+                    it.copy(isEditingItem = true)
                 }
             }
             AgendaItemAction.HideTimePicker -> {
                 _uiState.update {
-                    it.copy(
-                        isEditingItem = false
-                    )
+                    it.copy(isEditingItem = false)
+                }
+            }
+            AgendaItemAction.CloseEditDescriptionScreen -> {
+                _uiState.update {
+                    it.copy(isEditingItem = false)
+                }
+            }
+            AgendaItemAction.CloseEditTitleScreen -> {
+                _uiState.update {
+                    it.copy(isEditingItem = false)
+                }
+            }
+            AgendaItemAction.LaunchEditDescriptionScreen -> {
+                _uiState.update {
+                    it.copy(isEditingItem = true)
+                }
+            }
+            AgendaItemAction.LaunchEditTitleScreen -> {
+                _uiState.update {
+                    it.copy(isEditingItem = true)
                 }
             }
         }
