@@ -5,6 +5,7 @@ import androidx.room.Delete
 import androidx.room.Query
 import androidx.room.Upsert
 import com.example.taskyapplication.agenda.task.data.local.entity.TaskEntity
+import com.example.taskyapplication.agenda.task.presentation.TaskUiState
 
 @Dao
 interface TaskDao {

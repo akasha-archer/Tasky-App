@@ -22,6 +22,17 @@ fun GetTaskResponse.asEntity() = TaskEntity(
 )
 
 @RequiresApi(Build.VERSION_CODES.O)
+fun GetTaskResponse.asTaskUi() = TaskUiState(
+    id = id,
+    title = title,
+    description = description,
+    time = time.toDateTime().toFormattedTime(),
+    date = time.toDateTime().toFormattedDate(),
+    remindAt = remindAt,
+    isDone = isDone
+)
+
+@RequiresApi(Build.VERSION_CODES.O)
 fun TaskEntity.asTask() = TaskUiState(
     id = id,
     title = title,
