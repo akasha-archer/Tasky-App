@@ -7,7 +7,7 @@ import com.example.taskyapplication.domain.utils.asEmptyDataResult
 import com.example.taskyapplication.domain.utils.onError
 import com.example.taskyapplication.domain.utils.onSuccess
 import com.example.taskyapplication.domain.utils.safeApiCall
-import com.example.taskyapplication.network.TaskyApiService
+import com.example.taskyapplication.network.AuthApiService
 import javax.inject.Inject
 import javax.inject.Singleton
 
@@ -27,7 +27,7 @@ interface AuthRepository {
 
 @Singleton
 class AuthRepositoryImpl @Inject constructor(
-    private val taskyApiService: TaskyApiService,
+    private val authApiService: AuthApiService,
     private val authTokenManager: AuthTokenManager
 ) : AuthRepository {
 
@@ -35,7 +35,7 @@ class AuthRepositoryImpl @Inject constructor(
         registerData: RegisterData
     ): EmptyResult<DataError> {
         return safeApiCall {
-            taskyApiService.registerUser(
+            authApiService.registerUser(
                registerData = registerData
             )
         }.asEmptyDataResult()
@@ -45,7 +45,7 @@ class AuthRepositoryImpl @Inject constructor(
        loginData: LoginData
     ): EmptyResult<DataError> {
         val result = safeApiCall {
-            taskyApiService.loginUser(
+            authApiService.loginUser(
                 loginData = loginData
             )
         }.onSuccess { response ->
@@ -82,7 +82,7 @@ class AuthRepositoryImpl @Inject constructor(
         tokenRequest: AccessTokenRequest
     ): EmptyResult<DataError> {
         val result = safeApiCall {
-            taskyApiService.getNewAccessToken(
+            authApiService.getNewAccessToken(
                 accessTokenRequest = tokenRequest
             )
         }.onSuccess {
@@ -98,7 +98,7 @@ class AuthRepositoryImpl @Inject constructor(
 
     override suspend fun authenticateToken(): EmptyResult<DataError> {
         val result = safeApiCall {
-            taskyApiService.authenticateUser()
+            authApiService.authenticateUser()
         }.onError {
             requestAccessToken(
                 AccessTokenRequest(
@@ -119,7 +119,7 @@ class AuthRepositoryImpl @Inject constructor(
 
     override suspend fun logoutUser(): EmptyResult<DataError> {
         return safeApiCall {
-            taskyApiService.logoutUser()
+            authApiService.logoutUser()
         }.onSuccess {
             authTokenManager.clearRefreshToken()
         }
