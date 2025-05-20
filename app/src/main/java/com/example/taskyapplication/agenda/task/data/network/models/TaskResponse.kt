@@ -4,7 +4,7 @@ data class GetTaskResponse(
     val id: String,
     val title: String,
     val description: String,
-    val time: String,
-    val remindAt: String,
+    val time: Long,
+    val remindAt: Long,
     val isDone: Boolean
 )

@@ -4,7 +4,8 @@ data class TaskUiState(
     val id: String,
     val title: String,
     val description: String,
-    val time: Long,
+    val time: String,
+    val date: String,
     val remindAt: Long,
     val isDone: Boolean
 )
