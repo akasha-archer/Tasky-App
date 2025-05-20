@@ -5,7 +5,6 @@ import androidx.annotation.RequiresApi
 import java.text.SimpleDateFormat
 import java.time.Instant
 import java.time.LocalDate
-import java.time.LocalDateTime
 import java.time.LocalTime
 import java.time.ZoneId
 import java.time.format.DateTimeFormatter
@@ -26,6 +25,7 @@ fun String.timeAsLong(): Long {
     val simpleDate = SimpleDateFormat("HH:mm", Locale.getDefault())
     return simpleDate.parse(this)?.time
         ?: throw IllegalArgumentException("Invalid time string or pattern")
+
 //    val selectedDate = LocalDate.parse(
 //        this,
 //        DateTimeFormatter.ofPattern("hh:mm")
@@ -33,7 +33,6 @@ fun String.timeAsLong(): Long {
 //    return selectedDate.atStartOfDay(ZoneId.systemDefault()).toInstant().toEpochMilli()
 }
 
-//Convert date and time to long
 // https://stackoverflow.com/questions/26637168/how-to-convert-a-date-to-milliseconds
 // https://stackoverflow.com/questions/76323246/unable-to-obtain-localdate-from-temporalaccessor
 
@@ -41,47 +40,28 @@ fun String.timeAsLong(): Long {
 *
 * String myDate = "2014/10/29 18:10:45";
 LocalDateTime localDateTime = LocalDateTime.parse(myDate,
-    DateTimeFormatter.ofPattern("yyyy/MM/dd HH:mm:ss") );
+    DateTimeFormatter.ofPattern("yyyy/MM/dd HH:mm:ss") )
+    ;
+ */
 /*
   With this new Date/Time API, when using a date, you need to
   specify the Zone where the date/time will be used. For your case,
   seems that you want/need to use the default zone of your system.
   Check which zone you need to use for specific behaviour e.g.
   CET or America/Lima
-*/
-long millis = localDateTime
+
+
+  long millis = localDateTime
     .atZone(ZoneId.systemDefault())
     .toInstant().toEpochMilli();
+*/
 
-* */
+
 
 // Combine date and time strings and convert to LocalDateTime
 
 
 // Convert LocalDateTime to Long
-
-// Convert time Response to LocalDateTime Object
-@RequiresApi(Build.VERSION_CODES.O)
-fun Long.toDateTime(): LocalDateTime = LocalDateTime.ofInstant(
-    Instant.ofEpochMilli(this),
-    ZoneId.systemDefault()
-)
-
-// Extract date from LocalDateTime object and format as String
-@RequiresApi(Build.VERSION_CODES.O)
-fun LocalDateTime.toFormattedDate(): String =
-    this.toLocalDate()
-        .format(DateTimeFormatter.ofPattern(
-            "dd MMM yyyy")
-        )
-
-// Extract time from LocalDateTime object and format as String
-@RequiresApi(Build.VERSION_CODES.O)
-fun LocalDateTime.toFormattedTime(): String =
-    this.toLocalTime()
-        .format(DateTimeFormatter.ofPattern(
-            "h:mm a")
-        )
 
 
 //val currMoment = LocalDateTime.now()
