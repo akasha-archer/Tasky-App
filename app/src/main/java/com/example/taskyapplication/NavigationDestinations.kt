@@ -6,6 +6,8 @@ import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import com.example.taskyapplication.agenda.presentation.AgendaScreen
+import com.example.taskyapplication.agenda.task.presentation.components.DetailTest
+import com.example.taskyapplication.agenda.task.presentation.components.Edit1
 import com.example.taskyapplication.auth.login.LoginScreenRoot
 import com.example.taskyapplication.auth.register.RegisterScreenRoot
 import kotlinx.serialization.Serializable
@@ -20,12 +22,34 @@ fun NavigationRoot(
     NavHost(
         modifier = modifier,
         navController = navController,
-        startDestination = when {
-            isLoggedIn -> NavigationRoutes.AgendaScreen
-            isUserRegistered -> NavigationRoutes.LoginScreen
-            else -> NavigationRoutes.RegisterScreen
-        }
+        startDestination = NavigationRoutes.TaskScreen
+//            when {
+//            isLoggedIn -> NavigationRoutes.AgendaScreen
+//            isUserRegistered -> NavigationRoutes.LoginScreen
+//            else -> NavigationRoutes.RegisterScreen
+//        }
     ) {
+
+        composable<NavigationRoutes.TaskScreen> {
+            DetailTest(
+                onClickNext = {
+                    navController.navigate(NavigationRoutes.EditScreen)
+                },
+            )
+        }
+
+        composable<NavigationRoutes.EditScreen> {
+            Edit1(
+                onClickCancel = {
+                    navController.popBackStack()
+                },
+                onDoneEdit = {
+                    navController.popBackStack()
+                },
+                onAction = {}
+            )
+        }
+
         composable<NavigationRoutes.RegisterScreen> {
             RegisterScreenRoot(
                 onLoginClick = {
@@ -71,6 +95,7 @@ fun NavigationRoot(
 }
 
 sealed interface NavigationRoutes {
+
     @Serializable
     data object LoginScreen : NavigationRoutes
 
@@ -85,6 +110,9 @@ sealed interface NavigationRoutes {
 
     @Serializable
     data object TaskScreen : NavigationRoutes
+
+    @Serializable
+    data object EditScreen : NavigationRoutes
 
     @Serializable
     data object ReminderScreen : NavigationRoutes

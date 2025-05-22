@@ -6,6 +6,7 @@ import java.net.SocketTimeoutException
 import java.nio.channels.UnresolvedAddressException
 import kotlin.coroutines.cancellation.CancellationException
 
+
 suspend inline fun <reified T> safeApiCall(execute: () -> Response<T>): Result<T, DataError.Network> {
     val response = try {
         execute()

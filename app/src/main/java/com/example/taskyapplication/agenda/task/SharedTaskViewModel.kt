@@ -10,21 +10,27 @@ import com.example.taskyapplication.agenda.task.domain.TaskRepository
 import com.example.taskyapplication.agenda.task.presentation.TaskUiState
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import java.util.UUID
 import javax.inject.Inject
 
 @HiltViewModel
-class TaskViewModel @Inject constructor(
+class SharedTaskViewModel @Inject constructor(
     private val repository: TaskRepository
 ): ViewModel() {
 
     private val _uiState = MutableStateFlow(TaskUiState())
-    val uiState = _uiState.asStateFlow()
+    val uiState = _uiState.stateIn(
+        scope = viewModelScope,
+        started = SharingStarted.WhileSubscribed(5000L),
+        initialValue = TaskUiState(),
+    )
 
-    @RequiresApi(Build.VERSION_CODES.O)
+    @RequiresApi(Build.VERSION_CODES.S)
     fun onAction(action: AgendaItemAction) {
         when(action) {
            AgendaItemAction.SaveTaskUpdates -> {
@@ -61,31 +67,24 @@ class TaskViewModel @Inject constructor(
                }
             }
             is AgendaItemAction.SetTitle -> {
-                _uiState.update { it.copy(title = action.title)
+                viewModelScope.launch {
+                    _uiState.update { it.copy(title = action.title) }
                 }
             }
             is AgendaItemAction.SetDate -> {
-                _uiState.update { it.copy(date = action.date)
-                }
+                _uiState.update { it.copy(date = action.date) }
             }
             is AgendaItemAction.SetDescription -> {
-                _uiState.update { it.copy(description = action.description)
-                }
+                _uiState.update { it.copy(description = action.description) }
             }
             is AgendaItemAction.SetReminderTime -> {
-                _uiState.update {
-                    it.copy(remindAt = action.reminder)
-                }
+                _uiState.update { it.copy(remindAt = action.reminder) }
             }
             is AgendaItemAction.SetTime -> {
-                _uiState.update {
-                    it.copy(time = action.time)
-                }
+                _uiState.update { it.copy(time = action.time) }
             }
             AgendaItemAction.ShowDatePicker -> {
-                _uiState.update {
-                    it.copy(isEditingItem = true)
-                }
+                _uiState.update { it.copy(isEditingItem = true) }
             }
             AgendaItemAction.HideDatePicker -> {
                 _uiState.update {
@@ -126,7 +125,7 @@ class TaskViewModel @Inject constructor(
                     it.copy(isEditingItem = true)
                 }
             }
-            AgendaItemAction.LaunchEditTitleScreen -> {
+            is AgendaItemAction.LaunchEditTitleScreen -> {
                 _uiState.update {
                     it.copy(isEditingItem = true)
                 }
