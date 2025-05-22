@@ -32,6 +32,24 @@ fun GetTaskResponse.asTaskUi() = TaskUiState(
     isDone = isDone
 )
 
+fun UpdateTaskBody.asEntity() = TaskEntity(
+    id = itemId,
+    title = title,
+    description = description,
+    time = startTime,
+    remindAt = reminderTime,
+    isDone = isDone
+)
+
+fun TaskNetworkModel.asEntity() = TaskEntity(
+    id = itemId,
+    title = title,
+    description = description,
+    time = startTime,
+    remindAt = reminderTime,
+    isDone = isDone
+)
+
 @RequiresApi(Build.VERSION_CODES.O)
 fun TaskEntity.asTask() = TaskUiState(
     id = id,
@@ -74,7 +92,6 @@ fun TaskUiState.asEntity() = TaskEntity(
 )
 
 // Helper Functions for models
-
 //Combine date and time strings to convert to long
 @RequiresApi(Build.VERSION_CODES.O)
 fun convertDateAndTimeStringsToLong(

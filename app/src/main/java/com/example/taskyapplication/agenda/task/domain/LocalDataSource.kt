@@ -5,17 +5,15 @@ import android.os.Build
 import androidx.annotation.RequiresApi
 import com.example.taskyapplication.agenda.task.data.local.dao.TaskDao
 import com.example.taskyapplication.agenda.task.data.local.entity.TaskEntity
-import com.example.taskyapplication.agenda.task.data.mappers.asEntity
-import com.example.taskyapplication.agenda.task.presentation.TaskUiState
 import com.example.taskyapplication.domain.utils.DataError
 import com.example.taskyapplication.domain.utils.Result
 import kotlinx.coroutines.flow.Flow
 import javax.inject.Inject
 
 interface LocalDataSource {
-    fun getTasks(): Flow<List<TaskUiState>>
-    suspend fun upsertTask(task: TaskUiState): Result<Unit, DataError.Local>
-    suspend fun upsertAllTasks(tasks: List<TaskUiState>): Result<Unit, DataError.Local>
+    fun getTasks(): Flow<List<TaskEntity>>
+    suspend fun upsertTask(task: TaskEntity): Result<Unit, DataError.Local>
+    suspend fun upsertAllTasks(tasks: List<TaskEntity>): Result<Unit, DataError.Local>
     suspend fun getTask(taskId: String): TaskEntity
     suspend fun deleteTask(taskId: String)
     suspend fun deleteAllTasks()
@@ -26,9 +24,9 @@ class TaskLocalDataSource @Inject constructor(
 ) : LocalDataSource {
 
     @RequiresApi(Build.VERSION_CODES.O)
-    override suspend fun upsertTask(task: TaskUiState): Result<Unit, DataError.Local> {
+    override suspend fun upsertTask(task: TaskEntity): Result<Unit, DataError.Local> {
         return try {
-            dao.upsertTask(task.asEntity())
+            dao.upsertTask(task)
             Result.Success(Unit)
         } catch(e: SQLiteFullException) {
             Result.Error(DataError.Local.DISK_FULL)
@@ -43,11 +41,11 @@ class TaskLocalDataSource @Inject constructor(
         dao.deleteTaskById(taskId)
     }
 
-    override suspend fun upsertAllTasks(tasks: List<TaskUiState>): Result<Unit, DataError.Local> {
+    override suspend fun upsertAllTasks(tasks: List<TaskEntity>): Result<Unit, DataError.Local> {
         TODO("Not yet implemented")
     }
 
-    override fun getTasks(): Flow<List<TaskUiState>> {
+    override fun getTasks(): Flow<List<TaskEntity>> {
         TODO("Not yet implemented")
     }
 
