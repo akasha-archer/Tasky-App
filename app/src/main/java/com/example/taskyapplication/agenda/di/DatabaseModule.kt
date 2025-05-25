@@ -5,6 +5,7 @@ import androidx.room.Room
 import com.example.taskyapplication.BuildConfig
 import com.example.taskyapplication.agenda.data.db.AgendaDatabase
 import com.example.taskyapplication.agenda.task.data.OfflineFirstTaskRepository
+import com.example.taskyapplication.agenda.task.data.local.dao.PendingTaskDao
 import com.example.taskyapplication.agenda.task.data.local.dao.TaskDao
 import com.example.taskyapplication.agenda.task.domain.LocalDataSource
 import com.example.taskyapplication.agenda.task.domain.RemoteDataSource
@@ -81,13 +82,21 @@ object DatabaseModule {
     fun provideTaskRepository(
         localDataSource: LocalDataSource,
         remoteDataSource: RemoteDataSource,
+        pendingTaskDao: PendingTaskDao,
         scope: CoroutineScope
         ): TaskRepository =
         OfflineFirstTaskRepository(
            localDataSource,
             remoteDataSource,
+            pendingTaskDao,
             scope
         )
+
+    @Provides
+    @Singleton
+    fun providePendingTaskDao(database: AgendaDatabase): PendingTaskDao {
+        return database.pendingTaskDao()
+    }
 
     @Provides
     @Singleton
