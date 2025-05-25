@@ -76,7 +76,7 @@ class OfflineFirstTaskRepository @Inject constructor(
         }.await()
         if (remoteResult !is Result.Success) {
             applicationScope.launch {
-                pendingTaskDao.saveRunToDelete(taskId)
+                pendingTaskDao.saveTaskToDelete(taskId)
             }.join()
         }
         return remoteResult.asEmptyDataResult()
