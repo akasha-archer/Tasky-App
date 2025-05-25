@@ -75,9 +75,10 @@ class OfflineFirstTaskRepository @Inject constructor(
             remoteDataSource.deleteTask(taskId)
         }.await()
         if (remoteResult !is Result.Success) {
-            applicationScope.launch {
-                pendingTaskDao.saveRunToDelete(taskId)
-            }.join()
+           TODO("Implement the logic for handling the error case when deleting a task")
+//            applicationScope.launch {
+//                pendingTaskDao.saveTaskToDelete(taskId)
+//            }.join()
         }
         return remoteResult.asEmptyDataResult()
     }

@@ -11,8 +11,8 @@ interface PendingTaskDao {
     @Upsert
     suspend fun upsertPendingTask(task: PendingTaskEntity)
 
-    @Upsert
-    suspend fun saveRunToDelete(taskId: String)
+//    @Query("SELECT * FROM pendingtasks WHERE taskId = :taskId")
+//    suspend fun saveTaskToDelete(taskId: String)
 
     @Query("DELETE FROM pendingtasks WHERE taskId = :taskId")
     suspend fun deletePendingTask(taskId: String)
