@@ -4,15 +4,21 @@ import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.width
 import androidx.compose.material.Icon
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.outlined.CheckCircle
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.example.taskyapplication.ui.theme.TaskyDesignSystem.Companion.taskyColors
 import com.example.taskyapplication.ui.theme.TaskyTypography
@@ -116,4 +122,47 @@ fun AgendaTitleRow(
             )
         }
     }
+}
+
+// previews
+@Preview(showBackground = true)
+@Composable
+fun AgendaDescriptionPreview() {
+    AgendaDescriptionText(
+        agendaItemDescription = "This is a sample description for the agenda item. It can be quite long and should be truncated if it exceeds the available space."
+    )
+}
+
+
+@Preview(showBackground = true)
+@Composable
+fun AgendaItemTypePreview() {
+    AgendaIconTextRow(
+        itemIcon = {
+            Icon(
+                imageVector = Icons.Outlined.CheckCircle, // Or another square icon
+                contentDescription = "Home",
+                modifier = Modifier
+                    .padding(end = 12.dp)
+                    .height(24.dp)
+                    .width(24.dp),
+                tint = Color.Blue
+            )
+        },
+        textItem = {
+            Text(
+                text = "Reminder".uppercase(),
+                style = TaskyTypography.labelMedium,
+                color = taskyColors.onSurface
+            )
+        },
+    )
+}
+
+@Preview(showBackground = true)
+@Composable
+fun AgendaItemTitlePreview() {
+    AgendaTitleRow(
+        agendaItemTitle = "This is a sample title.",
+    )
 }
