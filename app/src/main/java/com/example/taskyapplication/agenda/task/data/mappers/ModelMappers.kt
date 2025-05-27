@@ -12,7 +12,7 @@ import java.time.LocalDateTime
 import java.time.ZoneId
 import java.time.format.DateTimeFormatter
 
-fun GetTaskResponse.asEntity() = TaskEntity(
+fun GetTaskResponse.asTaskEntity() = TaskEntity(
     id = id,
     title = title,
     description = description,
@@ -32,7 +32,7 @@ fun GetTaskResponse.asTaskUi() = TaskUiState(
     isDone = isDone
 )
 
-fun UpdateTaskBody.asEntity() = TaskEntity(
+fun UpdateTaskBody.asTaskEntity() = TaskEntity(
     id = itemId,
     title = title,
     description = description,
@@ -41,7 +41,7 @@ fun UpdateTaskBody.asEntity() = TaskEntity(
     isDone = isDone
 )
 
-fun TaskNetworkModel.asEntity() = TaskEntity(
+fun TaskNetworkModel.asTaskEntity() = TaskEntity(
     id = itemId,
     title = title,
     description = description,
@@ -82,7 +82,7 @@ fun TaskUiState.asUpdateTaskModel() = UpdateTaskBody(
 )
 
 @RequiresApi(Build.VERSION_CODES.O)
-fun TaskUiState.asEntity() = TaskEntity(
+fun TaskUiState.asTaskEntity() = TaskEntity(
     id = id,
     title = title,
     description = description,
