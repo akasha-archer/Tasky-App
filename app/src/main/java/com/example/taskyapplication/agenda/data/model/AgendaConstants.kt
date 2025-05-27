@@ -1,7 +1,6 @@
 package com.example.taskyapplication.agenda.data.model
 
 import androidx.compose.ui.graphics.vector.ImageVector
-import com.example.taskyapplication.agenda.presentation.components.ReminderDropDownItem
 
 enum class AgendaTypes(val type: String) {
     TASK("Task"),

@@ -75,39 +75,6 @@ fun AgendaScreenDivider(
     )
 }
 
-// delete button
-@Composable
-fun AgendaItemDeleteButton(
-    onClick: () -> Unit,
-    modifier: Modifier = Modifier
-) {
-    Column(
-        modifier = modifier
-            .fillMaxWidth()
-            .padding(horizontal = 16.dp),
-    ) {
-        HorizontalDivider(
-            modifier = Modifier
-                .padding(top = 8.dp)
-                .padding(horizontal = 16.dp),
-            color = taskyColors.surfaceContainerHigh,
-            thickness = 1.dp,
-        )
-        TextButton(
-            onClick = onClick,
-            modifier = Modifier
-                .fillMaxWidth()
-                .align(Alignment.CenterHorizontally)
-        ) {
-            Text(
-                text = "Delete Reminder".uppercase(),
-                style = TaskyTypography.labelSmall,
-                color = taskyColors.error
-            )
-        }
-    }
-}
-
 @Composable
 fun AgendaHeadingItem(
     modifier: Modifier = Modifier,
@@ -141,9 +108,4 @@ fun AgendaTypePreview() {
     AgendaHeadingItem(
         agendaItemType = "Reminder"
     )
-}
-@Preview(showBackground = true)
-@Composable
-fun DeleteButtonPreview() {
-    AgendaItemDeleteButton(onClick = {})
 }

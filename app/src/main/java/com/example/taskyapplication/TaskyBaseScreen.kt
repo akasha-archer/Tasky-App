@@ -32,12 +32,17 @@ import androidx.compose.ui.unit.sp
 fun TaskyBaseScreen(
     modifier: Modifier = Modifier,
     screenHeader: @Composable () -> Unit,
-    mainContent: @Composable () -> Unit
+    mainContent: @Composable () -> Unit,
+    isAgendaEditScreen: Boolean = false
 ) {
     Column(
         modifier = modifier
             .fillMaxWidth()
-            .background(color = Color.Black)
+            .background(color =
+            if(isAgendaEditScreen)
+                Color.White
+            else
+                Color.Black)
     ) {
         screenHeader()
         Card(
