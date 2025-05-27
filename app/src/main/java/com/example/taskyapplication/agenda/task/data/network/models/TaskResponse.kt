@@ -1,6 +1,6 @@
-package com.example.taskyapplication.agenda.task.domain.model
+package com.example.taskyapplication.agenda.task.data.network.models
 
-data class TaskUiState(
+data class GetTaskResponse(
     val id: String,
     val title: String,
     val description: String,
