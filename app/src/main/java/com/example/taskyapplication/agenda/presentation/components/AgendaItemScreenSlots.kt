@@ -4,7 +4,6 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
@@ -13,7 +12,6 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.outlined.CheckCircle
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Text
-import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -75,39 +73,6 @@ fun AgendaScreenDivider(
     )
 }
 
-// delete button
-@Composable
-fun AgendaItemDeleteButton(
-    onClick: () -> Unit,
-    modifier: Modifier = Modifier
-) {
-    Column(
-        modifier = modifier
-            .fillMaxWidth()
-            .padding(horizontal = 16.dp),
-    ) {
-        HorizontalDivider(
-            modifier = Modifier
-                .padding(top = 8.dp)
-                .padding(horizontal = 16.dp),
-            color = taskyColors.surfaceContainerHigh,
-            thickness = 1.dp,
-        )
-        TextButton(
-            onClick = onClick,
-            modifier = Modifier
-                .fillMaxWidth()
-                .align(Alignment.CenterHorizontally)
-        ) {
-            Text(
-                text = "Delete Reminder".uppercase(),
-                style = TaskyTypography.labelSmall,
-                color = taskyColors.error
-            )
-        }
-    }
-}
-
 @Composable
 fun AgendaHeadingItem(
     modifier: Modifier = Modifier,
@@ -141,9 +106,4 @@ fun AgendaTypePreview() {
     AgendaHeadingItem(
         agendaItemType = "Reminder"
     )
-}
-@Preview(showBackground = true)
-@Composable
-fun DeleteButtonPreview() {
-    AgendaItemDeleteButton(onClick = {})
 }
