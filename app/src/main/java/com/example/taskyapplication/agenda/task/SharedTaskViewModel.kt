@@ -1,7 +1,5 @@
 package com.example.taskyapplication.agenda.task
 
-import android.os.Build
-import androidx.annotation.RequiresApi
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.taskyapplication.agenda.AgendaItemAction
@@ -29,7 +27,6 @@ class SharedTaskViewModel @Inject constructor(
         initialValue = TaskUiState(),
     )
 
-    @RequiresApi(Build.VERSION_CODES.S)
     fun onTaskAction(action: AgendaItemAction) {
         when(action) {
            AgendaItemAction.SaveTaskUpdates -> {

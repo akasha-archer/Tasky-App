@@ -1,11 +1,13 @@
 package com.example.taskyapplication.agenda
 
+import com.example.taskyapplication.agenda.data.model.ReminderOptions
+
 sealed interface AgendaItemAction {
     data class SetTitle(val title: String): AgendaItemAction
     data class SetDescription(val description: String): AgendaItemAction
     data class SetTime(val time: String): AgendaItemAction
     data class SetDate(val date: String): AgendaItemAction
-    data class SetReminderTime(val reminder: Long): AgendaItemAction
+    data class SetReminderTime(val reminder: ReminderOptions): AgendaItemAction
     data object LaunchEditTitleScreen: AgendaItemAction
     data object CloseEditTitleScreen: AgendaItemAction
     data object LaunchEditDescriptionScreen: AgendaItemAction

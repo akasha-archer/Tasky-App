@@ -1,135 +1,110 @@
 package com.example.taskyapplication.agenda.presentation.components
 
-import androidx.compose.foundation.BorderStroke
-import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.width
-import androidx.compose.material3.ButtonDefaults
-import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.HorizontalDivider
-import androidx.compose.material3.ModalBottomSheet
-import androidx.compose.material3.OutlinedButton
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Text
-import androidx.compose.material3.TextButton
-import androidx.compose.material3.rememberModalBottomSheetState
+import androidx.compose.material3.Icon
+import androidx.compose.material3.TextField
+import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import com.example.taskyapplication.R
 import com.example.taskyapplication.ui.theme.TaskyDesignSystem.Companion.taskyColors
 import com.example.taskyapplication.ui.theme.TaskyTypography
+import java.time.LocalDate
+import java.time.LocalTime
+import java.time.format.DateTimeFormatter
+import java.time.format.FormatStyle
 
 @Composable
-fun AgendaItemDeleteTextButton(
+fun AgendaItemDateTimeRow(
     modifier: Modifier = Modifier,
-    onClick: () -> Unit,
-    itemToDelete: String
+    onClickTime: () -> Unit = {},
+    onClickDate: () -> Unit = {},
+    isEditing: Boolean = false,
+    dateText: String = LocalDate.now().format(
+        DateTimeFormatter.ofLocalizedDate(FormatStyle.MEDIUM)
+    ),
+    timeText: String = LocalTime.now().format(
+        DateTimeFormatter.ofLocalizedTime(FormatStyle.SHORT)
+    )
 ) {
-    Column(
+    Row(
         modifier = modifier
             .fillMaxWidth()
+            .padding(vertical = 16.dp),
+        horizontalArrangement = Arrangement.SpaceEvenly,
+        verticalAlignment = Alignment.CenterVertically
     ) {
-        HorizontalDivider(
+        Text(
             modifier = Modifier
-                .padding(top = 8.dp),
-            color = taskyColors.surfaceContainerHigh,
-            thickness = 1.dp,
+                .padding(end = 12.dp),
+            text = stringResource(R.string.start_time_label),
+            style = TaskyTypography.bodyMedium,
+            color = taskyColors.primary
         )
-        TextButton(
-            onClick = onClick,
-            modifier = Modifier
-                .fillMaxWidth()
-                .align(Alignment.CenterHorizontally)
-        ) {
-            Text(
-                text = "Delete $itemToDelete".uppercase(),
-                style = TaskyTypography.labelSmall,
-                color = taskyColors.error
-            )
-        }
+        DateTimeFieldWithIcon(
+            modifier = Modifier.weight(1.5f),
+            dateOrTimeText = timeText,
+            isEditing = isEditing,
+            onClickItem = onClickTime,
+        )
+        DateTimeFieldWithIcon(
+            modifier = Modifier.weight(2f),
+            dateOrTimeText = dateText,
+            isEditing = isEditing,
+            onClickItem = onClickDate,
+        )
     }
 }
 
-// delete bottom sheet
-@OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun DeleteItemBottomSheet(
+fun DateTimeFieldWithIcon(
     modifier: Modifier = Modifier,
-    onDeleteTask: () -> Unit = {},
-    onCancelDelete: () -> Unit = {}
+    onClickItem: () -> Unit = {},
+    onUpdateDateOrTime: (String) -> Unit = {},
+    isEditing: Boolean = false,
+    dateOrTimeText: String
 ) {
-    ModalBottomSheet(
-        modifier = modifier,
-        onDismissRequest = { onCancelDelete() },
-        sheetState = rememberModalBottomSheetState(),
-        containerColor = taskyColors.surface,
-        content = {
-            Column(
-                modifier = Modifier
-                    .background(color = taskyColors.surface)
-                    .fillMaxWidth()
-                    .padding(horizontal = 16.dp)
-                    .padding(vertical = 24.dp),
-                horizontalAlignment = Alignment.CenterHorizontally
-
-            ) {
-                Text(
-                    text = "Delete task?",
-                    style = TaskyTypography.headlineMedium,
-                    color = taskyColors.primary
+    TextField(
+        modifier = modifier
+            .padding(end = 8.dp),
+        value = dateOrTimeText,
+        onValueChange = {
+            onUpdateDateOrTime(it)
+        },
+        shape = RoundedCornerShape(4.dp),
+        readOnly = true,
+        enabled = false,
+        singleLine = true,
+        textStyle = TaskyTypography.bodyMedium.copy(color = taskyColors.primary),
+        colors = TextFieldDefaults.colors(
+            disabledTextColor = taskyColors.primary,
+            unfocusedContainerColor = taskyColors.surfaceContainerHigh,
+            focusedContainerColor = taskyColors.surfaceContainerHigh,
+            disabledContainerColor = taskyColors.surfaceContainerHigh,
+            focusedIndicatorColor = Color.Transparent,
+            unfocusedIndicatorColor = Color.Transparent,
+            disabledIndicatorColor = Color.Transparent
+        ),
+        trailingIcon = {
+            if (isEditing) {
+                Icon(
+                    modifier = Modifier.clickable { onClickItem() },
+                    painter = painterResource(R.drawable.dropdown),
+                    tint = taskyColors.primary,
+                    contentDescription = "Tap to edit date or time"
                 )
-                Text(
-                    modifier = Modifier.padding(top = 8.dp),
-                    text = "This action cannot be reversed",
-                    style = TaskyTypography.bodyMedium,
-                    color = taskyColors.onSurface
-                )
-                Row(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(vertical = 16.dp),
-                    verticalAlignment = Alignment.CenterVertically,
-                    horizontalArrangement = Arrangement.SpaceEvenly
-                ) {
-                    OutlinedButton(
-                        modifier = Modifier
-                            .height(52.dp)
-                            .width(156.dp),
-                        border = BorderStroke(
-                            width = 1.dp,
-                            color = taskyColors.onSurfaceVariant,
-                        ),
-                        onClick = onCancelDelete,
-                        colors = ButtonDefaults.buttonColors(
-                            containerColor = taskyColors.surface,
-                            contentColor = taskyColors.onSurface,
-                        )
-                    ) {
-                        Text(text = "CANCEL")
-                    }
-                    OutlinedButton(
-                        modifier = Modifier
-                            .height(52.dp)
-                            .width(156.dp),
-                        border = BorderStroke(
-                            width = 1.dp,
-                            color = taskyColors.error,
-                        ),
-                        onClick = onDeleteTask,
-                        colors = ButtonDefaults.buttonColors(
-                            containerColor = taskyColors.error,
-                            contentColor = taskyColors.onPrimary,
-                        )
-                    ) {
-                        Text(text = "DELETE")
-                    }
-                }
             }
         }
     )
@@ -137,15 +112,8 @@ fun DeleteItemBottomSheet(
 
 @Preview(showBackground = true)
 @Composable
-fun DeleteButtonPreview() {
-    AgendaItemDeleteTextButton(
-        onClick = {},
-        itemToDelete = "Task"
+fun AgendaItemTimeRowPreview() {
+    AgendaItemDateTimeRow(
+        isEditing = true,
     )
-}
-
-@Preview(showBackground = true)
-@Composable
-fun DeleteBottomSheetPreview() {
-    DeleteItemBottomSheet()
 }

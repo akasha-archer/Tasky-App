@@ -26,6 +26,7 @@ composeNavigation = "2.9.0"
 hiltNavigation = "1.2.0"
 composeRuntime = "1.8.2"
 roomVersion = "2.7.1"
+desugar_jdk_libs = "2.1.5"
 
 [libraries]
 androidx-activity = { module = "androidx.activity:activity", version.ref = "activity" }
@@ -62,6 +63,7 @@ androidx-compose-runtime = { group = "androidx.compose.runtime", name = "runtime
 androidx-compose-runtime-livedata = { group = "androidx.compose.runtime", name = "runtime-livedata", version.ref="composeRuntime"}
 room-compiler = { group = "androidx.room", name = "room-compiler", version.ref="roomVersion"}
 androidx-room = { group = "androidx.room", name = "room-ktx", version.ref="roomVersion"}
+desugar_jdk_libs = { module = "com.android.tools:desugar_jdk_libs", version.ref = "desugar_jdk_libs" }
 
 [plugins]
 android-application = { id = "com.android.application", version.ref = "agp" }

@@ -1,13 +1,13 @@
 package com.example.taskyapplication.agenda.task.data
 
 import com.example.taskyapplication.agenda.task.data.local.dao.PendingTaskDao
-import com.example.taskyapplication.agenda.task.data.local.entity.TaskEntity
 import com.example.taskyapplication.agenda.task.data.local.entity.asPendingTaskEntity
-import com.example.taskyapplication.agenda.task.data.mappers.asTaskEntity
+import com.example.taskyapplication.agenda.task.data.mappers.asTaskDomainModel
 import com.example.taskyapplication.agenda.task.data.network.models.TaskNetworkModel
 import com.example.taskyapplication.agenda.task.data.network.models.UpdateTaskBody
 import com.example.taskyapplication.agenda.task.domain.LocalDataSource
 import com.example.taskyapplication.agenda.task.domain.RemoteDataSource
+import com.example.taskyapplication.agenda.task.domain.TaskDomainModel
 import com.example.taskyapplication.agenda.task.domain.TaskRepository
 import com.example.taskyapplication.domain.utils.DataError
 import com.example.taskyapplication.domain.utils.EmptyResult
@@ -26,7 +26,7 @@ class OfflineFirstTaskRepository @Inject constructor(
 ) : TaskRepository {
 
     override suspend fun createNewTask(request: TaskNetworkModel): EmptyResult<DataError> {
-        val localResult = localDataSource.upsertTask(request.asTaskEntity())
+        val localResult = localDataSource.upsertTask(request.asTaskDomainModel())
         if (localResult !is Result.Success) {
             return localResult.asEmptyDataResult()
         }
@@ -41,14 +41,14 @@ class OfflineFirstTaskRepository @Inject constructor(
             }
             is Result.Success -> {
                 applicationScope.async {
-                    localDataSource.upsertTask(request.asTaskEntity())
+                    localDataSource.upsertTask(request.asTaskDomainModel())
                 }.await()
             }
         }
     }
 
     override suspend fun updateTask(request: UpdateTaskBody): EmptyResult<DataError> {
-        val localResult = localDataSource.upsertTask(request.asTaskEntity())
+        val localResult = localDataSource.upsertTask(request.asTaskDomainModel())
         if (localResult !is Result.Success) {
             return localResult.asEmptyDataResult()
         }
@@ -63,7 +63,7 @@ class OfflineFirstTaskRepository @Inject constructor(
             }
             is Result.Success -> {
                 applicationScope.async {
-                    localDataSource.upsertTask(request.asTaskEntity())
+                    localDataSource.upsertTask(request.asTaskDomainModel())
                 }.await()
             }
         }
@@ -83,7 +83,7 @@ class OfflineFirstTaskRepository @Inject constructor(
         return remoteResult.asEmptyDataResult()
     }
 
-    override suspend fun getTaskById(taskId: String): TaskEntity {
+    override suspend fun getTaskById(taskId: String): TaskDomainModel {
        return localDataSource.getTask(taskId)
     }
 }
