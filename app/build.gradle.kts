@@ -50,6 +50,7 @@ android {
         }
     }
     compileOptions {
+        isCoreLibraryDesugaringEnabled = true
         sourceCompatibility = JavaVersion.VERSION_11
         targetCompatibility = JavaVersion.VERSION_11
     }
@@ -94,6 +95,8 @@ dependencies {
     implementation(libs.androidx.compose.runtime.livedata)
     implementation(libs.androidx.datastore)
     implementation(libs.androidx.room)
+    coreLibraryDesugaring(libs.desugar.jdk.libs)
+
 
     ksp(libs.hilt.compiler)
     ksp(libs.room.compiler)
