@@ -24,6 +24,7 @@ import com.example.taskyapplication.ui.theme.TaskyTypography
 // Template for all screens
 @Composable
 fun AgendaItem(
+    modifier: Modifier = Modifier,
     agendaItemType: @Composable () -> Unit,
     agendaItemTitle: @Composable () -> Unit,
     agendaItemDescription: (@Composable () -> Unit)? = null,
@@ -32,7 +33,9 @@ fun AgendaItem(
     agendaItemEndTime: (@Composable () -> Unit)? = null,
     agendaItemReminderTime: @Composable () -> Unit,
 ) {
-    Column {
+    Column(
+        modifier = modifier,
+    ) {
         agendaItemType()
         Spacer(Modifier.height(24.dp))
         agendaItemTitle()

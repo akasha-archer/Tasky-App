@@ -31,21 +31,23 @@ fun GetTaskResponse.asTaskUi() = TaskUiState(
     isDone = isDone
 )
 
-fun UpdateTaskBody.asTaskEntity() = TaskEntity(
+fun UpdateTaskBody.asTaskDomainModel() = TaskDomainModel(
     id = itemId,
     title = title,
     description = description,
-    time = startTime,
-    remindAt = reminderTime,
+    time = startTime.toDateTime().toFormattedTime(),
+    date = startTime.toDateTime().toFormattedDate(),
+    remindAt = reminderTime,  // TODO("convert Long to enum value")
     isDone = isDone
 )
 
-fun TaskNetworkModel.asTaskEntity() = TaskEntity(
+fun TaskNetworkModel.asTaskDomainModel() = TaskDomainModel(
     id = itemId,
     title = title,
     description = description,
-    time = startTime,
-    remindAt = reminderTime,
+    time = startTime.toDateTime().toFormattedTime(),
+    date = startTime.toDateTime().toFormattedDate(),
+    remindAt = reminderTime, // TODO("convert Long to enum value")
     isDone = isDone
 )
 

@@ -25,9 +25,9 @@ import androidx.compose.ui.unit.dp
 @Composable
 fun TaskyTimePicker(
     modifier: Modifier = Modifier,
-    state: TimePickerState,
     onDismiss: () -> Unit,
-    onConfirm: () -> Unit
+    onConfirm: () -> Unit,
+    state: TimePickerState,
 ) {
     Column(
         modifier = modifier.fillMaxSize(),
