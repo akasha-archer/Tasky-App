@@ -15,4 +15,11 @@
     <string name="show_password">hide password entry</string>
     <string name="account_signup_prompt">DON\'T HAVE AN ACCOUNT?</string>
     <string name="api_base_url">https://tasky.pl-coding.com/</string>
+
+<!-- Agenda strings   -->
+    <string name="reminder_ten_minutes">10 minutes before</string>
+    <string name="reminder_thirty_minutes">30 minutes before</string>
+    <string name="reminder_one_hour">1 hour before</string>
+    <string name="reminder_six_hours">6 hours before</string>
+    <string name="reminder_one_day">1 day before/</string>
 </resources>
