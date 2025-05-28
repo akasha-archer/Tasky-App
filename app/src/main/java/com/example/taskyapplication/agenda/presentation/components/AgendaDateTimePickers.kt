@@ -17,8 +17,10 @@ import androidx.compose.material3.rememberDatePickerState
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import com.example.taskyapplication.R
 
 // time picker
 @OptIn(ExperimentalMaterial3Api::class)
@@ -58,14 +60,14 @@ fun TimePickerDialog(
             TextButton(
                 onClick = { onDismiss() }
             ) {
-                Text("Cancel")
+                Text(text = stringResource(id = android.R.string.cancel))
             }
         },
         confirmButton = {
             TextButton(
                 onClick = { onConfirm() }
             ) {
-                Text("OK")
+                Text(text = stringResource(id = android.R.string.ok))
             }
         },
         text = { content() }
@@ -93,7 +95,7 @@ fun TaskyDatePicker(
                 DatePicker(
                     modifier = Modifier.padding(16.dp),
                     state = state,
-                    headline = { Text(text = "Select Task Date") }
+                    headline = { Text(text = stringResource(R.string.date_picker_heading)) }
                 )
             }
         )
@@ -115,14 +117,14 @@ fun DateDialog(
             TextButton(
                 onClick = { onDismiss() }
             ) {
-                Text("Cancel")
+                Text(text = stringResource(id = android.R.string.cancel))
             }
         },
         confirmButton = {
             TextButton(
                 onClick = { onConfirm() }
             ) {
-                Text("OK")
+                Text(text = stringResource(id = android.R.string.ok))
             }
         },
         content = { content() }

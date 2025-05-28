@@ -19,8 +19,10 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import com.example.taskyapplication.R
 import com.example.taskyapplication.ui.theme.TaskyDesignSystem.Companion.taskyColors
 import com.example.taskyapplication.ui.theme.TaskyTypography
 import java.text.SimpleDateFormat
@@ -65,14 +67,14 @@ fun EditInputHeader(
             Text(
                 modifier = Modifier
                     .clickable { onClickCancel() },
-                text = "Cancel",
+                text = stringResource(android.R.string.cancel),
                 color = taskyColors.onSurface,
                 style = TaskyTypography.labelSmall
             )
         },
         secondItem = {
             Text(
-                text ="Edit $itemToEdit".uppercase(),
+                text = stringResource(R.string.edit_item_header, itemToEdit).uppercase(),
                 color = taskyColors.onSurface,
                 style = TaskyTypography.labelMedium
             )
@@ -81,7 +83,7 @@ fun EditInputHeader(
             Text(
                 modifier = Modifier
                     .clickable { onClickSave },
-                text = "Save",
+                text = stringResource(R.string.save_item_after_edit),
                 color = taskyColors.validInput,
                 style = TaskyTypography.labelSmall
             )
@@ -113,7 +115,7 @@ fun DetailScreenHeader(
                     .format(
                         DateTimeFormatter.ofPattern(
                             SimpleDateFormat(
-                                "dd MMMM yyyy",
+                                stringResource(R.string.edit_header_date_format),
                                 Locale.getDefault()
                             ).toPattern()
                         )

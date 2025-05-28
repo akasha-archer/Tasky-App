@@ -16,10 +16,22 @@
     <string name="account_signup_prompt">DON\'T HAVE AN ACCOUNT?</string>
     <string name="api_base_url">https://tasky.pl-coding.com/</string>
 
-<!-- Agenda strings   -->
+<!-- Agenda strings -->
     <string name="reminder_ten_minutes">10 minutes before</string>
     <string name="reminder_thirty_minutes">30 minutes before</string>
     <string name="reminder_one_hour">1 hour before</string>
     <string name="reminder_six_hours">6 hours before</string>
     <string name="reminder_one_day">1 day before/</string>
+
+    <string name="start_time_label">At</string>
+    <string name="delete_text_button">DELETE %1$s</string>
+    <string name="delete_bottom_sheet_heading">Delete task?</string>
+    <string name="delete_bottom_sheet_sub_heading">This action cannot be reversed</string>
+    <string name="delete_bottom_sheet_cancel_button">DELETE</string>
+    <string name="delete_bottom_sheet_delete_button">CANCEL</string>
+    <string name="edit_item_header">Edit %1$s</string>
+    <string name="edit_header_date_format">dd MMMM yyyy</string>
+    <string name="save_item_after_edit">Save</string>
+    <string name="date_picker_heading">Select Date</string>
+
 </resources>

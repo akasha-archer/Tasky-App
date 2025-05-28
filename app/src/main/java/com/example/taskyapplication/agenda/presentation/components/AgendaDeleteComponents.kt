@@ -20,8 +20,10 @@ import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import com.example.taskyapplication.R
 import com.example.taskyapplication.ui.theme.TaskyDesignSystem.Companion.taskyColors
 import com.example.taskyapplication.ui.theme.TaskyTypography
 
@@ -48,7 +50,7 @@ fun AgendaItemDeleteTextButton(
                 .align(Alignment.CenterHorizontally)
         ) {
             Text(
-                text = "Delete $itemToDelete".uppercase(),
+                text = stringResource(R.string.delete_text_button, itemToDelete).uppercase(),
                 style = TaskyTypography.labelSmall,
                 color = taskyColors.error
             )
@@ -80,13 +82,13 @@ fun DeleteItemBottomSheet(
 
             ) {
                 Text(
-                    text = "Delete task?",
+                    text = stringResource(R.string.delete_bottom_sheet_heading),
                     style = TaskyTypography.headlineMedium,
                     color = taskyColors.primary
                 )
                 Text(
                     modifier = Modifier.padding(top = 8.dp),
-                    text = "This action cannot be reversed",
+                    text = stringResource(R.string.delete_bottom_sheet_sub_heading),
                     style = TaskyTypography.bodyMedium,
                     color = taskyColors.onSurface
                 )
@@ -111,7 +113,7 @@ fun DeleteItemBottomSheet(
                             contentColor = taskyColors.onSurface,
                         )
                     ) {
-                        Text(text = "CANCEL")
+                        Text(text = stringResource(R.string.delete_bottom_sheet_cancel_button))
                     }
                     OutlinedButton(
                         modifier = Modifier
@@ -127,7 +129,7 @@ fun DeleteItemBottomSheet(
                             contentColor = taskyColors.onPrimary,
                         )
                     ) {
-                        Text(text = "DELETE")
+                        Text(text = stringResource(R.string.delete_bottom_sheet_delete_button))
                     }
                 }
             }
