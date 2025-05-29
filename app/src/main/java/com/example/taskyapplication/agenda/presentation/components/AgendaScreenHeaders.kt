@@ -92,7 +92,6 @@ fun EditInputHeader(
 }
 
 // detail screen header
-@RequiresApi(Build.VERSION_CODES.O)
 @Composable
 fun DetailScreenHeader(
     modifier: Modifier = Modifier,

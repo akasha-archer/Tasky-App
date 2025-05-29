@@ -27,10 +27,9 @@
     <string name="delete_text_button">DELETE %1$s</string>
     <string name="delete_bottom_sheet_heading">Delete task?</string>
     <string name="delete_bottom_sheet_sub_heading">This action cannot be reversed</string>
-    <string name="delete_bottom_sheet_cancel_button">DELETE</string>
+    <string name="delete_bottom_sheet_button">DELETE</string>
     <string name="edit_item_header">Edit %1$s</string>
     <string name="edit_header_date_format">dd MMMM yyyy</string>
     <string name="save_item_after_edit">Save</string>
     <string name="date_picker_heading">Select Date</string>
-
 </resources>
