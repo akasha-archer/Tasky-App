@@ -32,6 +32,8 @@ fun AgendaItem(
     agendaItemStartTime:@Composable () -> Unit,
     agendaItemEndTime: (@Composable () -> Unit)? = null,
     agendaItemReminderTime: @Composable () -> Unit,
+    launchDatePicker: (@Composable () -> Unit)? = null,
+    launchTimePicker: (@Composable () -> Unit)? = null
 ) {
     Column(
         modifier = modifier,
@@ -62,6 +64,12 @@ fun AgendaItem(
         agendaItemReminderTime()
         Spacer(Modifier.height(20.dp))
         AgendaScreenDivider()
+    }
+    if (launchDatePicker != null) {
+        launchDatePicker()
+    }
+    if (launchTimePicker != null) {
+        launchTimePicker()
     }
 }
 
