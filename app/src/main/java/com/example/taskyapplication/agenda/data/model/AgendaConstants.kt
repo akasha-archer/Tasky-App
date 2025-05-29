@@ -1,9 +1,7 @@
 package com.example.taskyapplication.agenda.data.model
 
 import android.content.res.Resources
-import androidx.annotation.StringRes
 import androidx.compose.ui.graphics.vector.ImageVector
-import androidx.compose.ui.res.stringResource
 import com.example.taskyapplication.R
 import kotlin.time.Duration
 import kotlin.time.Duration.Companion.days
