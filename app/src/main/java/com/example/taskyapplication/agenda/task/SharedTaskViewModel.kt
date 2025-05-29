@@ -80,11 +80,11 @@ class SharedTaskViewModel @Inject constructor(
                 _uiState.update { it.copy(time = action.time) }
             }
             AgendaItemAction.ShowDatePicker -> {
-                _uiState.update { it.copy(isEditingItem = true) }
+                _uiState.update { it.copy(isEditingDate = true) }
             }
             AgendaItemAction.HideDatePicker -> {
                 _uiState.update {
-                    it.copy(isEditingItem = false)
+                    it.copy(isEditingDate = false)
                 }
             }
             AgendaItemAction.ShowReminderDropDown -> {
@@ -98,12 +98,12 @@ class SharedTaskViewModel @Inject constructor(
             }
             AgendaItemAction.ShowTimePicker -> {
                 _uiState.update {
-                    it.copy(isEditingItem = true)
+                    it.copy(isEditingTime = true)
                 }
             }
             AgendaItemAction.HideTimePicker -> {
                 _uiState.update {
-                    it.copy(isEditingItem = false)
+                    it.copy(isEditingTime = false)
                 }
             }
             AgendaItemAction.CloseEditDescriptionScreen -> {

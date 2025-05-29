@@ -11,7 +11,9 @@ data class TaskUiState(
     val date: String = "",
     val remindAt: ReminderOptions = ReminderOptions.THIRTY_MINUTES_BEFORE,
     val isDone: Boolean = false,
-    val isEditingItem: Boolean = false
+    val isEditingItem: Boolean = false,
+    val isEditingDate: Boolean = false,
+    val isEditingTime: Boolean = false
 )
 
 fun TaskDomainModel.toTaskUiState() = TaskUiState(
