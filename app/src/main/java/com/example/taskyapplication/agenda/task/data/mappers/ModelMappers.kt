@@ -36,7 +36,8 @@ fun UpdateTaskBody.asTaskEntity() = TaskEntity(
     title = title,
     description = description,
     time = startTime,
-    remindAt = reminderTime,
+    remindAt = 0L,
+    //reminderTime,
     isDone = isDone
 )
 
@@ -46,7 +47,8 @@ fun UpdateTaskBody.asTaskDomainModel() = TaskDomainModel(
     description = description,
     time = startTime.toDateTime().toFormattedTime(),
     date = startTime.toDateTime().toFormattedDate(),
-    remindAt = reminderTime,  // TODO("convert Long to enum value")
+    remindAt = ReminderOptions.THIRTY_MINUTES_BEFORE,
+    //reminderTime,  // TODO("convert Long to enum value")
     isDone = isDone
 )
 
@@ -56,7 +58,8 @@ fun TaskNetworkModel.asTaskDomainModel() = TaskDomainModel(
     description = description,
     time = startTime.toDateTime().toFormattedTime(),
     date = startTime.toDateTime().toFormattedDate(),
-    remindAt = reminderTime, // TODO("convert Long to enum value")
+    remindAt = ReminderOptions.THIRTY_MINUTES_BEFORE,
+    //reminderTime, // TODO("convert Long to enum value")
     isDone = isDone
 )
 

@@ -113,7 +113,7 @@ fun DeleteItemBottomSheet(
                             contentColor = taskyColors.onSurface,
                         )
                     ) {
-                        Text(text = stringResource(R.string.delete_bottom_sheet_cancel_button))
+                        Text(text = stringResource(android.R.string.cancel))
                     }
                     OutlinedButton(
                         modifier = Modifier
@@ -129,7 +129,7 @@ fun DeleteItemBottomSheet(
                             contentColor = taskyColors.onPrimary,
                         )
                     ) {
-                        Text(text = stringResource(R.string.delete_bottom_sheet_delete_button))
+                        Text(text = stringResource(R.string.delete_text_button))
                     }
                 }
             }
