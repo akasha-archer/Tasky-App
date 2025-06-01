@@ -1,24 +1,24 @@
 package com.example.taskyapplication
 
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import com.example.taskyapplication.agenda.presentation.AgendaScreen
-import com.example.taskyapplication.agenda.task.presentation.components.DetailTest
 import com.example.taskyapplication.auth.login.LoginScreenRoot
 import com.example.taskyapplication.auth.register.RegisterScreenRoot
 import kotlinx.serialization.Serializable
 import androidx.compose.runtime.remember
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.ViewModel
-import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavBackStackEntry
 import androidx.navigation.navigation
 import com.example.taskyapplication.agenda.task.SharedTaskViewModel
-import com.example.taskyapplication.agenda.task.presentation.components.EditScreenWrapper
+import com.example.taskyapplication.agenda.task.presentation.screens.TaskDetailRoot
+import com.example.taskyapplication.agenda.task.presentation.screens.TaskEditDateTimeRoot
+import com.example.taskyapplication.agenda.task.presentation.screens.TaskEditDescriptionRoot
+import com.example.taskyapplication.agenda.task.presentation.screens.TaskEditTitleRoot
 
 @Composable
 fun NavigationRoot(
@@ -40,37 +40,63 @@ fun NavigationRoot(
     ) {
         // Task screens subgraph
         navigation<NavigationRoutes.TaskEditGraph>(
-            startDestination = NavigationRoutes.TaskScreen
-        ){
-            composable< NavigationRoutes.TaskScreen> { entry ->
+            startDestination = NavigationRoutes.TaskDetailScreen
+        ) {
+            composable<NavigationRoutes.TaskDetailScreen> { entry ->
                 val viewmodel = entry.sharedViewModel<SharedTaskViewModel>(navController)
-                val state by viewmodel.uiState.collectAsStateWithLifecycle()
-
-                DetailTest(
-                    state = state,
-                    onClickNext = {
-                        navController.navigate(NavigationRoutes.EditScreen)
+                TaskDetailRoot(
+                    onClickEdit = {
+                        navController.navigate(NavigationRoutes.TaskEditDateTime)
                     },
+                    onClickClose = {
+                        navController.navigate(NavigationRoutes.AgendaScreen)
+                    },
+                    taskViewModel = viewmodel
                 )
             }
-            composable<NavigationRoutes.EditScreen> { entry ->
+            composable<NavigationRoutes.TaskEditDateTime> { entry ->
                 val viewmodel = entry.sharedViewModel<SharedTaskViewModel>(navController)
-//                val state by viewmodel.uiState.collectAsStateWithLifecycle()
-
-                EditScreenWrapper(
+                TaskEditDateTimeRoot(
                     onClickCancel = {
-                        navController.navigate(NavigationRoutes.TaskScreen) {
-                            popUpTo(NavigationRoutes.TaskScreen) {
-                                inclusive = false
-                                saveState = true
-                            }
-                        }
+                        navController.navigateUp()
                     },
-                    onDoneEdit = { navController.popBackStack() },
-                    viewModel = viewmodel
+                    onClickSave = {
+                        navController.navigateUp()
+                    },
+                    onSelectEditTitle = {
+                        navController.navigate(NavigationRoutes.TaskEditTitle)
+                    },
+                    onSelectEditDescription = {
+                        navController.navigate(NavigationRoutes.TaskEditDescription)
+                    },
+                    taskViewModel = viewmodel
                 )
             }
-        }
+            composable<NavigationRoutes.TaskEditTitle> { entry ->
+                val viewmodel = entry.sharedViewModel<SharedTaskViewModel>(navController)
+                TaskEditTitleRoot(
+                    onClickSave = {
+                        navController.navigateUp()
+                    },
+                    onClickCancel = {
+                        navController.navigateUp()
+                    },
+                    taskViewModel = viewmodel
+                )
+            }
+            composable<NavigationRoutes.TaskEditDescription> { entry ->
+                val viewmodel = entry.sharedViewModel<SharedTaskViewModel>(navController)
+                TaskEditDescriptionRoot(
+                    onClickSave = {
+                        navController.navigateUp()
+                    },
+                    onClickCancel = {
+                        navController.navigateUp()
+                    },
+                    taskViewModel = viewmodel
+                )
+            }
+        } // end task subgraph
 
         composable<NavigationRoutes.RegisterScreen> {
             RegisterScreenRoot(
@@ -145,10 +171,16 @@ sealed interface NavigationRoutes {
     data object EventScreen : NavigationRoutes
 
     @Serializable
-    data object TaskScreen : NavigationRoutes
+    data object TaskDetailScreen : NavigationRoutes
 
     @Serializable
-    data object EditScreen : NavigationRoutes
+    data object TaskEditDateTime : NavigationRoutes
+
+    @Serializable
+    data object TaskEditTitle : NavigationRoutes
+
+    @Serializable
+    data object TaskEditDescription : NavigationRoutes
 
     @Serializable
     data object ReminderScreen : NavigationRoutes

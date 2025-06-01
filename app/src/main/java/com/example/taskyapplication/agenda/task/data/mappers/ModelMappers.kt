@@ -5,7 +5,7 @@ import com.example.taskyapplication.agenda.task.data.local.entity.TaskEntity
 import com.example.taskyapplication.agenda.task.data.network.models.GetTaskResponse
 import com.example.taskyapplication.agenda.task.data.network.models.TaskNetworkModel
 import com.example.taskyapplication.agenda.task.data.network.models.UpdateTaskBody
-import com.example.taskyapplication.agenda.task.domain.TaskDomainModel
+import com.example.taskyapplication.agenda.task.domain.TaskDto
 import com.example.taskyapplication.agenda.task.presentation.TaskUiState
 import java.time.Instant
 import java.time.LocalDateTime
@@ -41,7 +41,7 @@ fun UpdateTaskBody.asTaskEntity() = TaskEntity(
     isDone = isDone
 )
 
-fun UpdateTaskBody.asTaskDomainModel() = TaskDomainModel(
+fun UpdateTaskBody.asTaskDomainModel() = TaskDto(
     id = itemId,
     title = title,
     description = description,
@@ -52,7 +52,7 @@ fun UpdateTaskBody.asTaskDomainModel() = TaskDomainModel(
     isDone = isDone
 )
 
-fun TaskNetworkModel.asTaskDomainModel() = TaskDomainModel(
+fun TaskNetworkModel.asTaskDomainModel() = TaskDto(
     id = itemId,
     title = title,
     description = description,
@@ -72,7 +72,7 @@ fun TaskNetworkModel.asTaskEntity() = TaskEntity(
     isDone = isDone
 )
 
-fun TaskEntity.asTaskDomainModel() = TaskDomainModel(
+fun TaskEntity.asTaskDomainModel() = TaskDto(
     id = id,
     title = title,
     description = description,
@@ -100,7 +100,7 @@ fun TaskUiState.asUpdateTaskModel() = UpdateTaskBody(
     isDone = isDone
 )
 
-fun TaskDomainModel.asTaskEntity() = TaskEntity(
+fun TaskDto.asTaskEntity() = TaskEntity(
     id = id,
     title = title,
     description = description,

@@ -59,7 +59,12 @@ fun TaskyBaseScreen(
                 disabledContainerColor = Color.Transparent
             ),
             modifier = Modifier
-                .background(color = Color.Black)
+                .background(color =
+                if(isAgendaEditScreen)
+                    Color.White
+                else
+                    Color.Black
+                )
                 .fillMaxWidth()
                 .fillMaxHeight()
         ) {

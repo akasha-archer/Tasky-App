@@ -20,6 +20,7 @@ import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
@@ -31,7 +32,8 @@ import com.example.taskyapplication.ui.theme.TaskyTypography
 fun AgendaItemDeleteTextButton(
     modifier: Modifier = Modifier,
     onClick: () -> Unit,
-    itemToDelete: String
+    itemToDelete: String,
+    isEnabled: Boolean = false
 ) {
     Column(
         modifier = modifier
@@ -45,14 +47,16 @@ fun AgendaItemDeleteTextButton(
         )
         TextButton(
             onClick = onClick,
+            enabled = isEnabled,
             modifier = Modifier
                 .fillMaxWidth()
                 .align(Alignment.CenterHorizontally)
+                .alpha(if (isEnabled) 1f else 0.4f)
         ) {
             Text(
                 text = stringResource(R.string.delete_text_button, itemToDelete).uppercase(),
                 style = TaskyTypography.labelSmall,
-                color = taskyColors.error
+                color = if (isEnabled) taskyColors.error else taskyColors.inputText
             )
         }
     }

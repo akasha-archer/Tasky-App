@@ -2,7 +2,7 @@ package com.example.taskyapplication.agenda.task.domain
 
 import com.example.taskyapplication.agenda.data.model.ReminderOptions
 
-data class TaskDomainModel(
+data class TaskDto(
     val id: String,
     val title: String,
     val description: String,

@@ -16,7 +16,7 @@ interface TaskRepository {
 
     suspend fun getTaskById(
         taskId: String
-    ): TaskDomainModel
+    ): TaskDto
 
     suspend fun deleteTask(
         taskId: String
