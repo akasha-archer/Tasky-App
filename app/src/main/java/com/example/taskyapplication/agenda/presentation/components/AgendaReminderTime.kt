@@ -25,6 +25,7 @@ import androidx.compose.ui.geometry.CornerRadius
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import com.example.taskyapplication.agenda.data.model.ReminderOptions
 import com.example.taskyapplication.agenda.data.model.reminderTimeList
 import com.example.taskyapplication.ui.theme.TaskyDesignSystem.Companion.taskyColors
 import com.example.taskyapplication.ui.theme.TaskyTypography
@@ -32,7 +33,7 @@ import com.example.taskyapplication.ui.theme.TaskyTypography
 @Composable
 fun ReminderTimeRow(
     modifier: Modifier = Modifier,
-    reminderTime: String = "30 minutes before",
+    reminderTime: String = ReminderOptions.THIRTY_MINUTES_BEFORE.value.toString(),
     isEditing: Boolean = false
 ) {
     Row(

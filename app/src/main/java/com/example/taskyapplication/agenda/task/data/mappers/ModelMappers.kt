@@ -1,11 +1,11 @@
 package com.example.taskyapplication.agenda.task.data.mappers
 
-import android.os.Build
-import androidx.annotation.RequiresApi
+import com.example.taskyapplication.agenda.data.model.ReminderOptions
 import com.example.taskyapplication.agenda.task.data.local.entity.TaskEntity
 import com.example.taskyapplication.agenda.task.data.network.models.GetTaskResponse
 import com.example.taskyapplication.agenda.task.data.network.models.TaskNetworkModel
 import com.example.taskyapplication.agenda.task.data.network.models.UpdateTaskBody
+import com.example.taskyapplication.agenda.task.domain.TaskDomainModel
 import com.example.taskyapplication.agenda.task.presentation.TaskUiState
 import java.time.Instant
 import java.time.LocalDateTime
@@ -21,14 +21,13 @@ fun GetTaskResponse.asTaskEntity() = TaskEntity(
     isDone = isDone
 )
 
-@RequiresApi(Build.VERSION_CODES.O)
 fun GetTaskResponse.asTaskUi() = TaskUiState(
     id = id,
     title = title,
     description = description,
     time = time.toDateTime().toFormattedTime(),
     date = time.toDateTime().toFormattedDate(),
-    remindAt = remindAt,
+    remindAt = ReminderOptions.THIRTY_MINUTES_BEFORE,
     isDone = isDone
 )
 
@@ -37,7 +36,30 @@ fun UpdateTaskBody.asTaskEntity() = TaskEntity(
     title = title,
     description = description,
     time = startTime,
-    remindAt = reminderTime,
+    remindAt = 0L,
+    //reminderTime,
+    isDone = isDone
+)
+
+fun UpdateTaskBody.asTaskDomainModel() = TaskDomainModel(
+    id = itemId,
+    title = title,
+    description = description,
+    time = startTime.toDateTime().toFormattedTime(),
+    date = startTime.toDateTime().toFormattedDate(),
+    remindAt = ReminderOptions.THIRTY_MINUTES_BEFORE,
+    //reminderTime,  // TODO("convert Long to enum value")
+    isDone = isDone
+)
+
+fun TaskNetworkModel.asTaskDomainModel() = TaskDomainModel(
+    id = itemId,
+    title = title,
+    description = description,
+    time = startTime.toDateTime().toFormattedTime(),
+    date = startTime.toDateTime().toFormattedDate(),
+    remindAt = ReminderOptions.THIRTY_MINUTES_BEFORE,
+    //reminderTime, // TODO("convert Long to enum value")
     isDone = isDone
 )
 
@@ -50,18 +72,16 @@ fun TaskNetworkModel.asTaskEntity() = TaskEntity(
     isDone = isDone
 )
 
-@RequiresApi(Build.VERSION_CODES.O)
-fun TaskEntity.asTask() = TaskUiState(
+fun TaskEntity.asTaskDomainModel() = TaskDomainModel(
     id = id,
     title = title,
     description = description,
     time = time.toDateTime().toFormattedTime(),
     date = time.toDateTime().toFormattedDate(),
-    remindAt = remindAt,
+    remindAt = ReminderOptions.THIRTY_MINUTES_BEFORE,
     isDone = isDone
 )
 
-@RequiresApi(Build.VERSION_CODES.O)
 fun TaskUiState.asTaskNetworkModel() = TaskNetworkModel(
     itemId = id,
     title = title,
@@ -71,7 +91,6 @@ fun TaskUiState.asTaskNetworkModel() = TaskNetworkModel(
     isDone = isDone
 )
 
-@RequiresApi(Build.VERSION_CODES.O)
 fun TaskUiState.asUpdateTaskModel() = UpdateTaskBody(
     itemId = id,
     title = title,
@@ -81,19 +100,17 @@ fun TaskUiState.asUpdateTaskModel() = UpdateTaskBody(
     isDone = isDone
 )
 
-@RequiresApi(Build.VERSION_CODES.O)
-fun TaskUiState.asTaskEntity() = TaskEntity(
+fun TaskDomainModel.asTaskEntity() = TaskEntity(
     id = id,
     title = title,
     description = description,
     time = convertDateAndTimeStringsToLong(time, date),
-    remindAt = remindAt,
+    remindAt = ReminderOptions.THIRTY_MINUTES_BEFORE.value.inWholeMilliseconds,
     isDone = isDone
 )
 
 // Helper Functions for models
 //Combine date and time strings to convert to long
-@RequiresApi(Build.VERSION_CODES.O)
 fun convertDateAndTimeStringsToLong(
     timeString: String,
     dateString: String
@@ -106,14 +123,12 @@ fun convertDateAndTimeStringsToLong(
 }
 
 // Convert time Response to LocalDateTime Object
-@RequiresApi(Build.VERSION_CODES.O)
 fun Long.toDateTime(): LocalDateTime = LocalDateTime.ofInstant(
     Instant.ofEpochMilli(this),
     ZoneId.systemDefault()
 )
 
 // Extract date from LocalDateTime object and format as String
-@RequiresApi(Build.VERSION_CODES.O)
 fun LocalDateTime.toFormattedDate(): String =
     this.toLocalDate()
         .format(DateTimeFormatter.ofPattern(
@@ -121,7 +136,6 @@ fun LocalDateTime.toFormattedDate(): String =
         )
 
 // Extract time from LocalDateTime object and format as String
-@RequiresApi(Build.VERSION_CODES.O)
 fun LocalDateTime.toFormattedTime(): String =
     this.toLocalTime()
         .format(DateTimeFormatter.ofPattern(

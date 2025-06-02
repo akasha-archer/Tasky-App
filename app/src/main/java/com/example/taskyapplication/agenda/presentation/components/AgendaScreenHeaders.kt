@@ -6,6 +6,7 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.RowScope
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -18,8 +19,10 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import com.example.taskyapplication.R
 import com.example.taskyapplication.ui.theme.TaskyDesignSystem.Companion.taskyColors
 import com.example.taskyapplication.ui.theme.TaskyTypography
 import java.text.SimpleDateFormat
@@ -31,9 +34,9 @@ import java.util.Locale
 @Composable
 fun AgendaItemScreenHeader(
     modifier: Modifier = Modifier,
-    firstItem: @Composable () -> Unit,
-    secondItem: @Composable () -> Unit,
-    thirdItem: @Composable () -> Unit
+    firstItem: @Composable RowScope.() -> Unit,
+    secondItem: @Composable RowScope.() -> Unit,
+    thirdItem: @Composable RowScope.() -> Unit
 ) {
     Row(
         modifier = modifier
@@ -64,14 +67,14 @@ fun EditInputHeader(
             Text(
                 modifier = Modifier
                     .clickable { onClickCancel() },
-                text = "Cancel",
+                text = stringResource(android.R.string.cancel),
                 color = taskyColors.onSurface,
                 style = TaskyTypography.labelSmall
             )
         },
         secondItem = {
             Text(
-                text ="Edit $itemToEdit".uppercase(),
+                text = stringResource(R.string.edit_item_header, itemToEdit).uppercase(),
                 color = taskyColors.onSurface,
                 style = TaskyTypography.labelMedium
             )
@@ -80,7 +83,7 @@ fun EditInputHeader(
             Text(
                 modifier = Modifier
                     .clickable { onClickSave },
-                text = "Save",
+                text = stringResource(R.string.save_item_after_edit),
                 color = taskyColors.validInput,
                 style = TaskyTypography.labelSmall
             )
@@ -89,7 +92,6 @@ fun EditInputHeader(
 }
 
 // detail screen header
-@RequiresApi(Build.VERSION_CODES.O)
 @Composable
 fun DetailScreenHeader(
     modifier: Modifier = Modifier,
@@ -112,7 +114,7 @@ fun DetailScreenHeader(
                     .format(
                         DateTimeFormatter.ofPattern(
                             SimpleDateFormat(
-                                "dd MMMM yyyy",
+                                stringResource(R.string.edit_header_date_format),
                                 Locale.getDefault()
                             ).toPattern()
                         )
