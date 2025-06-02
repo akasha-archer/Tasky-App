@@ -28,9 +28,9 @@ import com.example.taskyapplication.ui.theme.TaskyTypography
 
 @Composable
 fun AgendaItemDeleteTextButton(
+    itemToDelete: String,
     modifier: Modifier = Modifier,
     onClick: () -> Unit,
-    itemToDelete: String,
     isEnabled: Boolean = false
 ) {
     Column(
@@ -64,10 +64,10 @@ fun AgendaItemDeleteTextButton(
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun DeleteItemBottomSheet(
+    itemToDelete: String,
     modifier: Modifier = Modifier,
     onDeleteTask: () -> Unit = {},
     onCancelDelete: () -> Unit = {},
-    itemToDelete: String
 ) {
     ModalBottomSheet(
         modifier = modifier,
