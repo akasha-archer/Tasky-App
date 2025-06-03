@@ -14,6 +14,11 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.ViewModel
 import androidx.navigation.NavBackStackEntry
 import androidx.navigation.navigation
+import com.example.taskyapplication.agenda.reminder.SharedReminderViewModel
+import com.example.taskyapplication.agenda.reminder.presentation.screens.ReminderDetailRoot
+import com.example.taskyapplication.agenda.reminder.presentation.screens.ReminderEditDateTimeRoot
+import com.example.taskyapplication.agenda.reminder.presentation.screens.ReminderEditDescriptionRoot
+import com.example.taskyapplication.agenda.reminder.presentation.screens.ReminderEditTitleRoot
 import com.example.taskyapplication.agenda.task.SharedTaskViewModel
 import com.example.taskyapplication.agenda.task.presentation.screens.TaskDetailRoot
 import com.example.taskyapplication.agenda.task.presentation.screens.TaskEditDateTimeRoot
@@ -30,7 +35,7 @@ fun NavigationRoot(
     NavHost(
         modifier = modifier,
         navController = navController,
-        startDestination = NavigationRoutes.TaskEditGraph
+        startDestination = NavigationRoutes.ReminderEditGraph
             //NavigationRoutes.TaskScreen
 //            when {
 //            isLoggedIn -> NavigationRoutes.AgendaScreen
@@ -94,6 +99,66 @@ fun NavigationRoot(
                         navController.navigateUp()
                     },
                     taskViewModel = viewmodel
+                )
+            }
+        } // end task subgraph
+
+        // Reminder screens subgraph
+        navigation<NavigationRoutes.ReminderEditGraph>(
+            startDestination = NavigationRoutes.ReminderDetail
+        ) {
+            composable<NavigationRoutes.ReminderDetail> { entry ->
+                val viewmodel = entry.sharedViewModel<SharedReminderViewModel>(navController)
+                ReminderDetailRoot(
+                    onClickEdit = {
+                        navController.navigate(NavigationRoutes.ReminderDateTime)
+                    },
+                    onClickClose = {
+                        navController.navigate(NavigationRoutes.AgendaScreen)
+                    },
+                    reminderViewModel = viewmodel
+                )
+            }
+            composable<NavigationRoutes.ReminderDateTime> { entry ->
+                val viewmodel = entry.sharedViewModel<SharedReminderViewModel>(navController)
+                ReminderEditDateTimeRoot(
+                    onClickCancel = {
+                        navController.navigateUp()
+                    },
+                    onClickSave = {
+                        navController.navigateUp()
+                    },
+                    onSelectEditTitle = {
+                        navController.navigate(NavigationRoutes.ReminderEditTitle)
+                    },
+                    onSelectEditDescription = {
+                        navController.navigate(NavigationRoutes.ReminderEditDescription)
+                    },
+                    reminderViewModel = viewmodel
+                )
+            }
+            composable<NavigationRoutes.ReminderEditTitle> { entry ->
+                val viewmodel = entry.sharedViewModel<SharedReminderViewModel>(navController)
+                ReminderEditTitleRoot(
+                    onClickSave = {
+                        navController.navigateUp()
+                    },
+                    onClickCancel = {
+                        navController.navigateUp()
+                    },
+                    reminderViewModel = viewmodel
+                )
+            }
+            composable<NavigationRoutes.ReminderEditDescription> { entry ->
+                val viewmodel = entry.sharedViewModel<SharedReminderViewModel>(navController)
+                ReminderEditDescriptionRoot(
+                    onClickSave = {
+                        navController.navigateUp()
+                    },
+                    onClickCancel = {
+                        navController.navigateUp()
+                    },
+                    reminderViewModel = viewmodel
                 )
             }
         } // end task subgraph
@@ -164,6 +229,9 @@ sealed interface NavigationRoutes {
     @Serializable // route for nested graph for Task screens
     data object TaskEditGraph: NavigationRoutes
 
+    @Serializable // route for nested graph for Task screens
+    data object ReminderEditGraph: NavigationRoutes
+
     @Serializable
     data object AgendaScreen : NavigationRoutes
 
@@ -183,5 +251,14 @@ sealed interface NavigationRoutes {
     data object TaskEditDescription : NavigationRoutes
 
     @Serializable
-    data object ReminderScreen : NavigationRoutes
+    data object ReminderDetail : NavigationRoutes
+
+    @Serializable
+    data object ReminderDateTime : NavigationRoutes
+
+    @Serializable
+    data object ReminderEditDescription : NavigationRoutes
+
+    @Serializable
+    data object ReminderEditTitle : NavigationRoutes
 }

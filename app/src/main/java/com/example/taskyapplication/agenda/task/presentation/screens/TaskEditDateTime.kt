@@ -30,6 +30,7 @@ import com.example.taskyapplication.agenda.data.model.ReminderTimeItem.Companion
 import com.example.taskyapplication.agenda.data.model.ReminderTimeItem.Companion.REMINDER_SIX_HOURS_BEFORE
 import com.example.taskyapplication.agenda.data.model.ReminderTimeItem.Companion.REMINDER_TEN_MINUTES_BEFORE
 import com.example.taskyapplication.agenda.data.model.ReminderTimeItem.Companion.REMINDER_THIRTY_MINUTES_BEFORE
+import com.example.taskyapplication.agenda.domain.getReminderOption
 import com.example.taskyapplication.agenda.domain.toDateAsString
 import com.example.taskyapplication.agenda.presentation.components.AgendaDescriptionText
 import com.example.taskyapplication.agenda.presentation.components.AgendaIconTextRow
@@ -202,7 +203,7 @@ fun TaskEditDateTimeScreen(
                                             onDismiss = {
                                                 onAction(AgendaItemAction.HideReminderDropDown)
                                             },
-                                            isExpanded = state.isEditingReminder,
+                                            isExpanded = true,
                                             onTimeSelected = { time ->
                                                 onAction(AgendaItemAction.SetReminderTime(getReminderOption(time)))
                                             },
@@ -257,19 +258,6 @@ fun TaskEditDateTimeScreen(
                 }
             }
         )
-    }
-}
-
-fun getReminderOption(
-    selection: String,
-) : ReminderOptions {
-    return when (selection) {
-        REMINDER_TEN_MINUTES_BEFORE -> ReminderOptions.TEN_MINUTES_BEFORE
-        REMINDER_THIRTY_MINUTES_BEFORE -> ReminderOptions.THIRTY_MINUTES_BEFORE
-        REMINDER_ONE_HOUR_BEFORE -> ReminderOptions.ONE_HOUR_BEFORE
-        REMINDER_ONE_DAY_BEFORE -> ReminderOptions.ONE_DAY_BEFORE
-        REMINDER_SIX_HOURS_BEFORE -> ReminderOptions.SIX_HOURS_BEFORE
-        else -> ReminderOptions.THIRTY_MINUTES_BEFORE // default value
     }
 }
 
