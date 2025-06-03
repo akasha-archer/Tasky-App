@@ -29,7 +29,7 @@ class SharedTaskViewModel @Inject constructor(
 
     fun executeActions(action: AgendaItemAction) {
         when (action) {
-            AgendaItemAction.SaveTaskUpdates -> {
+            AgendaItemAction.SaveAgendaItemUpdates -> {
                 val newTitle = _uiState.value.title
                 val newDescription = _uiState.value.description
                 val taskTime = _uiState.value.time
