@@ -22,7 +22,6 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.example.taskyapplication.TaskyBaseScreen
 import com.example.taskyapplication.agenda.AgendaItemAction
-import com.example.taskyapplication.agenda.data.model.AgendaItemType
 import com.example.taskyapplication.agenda.presentation.components.AgendaDescriptionText
 import com.example.taskyapplication.agenda.presentation.components.AgendaIconTextRow
 import com.example.taskyapplication.agenda.presentation.components.AgendaItem
@@ -66,7 +65,7 @@ fun TaskDetailRoot(
 @Composable
 fun TaskDetailScreen(
     modifier: Modifier = Modifier,
-    agendaItem: AgendaItemType = AgendaItemType.TASK,
+    agendaItem: String = "Task",
     onAction: (AgendaItemAction) -> Unit = {},
     state: TaskUiState,
     isEditScreen: Boolean = false
@@ -113,7 +112,7 @@ fun TaskDetailScreen(
                                     },
                                     textItem = {
                                         Text(
-                                            text = agendaItem.name.uppercase(),
+                                            text = agendaItem.uppercase(),
                                             style = TaskyTypography.labelMedium,
                                             color = taskyColors.onSurface
                                         )
@@ -151,7 +150,7 @@ fun TaskDetailScreen(
                                 .padding(bottom = 36.dp)
                                 .align(Alignment.BottomEnd),
                             onClick = {  },
-                            itemToDelete = AgendaItemType.TASK.name,
+                            itemToDelete = agendaItem.uppercase(),
                             isEnabled = state.id.isNotEmpty()
                         )
                     }

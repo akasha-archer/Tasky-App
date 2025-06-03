@@ -24,8 +24,12 @@ import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.example.taskyapplication.TaskyBaseScreen
 import com.example.taskyapplication.agenda.AgendaItemAction
-import com.example.taskyapplication.agenda.data.model.AgendaItemType
 import com.example.taskyapplication.agenda.data.model.ReminderOptions
+import com.example.taskyapplication.agenda.data.model.ReminderTimeItem.Companion.REMINDER_ONE_DAY_BEFORE
+import com.example.taskyapplication.agenda.data.model.ReminderTimeItem.Companion.REMINDER_ONE_HOUR_BEFORE
+import com.example.taskyapplication.agenda.data.model.ReminderTimeItem.Companion.REMINDER_SIX_HOURS_BEFORE
+import com.example.taskyapplication.agenda.data.model.ReminderTimeItem.Companion.REMINDER_TEN_MINUTES_BEFORE
+import com.example.taskyapplication.agenda.data.model.ReminderTimeItem.Companion.REMINDER_THIRTY_MINUTES_BEFORE
 import com.example.taskyapplication.agenda.domain.toDateAsString
 import com.example.taskyapplication.agenda.presentation.components.AgendaDescriptionText
 import com.example.taskyapplication.agenda.presentation.components.AgendaIconTextRow
@@ -34,17 +38,12 @@ import com.example.taskyapplication.agenda.presentation.components.AgendaItemDat
 import com.example.taskyapplication.agenda.presentation.components.AgendaItemDeleteTextButton
 import com.example.taskyapplication.agenda.presentation.components.AgendaTitleRow
 import com.example.taskyapplication.agenda.presentation.components.EditScreenHeader
-import com.example.taskyapplication.agenda.presentation.components.ReminderDropDownMenu
+import com.example.taskyapplication.agenda.presentation.components.ReminderDropDown
 import com.example.taskyapplication.agenda.presentation.components.ReminderTimeRow
 import com.example.taskyapplication.agenda.presentation.components.TaskyDatePicker
 import com.example.taskyapplication.agenda.presentation.components.TaskyTimePicker
 import com.example.taskyapplication.agenda.task.SharedTaskViewModel
 import com.example.taskyapplication.agenda.task.presentation.TaskUiState
-import com.example.taskyapplication.agenda.task.presentation.TaskUiState.Companion.REMINDER_ONE_DAY_BEFORE
-import com.example.taskyapplication.agenda.task.presentation.TaskUiState.Companion.REMINDER_ONE_HOUR_BEFORE
-import com.example.taskyapplication.agenda.task.presentation.TaskUiState.Companion.REMINDER_SIX_HOURS_BEFORE
-import com.example.taskyapplication.agenda.task.presentation.TaskUiState.Companion.REMINDER_TEN_MINUTES_BEFORE
-import com.example.taskyapplication.agenda.task.presentation.TaskUiState.Companion.REMINDER_THIRTY_MINUTES_BEFORE
 import com.example.taskyapplication.main.presentation.components.TaskyScaffold
 import com.example.taskyapplication.ui.theme.TaskyDesignSystem.Companion.taskyColors
 import com.example.taskyapplication.ui.theme.TaskyTypography
@@ -186,10 +185,30 @@ fun TaskEditDateTimeScreen(
                                 )
                             },
                             agendaItemReminderTime = {
-                                ReminderTimeRow(
-                                    reminderTime = state.time.ifEmpty { ReminderOptions.THIRTY_MINUTES_BEFORE.timeString },
-                                    isEditing = isEditScreen,
-                                )
+                                Box(
+                                    contentAlignment = Alignment.CenterEnd
+                                ) {
+                                    ReminderTimeRow(
+                                        reminderTime = state.remindAt.timeString.ifEmpty { ReminderOptions.THIRTY_MINUTES_BEFORE.timeString },
+                                        isEditing = isEditScreen,
+                                        onClickDropDown = {
+                                            onAction(AgendaItemAction.ShowReminderDropDown)
+                                        }
+                                    )
+                                    if (state.isEditingReminder) {
+                                        ReminderDropDown(
+                                            modifier = Modifier
+                                                .padding(start = 36.dp, end = 16.dp),
+                                            onDismiss = {
+                                                onAction(AgendaItemAction.HideReminderDropDown)
+                                            },
+                                            isExpanded = state.isEditingReminder,
+                                            onTimeSelected = { time ->
+                                                onAction(AgendaItemAction.SetReminderTime(getReminderOption(time)))
+                                            },
+                                        )
+                                    }
+                                }
                             },
                             launchDatePicker = {
                                 if (state.isEditingDate) {
@@ -226,25 +245,13 @@ fun TaskEditDateTimeScreen(
                                     )
                                 }
                             },
-                            launchReminderDropDown = {
-                                if (state.isEditingReminder) {
-                                    ReminderDropDownMenu(
-                                        onDismiss = {},
-                                        isExpanded = true,
-                                        onSelectReminderOption = { time ->
-                                            onAction(AgendaItemAction.SetReminderTime(getReminderOption(time)))
-                                        },
-                                        selectedReminder = state.remindAt.timeString
-                                    )
-                                }
-                            }
                         )
                         AgendaItemDeleteTextButton(
                             modifier = Modifier
                                 .padding(bottom = 36.dp)
                                 .align(Alignment.BottomEnd),
                             onClick = {},
-                            itemToDelete = AgendaItemType.TASK.name
+                            itemToDelete = "Task".uppercase()
                         )
                     }
                 }
