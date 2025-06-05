@@ -14,16 +14,16 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.ViewModel
 import androidx.navigation.NavBackStackEntry
 import androidx.navigation.navigation
-import com.example.taskyapplication.agenda.reminder.SharedReminderViewModel
-import com.example.taskyapplication.agenda.reminder.presentation.screens.ReminderDetailRoot
-import com.example.taskyapplication.agenda.reminder.presentation.screens.ReminderEditDateTimeRoot
-import com.example.taskyapplication.agenda.reminder.presentation.screens.ReminderEditDescriptionRoot
-import com.example.taskyapplication.agenda.reminder.presentation.screens.ReminderEditTitleRoot
-import com.example.taskyapplication.agenda.task.SharedTaskViewModel
-import com.example.taskyapplication.agenda.task.presentation.screens.TaskDetailRoot
-import com.example.taskyapplication.agenda.task.presentation.screens.TaskEditDateTimeRoot
-import com.example.taskyapplication.agenda.task.presentation.screens.TaskEditDescriptionRoot
-import com.example.taskyapplication.agenda.task.presentation.screens.TaskEditTitleRoot
+import com.example.taskyapplication.agenda.items.reminder.SharedReminderViewModel
+import com.example.taskyapplication.agenda.items.reminder.presentation.screens.ReminderDetailRoot
+import com.example.taskyapplication.agenda.items.reminder.presentation.screens.ReminderEditDateTimeRoot
+import com.example.taskyapplication.agenda.items.reminder.presentation.screens.ReminderEditDescriptionRoot
+import com.example.taskyapplication.agenda.items.reminder.presentation.screens.ReminderEditTitleRoot
+import com.example.taskyapplication.agenda.items.task.SharedTaskViewModel
+import com.example.taskyapplication.agenda.items.task.presentation.screens.TaskDetailRoot
+import com.example.taskyapplication.agenda.items.task.presentation.screens.TaskEditDateTimeRoot
+import com.example.taskyapplication.agenda.items.task.presentation.screens.TaskEditDescriptionRoot
+import com.example.taskyapplication.agenda.items.task.presentation.screens.TaskEditTitleRoot
 
 @Composable
 fun NavigationRoot(

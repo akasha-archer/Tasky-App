@@ -3,13 +3,13 @@ package com.example.taskyapplication.agenda.di
 import android.content.Context
 import androidx.room.Room
 import com.example.taskyapplication.agenda.data.db.AgendaDatabase
-import com.example.taskyapplication.agenda.reminder.data.db.ReminderDao
-import com.example.taskyapplication.agenda.reminder.domain.ReminderLocalDataSource
-import com.example.taskyapplication.agenda.reminder.domain.ReminderLocalDataSourceImpl
-import com.example.taskyapplication.agenda.task.data.local.dao.PendingTaskDao
-import com.example.taskyapplication.agenda.task.data.local.dao.TaskDao
-import com.example.taskyapplication.agenda.task.domain.LocalDataSource
-import com.example.taskyapplication.agenda.task.domain.TaskLocalDataSource
+import com.example.taskyapplication.agenda.items.reminder.data.db.ReminderDao
+import com.example.taskyapplication.agenda.items.reminder.domain.ReminderLocalDataSource
+import com.example.taskyapplication.agenda.items.reminder.domain.ReminderLocalDataSourceImpl
+import com.example.taskyapplication.agenda.items.task.data.local.dao.PendingTaskDao
+import com.example.taskyapplication.agenda.items.task.data.local.dao.TaskDao
+import com.example.taskyapplication.agenda.items.task.domain.LocalDataSource
+import com.example.taskyapplication.agenda.items.task.domain.TaskLocalDataSource
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -33,8 +33,6 @@ object DatabaseModule {
     fun provideReminderLocalDataSource(
         dao: ReminderDao
     ): ReminderLocalDataSource = ReminderLocalDataSourceImpl(dao)
-
-
 
 // TASKS
     @Singleton
