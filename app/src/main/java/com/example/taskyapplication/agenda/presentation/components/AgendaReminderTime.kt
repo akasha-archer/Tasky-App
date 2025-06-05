@@ -83,6 +83,8 @@ fun ReminderTimeRow(
 fun ReminderDropDownMenu(
     modifier: Modifier = Modifier,
     onDismiss: () -> Unit,
+    selectedReminder: String = reminderTimeList[0].reminderTime,
+    onSelectReminderOption: (String) -> Unit = {},
     isExpanded: Boolean = false
 ) {
     ExposedDropdownMenuBox(
@@ -99,8 +101,10 @@ fun ReminderDropDownMenu(
             textStyle = TaskyTypography.bodyMedium.copy(
                 color = taskyColors.onSurface
             ),
-            value = reminderTimeList[0].reminderTime,
-            onValueChange = { }, // update State
+            value = selectedReminder,
+            onValueChange = {
+                onSelectReminderOption(it)
+            },
             readOnly = true,
             trailingIcon = {
                 ExposedDropdownMenuDefaults.TrailingIcon(expanded = isExpanded)

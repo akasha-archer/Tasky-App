@@ -12,10 +12,10 @@ import kotlinx.coroutines.flow.Flow
 import javax.inject.Inject
 
 interface LocalDataSource {
-    fun getTasks(): Flow<List<TaskDomainModel>>
-    suspend fun upsertTask(task: TaskDomainModel): Result<Unit, DataError.Local>
-    suspend fun upsertAllTasks(tasks: List<TaskDomainModel>): Result<Unit, DataError.Local>
-    suspend fun getTask(taskId: String): TaskDomainModel
+    fun getTasks(): Flow<List<TaskDto>>
+    suspend fun upsertTask(task: TaskDto): Result<Unit, DataError.Local>
+    suspend fun upsertAllTasks(tasks: List<TaskDto>): Result<Unit, DataError.Local>
+    suspend fun getTask(taskId: String): TaskDto
     suspend fun deleteTask(taskId: String)
     suspend fun deleteAllTasks()
 }
@@ -25,7 +25,7 @@ class TaskLocalDataSource @Inject constructor(
 ) : LocalDataSource {
 
     @RequiresApi(Build.VERSION_CODES.O)
-    override suspend fun upsertTask(task: TaskDomainModel): Result<Unit, DataError.Local> {
+    override suspend fun upsertTask(task: TaskDto): Result<Unit, DataError.Local> {
         return try {
             dao.upsertTask(task.asTaskEntity())
             Result.Success(Unit)
@@ -34,7 +34,7 @@ class TaskLocalDataSource @Inject constructor(
         }
     }
 
-    override suspend fun getTask(taskId: String): TaskDomainModel {
+    override suspend fun getTask(taskId: String): TaskDto {
         return dao.getTaskById(taskId).asTaskDomainModel()
     }
 
@@ -42,11 +42,11 @@ class TaskLocalDataSource @Inject constructor(
         dao.deleteTaskById(taskId)
     }
 
-    override suspend fun upsertAllTasks(tasks: List<TaskDomainModel>): Result<Unit, DataError.Local> {
+    override suspend fun upsertAllTasks(tasks: List<TaskDto>): Result<Unit, DataError.Local> {
         TODO("Not yet implemented")
     }
 
-    override fun getTasks(): Flow<List<TaskDomainModel>> {
+    override fun getTasks(): Flow<List<TaskDto>> {
         TODO("Not yet implemented")
     }
 

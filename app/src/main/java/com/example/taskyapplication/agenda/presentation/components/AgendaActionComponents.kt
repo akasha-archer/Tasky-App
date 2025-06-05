@@ -21,10 +21,6 @@ import androidx.compose.ui.unit.dp
 import com.example.taskyapplication.R
 import com.example.taskyapplication.ui.theme.TaskyDesignSystem.Companion.taskyColors
 import com.example.taskyapplication.ui.theme.TaskyTypography
-import java.time.LocalDate
-import java.time.LocalTime
-import java.time.format.DateTimeFormatter
-import java.time.format.FormatStyle
 
 @Composable
 fun AgendaItemDateTimeRow(
@@ -32,12 +28,8 @@ fun AgendaItemDateTimeRow(
     onClickTime: () -> Unit = {},
     onClickDate: () -> Unit = {},
     isEditing: Boolean = false,
-    dateText: String = LocalDate.now().format(
-        DateTimeFormatter.ofLocalizedDate(FormatStyle.MEDIUM)
-    ),
-    timeText: String = LocalTime.now().format(
-        DateTimeFormatter.ofLocalizedTime(FormatStyle.SHORT)
-    )
+    dateText: String,
+    timeText: String
 ) {
     Row(
         modifier = modifier
@@ -114,6 +106,8 @@ fun DateTimeFieldWithIcon(
 @Composable
 fun AgendaItemTimeRowPreview() {
     AgendaItemDateTimeRow(
+        timeText = "10:00 AM",
+        dateText = "2023-10-01",
         isEditing = true,
     )
 }

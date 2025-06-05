@@ -7,7 +7,7 @@ import com.example.taskyapplication.agenda.task.data.network.models.TaskNetworkM
 import com.example.taskyapplication.agenda.task.data.network.models.UpdateTaskBody
 import com.example.taskyapplication.agenda.task.domain.LocalDataSource
 import com.example.taskyapplication.agenda.task.domain.RemoteDataSource
-import com.example.taskyapplication.agenda.task.domain.TaskDomainModel
+import com.example.taskyapplication.agenda.task.domain.TaskDto
 import com.example.taskyapplication.agenda.task.domain.TaskRepository
 import com.example.taskyapplication.domain.utils.DataError
 import com.example.taskyapplication.domain.utils.EmptyResult
@@ -83,7 +83,7 @@ class OfflineFirstTaskRepository @Inject constructor(
         return remoteResult.asEmptyDataResult()
     }
 
-    override suspend fun getTaskById(taskId: String): TaskDomainModel {
+    override suspend fun getTaskById(taskId: String): TaskDto {
        return localDataSource.getTask(taskId)
     }
 }

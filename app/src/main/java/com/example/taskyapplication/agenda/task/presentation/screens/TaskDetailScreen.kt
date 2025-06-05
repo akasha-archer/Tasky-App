@@ -12,14 +12,17 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.outlined.CheckCircle
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.example.taskyapplication.TaskyBaseScreen
+import com.example.taskyapplication.agenda.AgendaItemAction
 import com.example.taskyapplication.agenda.data.model.AgendaItemType
-import com.example.taskyapplication.agenda.data.model.ReminderOptions
 import com.example.taskyapplication.agenda.presentation.components.AgendaDescriptionText
 import com.example.taskyapplication.agenda.presentation.components.AgendaIconTextRow
 import com.example.taskyapplication.agenda.presentation.components.AgendaItem
@@ -28,15 +31,43 @@ import com.example.taskyapplication.agenda.presentation.components.AgendaItemDel
 import com.example.taskyapplication.agenda.presentation.components.AgendaTitleRow
 import com.example.taskyapplication.agenda.presentation.components.DetailScreenHeader
 import com.example.taskyapplication.agenda.presentation.components.ReminderTimeRow
+import com.example.taskyapplication.agenda.task.SharedTaskViewModel
 import com.example.taskyapplication.agenda.task.presentation.TaskUiState
+import com.example.taskyapplication.main.presentation.components.TaskyScaffold
 import com.example.taskyapplication.ui.theme.TaskyDesignSystem.Companion.taskyColors
 import com.example.taskyapplication.ui.theme.TaskyTypography
 
 @Composable
+fun TaskDetailRoot(
+    modifier: Modifier = Modifier,
+    onClickEdit: () -> Unit = {},
+    onClickClose: () -> Unit = {},
+    taskViewModel: SharedTaskViewModel,
+) {
+    val uiState by taskViewModel.uiState.collectAsStateWithLifecycle()
+    TaskyScaffold(
+        mainContent = {
+            TaskDetailScreen(
+                modifier = modifier,
+                onAction = { action ->
+                    when (action) {
+                        AgendaItemAction.LaunchDateTimeEditScreen -> onClickEdit()
+                        AgendaItemAction.CloseDetailScreen -> onClickClose()
+                        else -> Unit
+                    }
+                    taskViewModel.executeActions(action)
+                },
+                state = uiState,
+            )
+        }
+    )
+}
+
+@Composable
 fun TaskDetailScreen(
     modifier: Modifier = Modifier,
-    screenHeading: @Composable () -> Unit = {},
-    agendaItem: AgendaItemType,
+    agendaItem: AgendaItemType = AgendaItemType.TASK,
+    onAction: (AgendaItemAction) -> Unit = {},
     state: TaskUiState,
     isEditScreen: Boolean = false
 ) {
@@ -47,8 +78,12 @@ fun TaskDetailScreen(
         TaskyBaseScreen(
             screenHeader = {
                 DetailScreenHeader(
-                    onClickEdit = { },
-                    onClickClose = { }
+                    onClickEdit = {
+                        onAction(AgendaItemAction.LaunchDateTimeEditScreen)
+                    },
+                    onClickClose = {
+                        onAction(AgendaItemAction.CloseDetailScreen)
+                    }
                 )
             },
             mainContent = {
@@ -100,11 +135,13 @@ fun TaskDetailScreen(
                             agendaItemStartTime = {
                                 AgendaItemDateTimeRow(
                                     isEditing = isEditScreen,
+                                    timeText = state.time,
+                                    dateText = state.date,
                                 )
                             },
                             agendaItemReminderTime = {
                                 ReminderTimeRow(
-                                    reminderTime = state.time.ifEmpty { ReminderOptions.THIRTY_MINUTES_BEFORE.timeString },
+                                    reminderTime = state.remindAt.timeString,
                                     isEditing = isEditScreen,
                                 )
                             }
@@ -114,7 +151,8 @@ fun TaskDetailScreen(
                                 .padding(bottom = 36.dp)
                                 .align(Alignment.BottomEnd),
                             onClick = {  },
-                            itemToDelete = AgendaItemType.TASK.name
+                            itemToDelete = AgendaItemType.TASK.name,
+                            isEnabled = state.id.isNotEmpty()
                         )
                     }
                 }
@@ -127,8 +165,7 @@ fun TaskDetailScreen(
 @Preview(showBackground = true)
 @Composable
 fun BaseDetailScreenPreview() {
-    TaskDetailScreen(
-        agendaItem = AgendaItemType.TASK,
-        state = TaskUiState()
+    TaskDetailRoot(
+        taskViewModel = hiltViewModel(),
     )
 }

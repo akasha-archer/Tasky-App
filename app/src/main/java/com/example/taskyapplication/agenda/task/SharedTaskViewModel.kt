@@ -18,7 +18,7 @@ import javax.inject.Inject
 @HiltViewModel
 class SharedTaskViewModel @Inject constructor(
     private val repository: TaskRepository
-): ViewModel() {
+) : ViewModel() {
 
     private val _uiState = MutableStateFlow(TaskUiState())
     val uiState = _uiState.stateIn(
@@ -27,103 +27,155 @@ class SharedTaskViewModel @Inject constructor(
         initialValue = TaskUiState(),
     )
 
-    fun onTaskAction(action: AgendaItemAction) {
-        when(action) {
-           AgendaItemAction.SaveTaskUpdates -> {
-               val newTitle = _uiState.value.title
-               val newDescription = _uiState.value.description
-               val taskTime = _uiState.value.time
-               val taskDate = _uiState.value.date
-               val reminderTime = _uiState.value.remindAt
+    fun executeActions(action: AgendaItemAction) {
+        when (action) {
+            AgendaItemAction.SaveTaskUpdates -> {
+                val newTitle = _uiState.value.title
+                val newDescription = _uiState.value.description
+                val taskTime = _uiState.value.time
+                val taskDate = _uiState.value.date
+                val reminderTime = _uiState.value.remindAt
 
-               if (newTitle.isBlank() || newDescription.isBlank()) {
-                   return
-               }
-               val newTaskId: String = UUID.randomUUID().toString()
-               _uiState.update {
-                   it.copy(
-                       id = newTaskId
-                   )
-               }
-               val taskUiState = TaskUiState(
-                   id = newTaskId,
-                   title = newTitle,
-                   description = newDescription,
-                   time = taskTime,
-                   date = taskDate,
-                   remindAt = reminderTime
-               )
-               viewModelScope.launch {
-                   repository.createNewTask(
-                       taskUiState.asTaskNetworkModel()
-                   )
-               }
-               _uiState.update {
-                   it.copy(isEditingItem = false)
-               }
+                if (newTitle.isBlank() || newDescription.isBlank()) {
+                    return
+                }
+                val newTaskId: String = UUID.randomUUID().toString()
+                _uiState.update {
+                    it.copy(
+                        id = newTaskId
+                    )
+                }
+                val taskUiState = TaskUiState(
+                    id = newTaskId,
+                    title = newTitle,
+                    description = newDescription,
+                    time = taskTime,
+                    date = taskDate,
+                    remindAt = reminderTime
+                )
+                viewModelScope.launch {
+                    repository.createNewTask(
+                        taskUiState.asTaskNetworkModel()
+                    )
+                }
+                _uiState.update {
+                    it.copy(isEditingItem = false)
+                }
             }
+
             is AgendaItemAction.SetTitle -> {
                 viewModelScope.launch {
                     _uiState.update { it.copy(title = action.title) }
                 }
             }
+
             is AgendaItemAction.SetDate -> {
-                _uiState.update { it.copy(date = action.date) }
+                _uiState.update { it.copy(
+                    date = action.date,
+                    isEditingDate = false
+                ) }
             }
+
             is AgendaItemAction.SetDescription -> {
                 _uiState.update { it.copy(description = action.description) }
             }
+
             is AgendaItemAction.SetReminderTime -> {
                 _uiState.update { it.copy(remindAt = action.reminder) }
             }
+
             is AgendaItemAction.SetTime -> {
-                _uiState.update { it.copy(time = action.time) }
+                _uiState.update {
+                    it.copy(
+                        time = action.time,
+                        isEditingTime = false
+                    )
+                }
             }
+
             AgendaItemAction.ShowDatePicker -> {
-                _uiState.update { it.copy(isEditingItem = true) }
+                _uiState.update { it.copy(isEditingDate = true) }
             }
+
             AgendaItemAction.HideDatePicker -> {
                 _uiState.update {
-                    it.copy(isEditingItem = false)
+                    it.copy(isEditingDate = false)
                 }
             }
+
             AgendaItemAction.ShowReminderDropDown -> {
                 _uiState.update {
-                    it.copy(isEditingItem = true) }
+                    it.copy(isEditingReminder = true)
+                }
             }
+
             AgendaItemAction.HideReminderDropDown -> {
                 _uiState.update {
-                    it.copy(isEditingItem = false)
+                    it.copy(isEditingReminder = false)
                 }
             }
+
             AgendaItemAction.ShowTimePicker -> {
                 _uiState.update {
-                    it.copy(isEditingItem = true)
+                    it.copy(isEditingTime = true)
                 }
             }
+
             AgendaItemAction.HideTimePicker -> {
                 _uiState.update {
-                    it.copy(isEditingItem = false)
+                    it.copy(isEditingTime = false)
                 }
             }
+
             AgendaItemAction.CloseEditDescriptionScreen -> {
                 _uiState.update {
                     it.copy(isEditingItem = false)
                 }
             }
+
             AgendaItemAction.CloseEditTitleScreen -> {
                 _uiState.update {
                     it.copy(isEditingItem = false)
                 }
             }
+
             AgendaItemAction.LaunchEditDescriptionScreen -> {
                 _uiState.update {
                     it.copy(isEditingItem = true)
                 }
             }
-            is AgendaItemAction.LaunchEditTitleScreen -> {
+
+            AgendaItemAction.LaunchEditTitleScreen -> {
                 _uiState.update {
                     it.copy(isEditingItem = true)
+                }
+            }
+
+            AgendaItemAction.CancelEdit -> {
+                _uiState.update {
+                    it.copy(
+                        isEditingItem = false,
+                        isEditingDate = false,
+                        isEditingTime = false,
+                        isEditingReminder = false
+                    )
+                }
+            }
+
+            AgendaItemAction.LaunchDateTimeEditScreen -> {
+                _uiState.update {
+                    it.copy(isEditingItem = true)
+                }
+            }
+
+            AgendaItemAction.CloseDetailScreen -> {
+                Unit
+                // go back to Agenda screen
+            }
+
+            AgendaItemAction.SaveDateTimeEdit -> {
+                _uiState.update {
+                    it.copy(isEditingItem = false)
                 }
             }
         }

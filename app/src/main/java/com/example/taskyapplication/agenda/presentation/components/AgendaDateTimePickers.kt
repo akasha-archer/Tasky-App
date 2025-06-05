@@ -29,7 +29,7 @@ fun TaskyTimePicker(
     modifier: Modifier = Modifier,
     onDismiss: () -> Unit,
     onConfirm: () -> Unit,
-    state: TimePickerState,
+    timePickerState: TimePickerState,
 ) {
     Column(
         modifier = modifier.fillMaxSize(),
@@ -41,7 +41,7 @@ fun TaskyTimePicker(
             onConfirm = onConfirm,
             content = {
                 TimePicker(
-                    state = state,
+                    state = timePickerState,
                 )
             }
         )
@@ -79,7 +79,7 @@ fun TimePickerDialog(
 @Composable
 fun TaskyDatePicker(
     modifier: Modifier = Modifier,
-    state: DatePickerState,
+    datePickerState: DatePickerState,
     onDismiss: () -> Unit,
     onConfirm: () -> Unit
 ) {
@@ -94,7 +94,7 @@ fun TaskyDatePicker(
             content = {
                 DatePicker(
                     modifier = Modifier.padding(16.dp),
-                    state = state,
+                    state = datePickerState,
                     headline = { Text(text = stringResource(R.string.date_picker_heading)) }
                 )
             }
@@ -136,7 +136,7 @@ fun DateDialog(
 @Composable
 fun AgendaTimePickerPreview() {
     TaskyTimePicker(
-        state = TimePickerState(
+        timePickerState = TimePickerState(
             initialHour = 12,
             initialMinute = 0,
             is24Hour = false
@@ -151,7 +151,7 @@ fun AgendaTimePickerPreview() {
 @Composable
 fun AgendaDatePickerPreview() {
     TaskyDatePicker(
-        state = rememberDatePickerState(),
+        datePickerState = rememberDatePickerState(),
         onDismiss = {},
         onConfirm = {},
     )
