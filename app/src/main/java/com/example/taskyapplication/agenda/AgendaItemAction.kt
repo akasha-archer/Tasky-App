@@ -16,7 +16,7 @@ sealed interface AgendaItemAction {
     data object CloseEditTitleScreen: AgendaItemAction
     data object LaunchEditDescriptionScreen: AgendaItemAction
     data object CloseEditDescriptionScreen: AgendaItemAction
-    data object SaveTaskUpdates: AgendaItemAction
+    data object SaveAgendaItemUpdates: AgendaItemAction
     data object ShowTimePicker: AgendaItemAction
     data object HideTimePicker: AgendaItemAction
     data object ShowDatePicker: AgendaItemAction

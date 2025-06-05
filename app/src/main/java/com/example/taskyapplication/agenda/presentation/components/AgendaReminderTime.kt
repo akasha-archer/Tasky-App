@@ -1,31 +1,35 @@
 package com.example.taskyapplication.agenda.presentation.components
 
+import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
-import androidx.compose.material3.ExposedDropdownMenuBox
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Check
 import androidx.compose.material.icons.outlined.Notifications
+import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.DropdownMenuItem
-import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.ExposedDropdownMenuDefaults
 import androidx.compose.material3.Icon
-import androidx.compose.material3.MenuAnchorType
-import androidx.compose.material3.MenuItemColors
 import androidx.compose.material3.Text
-import androidx.compose.material3.TextField
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.saveable.rememberSaveable
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.draw.drawBehind
 import androidx.compose.ui.geometry.CornerRadius
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import com.example.taskyapplication.agenda.data.model.ReminderOptions
+import com.example.taskyapplication.R
+import com.example.taskyapplication.agenda.data.model.ReminderTimeItem.Companion.REMINDER_THIRTY_MINUTES_BEFORE
 import com.example.taskyapplication.agenda.data.model.reminderTimeList
 import com.example.taskyapplication.ui.theme.TaskyDesignSystem.Companion.taskyColors
 import com.example.taskyapplication.ui.theme.TaskyTypography
@@ -33,7 +37,8 @@ import com.example.taskyapplication.ui.theme.TaskyTypography
 @Composable
 fun ReminderTimeRow(
     modifier: Modifier = Modifier,
-    reminderTime: String = ReminderOptions.THIRTY_MINUTES_BEFORE.value.toString(),
+    reminderTime: String = REMINDER_THIRTY_MINUTES_BEFORE,
+    onClickDropDown: () -> Unit = {},
     isEditing: Boolean = false
 ) {
     Row(
@@ -53,131 +58,77 @@ fun ReminderTimeRow(
                                 cornerRadius = CornerRadius(3.dp.toPx())
                             )
                         }
-                        .padding(horizontal = 4.dp, vertical = 4.dp),
+                        .padding(horizontal = 4.dp, vertical = 10.dp),
                     imageVector = Icons.Outlined.Notifications,
                     tint = taskyColors.onSurfaceVariant,
                     contentDescription = "Reminder Icon"
                 )
             },
             textItem = {
-                if (isEditing) {
-                    ReminderDropDownMenu(
-                        onDismiss = {},
-                        isExpanded = false
-                    )
-                } else {
-                    Text(
-                        modifier = Modifier.padding(start = 8.dp),
-                        text = reminderTime,
-                        style = TaskyTypography.bodyMedium,
-                        color = taskyColors.onSurface
-                    )
-                }
-            }
-        )
-    }
-}
-
-@OptIn(ExperimentalMaterial3Api::class)
-@Composable
-fun ReminderDropDownMenu(
-    modifier: Modifier = Modifier,
-    onDismiss: () -> Unit,
-    selectedReminder: String = reminderTimeList[0].reminderTime,
-    onSelectReminderOption: (String) -> Unit = {},
-    isExpanded: Boolean = false
-) {
-    ExposedDropdownMenuBox(
-        modifier = modifier,
-        expanded = isExpanded,
-        onExpandedChange = {}
-    ) {
-        TextField(
-            modifier = Modifier
-                .fillMaxWidth()
-                .menuAnchor(
-                type = MenuAnchorType.PrimaryNotEditable
-            ),
-            textStyle = TaskyTypography.bodyMedium.copy(
-                color = taskyColors.onSurface
-            ),
-            value = selectedReminder,
-            onValueChange = {
-                onSelectReminderOption(it)
-            },
-            readOnly = true,
-            trailingIcon = {
-                ExposedDropdownMenuDefaults.TrailingIcon(expanded = isExpanded)
-            },
-            colors = ExposedDropdownMenuDefaults.textFieldColors(
-                focusedContainerColor = Color.Transparent,
-                unfocusedContainerColor = Color.Transparent,
-                disabledIndicatorColor = Color.Transparent,
-                focusedIndicatorColor = Color.Transparent,
-                unfocusedIndicatorColor = Color.Transparent
-            )
-
-        )
-        ExposedDropdownMenu(
-            expanded = isExpanded,
-            onDismissRequest = onDismiss
-        ) {
-            reminderTimeList.forEach { time ->
-                ReminderDropDownItem(
-                    reminderText = time.reminderTime
+                Text(
+                    modifier = Modifier.padding(start = 8.dp),
+                    text = reminderTime,
+                    style = TaskyTypography.bodyMedium,
+                    color = taskyColors.onSurface
                 )
-
             }
+        )
+        if (isEditing) {
+            Icon(
+                modifier = Modifier
+                    .clickable { onClickDropDown() }
+                    .padding(end = 8.dp),
+                painter = painterResource(R.drawable.dropdown),
+                tint = taskyColors.primary,
+                contentDescription = ""
+            )
         }
-
-
     }
 }
 
 @Composable
-fun ReminderDropDownItem(
+fun ReminderDropDown(
     modifier: Modifier = Modifier,
-    reminderText: String = "30 minutes before",
-    onSelectTime: () -> Unit = {},
-    isSelected: Boolean = false
+    isExpanded: Boolean = false,
+    onTimeSelected: (String) -> Unit = {},
+    onDismiss: () -> Unit = {},
 ) {
-    val background = taskyColors.surfaceContainerHigh
-    DropdownMenuItem(
-        text = {
-            Text(
-                modifier = Modifier.padding(start = 8.dp),
-                text = reminderText,
-                style = TaskyTypography.bodyMedium,
-                color = taskyColors.onSurface
-            )
-        },
-        onClick = onSelectTime,
+    var selectedTime by rememberSaveable { mutableStateOf(reminderTimeList[0].reminderTime) }
+    DropdownMenu(
         modifier = modifier
             .fillMaxWidth()
-            .padding(top = 16.dp)
-            .drawBehind {
-                drawRect(
-                    color = background
-                )
-            },
-        trailingIcon = {
-            if (isSelected) {
-                Icon(
-                    imageVector = Icons.Filled.Check,
-                    tint = taskyColors.validInput,
-                    contentDescription = "selected time"
+            .background(taskyColors.surface),
+        expanded = isExpanded,
+        onDismissRequest = {
+            onDismiss()
+        },
+        shape = RoundedCornerShape(8.dp),
+        tonalElevation = 4.dp,
+        content = {
+            reminderTimeList.forEachIndexed { index, time ->
+                DropdownMenuItem(
+                    onClick = {
+                        selectedTime = time.reminderTime
+                        onTimeSelected(selectedTime)
+                    },
+                    text = {
+                        Text(text = time.reminderTime)
+                    },
+                    trailingIcon = {
+                        val isSelectedRow = selectedTime == time.reminderTime
+                        if (isSelectedRow) {
+                            Icon(
+                                modifier = Modifier
+                                    .padding(end = 8.dp),
+                                imageVector = Icons.Filled.Check,
+                                tint = taskyColors.validInput,
+                                contentDescription = ""
+                            )
+                        }
+                    }
                 )
             }
-        },
-        enabled = true,
-        colors = MenuItemColors(
-            textColor = taskyColors.primary,
-            trailingIconColor = taskyColors.validInput,
-            disabledTextColor = taskyColors.primary,
-            leadingIconColor = Color.Transparent,
-            disabledLeadingIconColor = Color.Transparent,
-            disabledTrailingIconColor = Color.Transparent,
-        )
+        }
     )
 }
 
@@ -192,8 +143,8 @@ fun ReminderPreview() {
 @Composable
 @Preview(showBackground = true)
 fun ReminderDropDownPreview() {
-    ReminderDropDownMenu(
+    ReminderDropDown(
         onDismiss = {},
-        isExpanded = false
+        isExpanded = true
     )
 }

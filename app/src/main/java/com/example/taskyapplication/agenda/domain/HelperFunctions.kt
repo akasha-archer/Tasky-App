@@ -1,5 +1,11 @@
 package com.example.taskyapplication.agenda.domain
 
+import com.example.taskyapplication.agenda.data.model.ReminderOptions
+import com.example.taskyapplication.agenda.data.model.ReminderTimeItem.Companion.REMINDER_ONE_DAY_BEFORE
+import com.example.taskyapplication.agenda.data.model.ReminderTimeItem.Companion.REMINDER_ONE_HOUR_BEFORE
+import com.example.taskyapplication.agenda.data.model.ReminderTimeItem.Companion.REMINDER_SIX_HOURS_BEFORE
+import com.example.taskyapplication.agenda.data.model.ReminderTimeItem.Companion.REMINDER_TEN_MINUTES_BEFORE
+import com.example.taskyapplication.agenda.data.model.ReminderTimeItem.Companion.REMINDER_THIRTY_MINUTES_BEFORE
 import java.text.SimpleDateFormat
 import java.time.Instant
 import java.time.LocalDate
@@ -20,4 +26,17 @@ fun String.timeAsLong(): Long {
     val simpleDate = SimpleDateFormat("HH:mm", Locale.getDefault())
     return simpleDate.parse(this)?.time
         ?: throw IllegalArgumentException("Invalid time string or pattern")
+}
+
+fun getReminderOption(
+    selection: String,
+) : ReminderOptions {
+    return when (selection) {
+        REMINDER_TEN_MINUTES_BEFORE -> ReminderOptions.TEN_MINUTES_BEFORE
+        REMINDER_THIRTY_MINUTES_BEFORE -> ReminderOptions.THIRTY_MINUTES_BEFORE
+        REMINDER_ONE_HOUR_BEFORE -> ReminderOptions.ONE_HOUR_BEFORE
+        REMINDER_ONE_DAY_BEFORE -> ReminderOptions.ONE_DAY_BEFORE
+        REMINDER_SIX_HOURS_BEFORE -> ReminderOptions.SIX_HOURS_BEFORE
+        else -> ReminderOptions.THIRTY_MINUTES_BEFORE // default value
+    }
 }

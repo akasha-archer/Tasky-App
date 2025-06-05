@@ -2,95 +2,44 @@ package com.example.taskyapplication.agenda.di
 
 import android.content.Context
 import androidx.room.Room
-import com.example.taskyapplication.BuildConfig
 import com.example.taskyapplication.agenda.data.db.AgendaDatabase
-import com.example.taskyapplication.agenda.task.data.OfflineFirstTaskRepository
-import com.example.taskyapplication.agenda.task.data.local.dao.PendingTaskDao
-import com.example.taskyapplication.agenda.task.data.local.dao.TaskDao
-import com.example.taskyapplication.agenda.task.domain.LocalDataSource
-import com.example.taskyapplication.agenda.task.domain.RemoteDataSource
-import com.example.taskyapplication.agenda.task.domain.TaskLocalDataSource
-import com.example.taskyapplication.agenda.task.domain.TaskRemoteDataSource
-import com.example.taskyapplication.agenda.task.domain.TaskRepository
-import com.example.taskyapplication.agenda.task.domain.network.TaskApiService
-import com.jakewharton.retrofit2.converter.kotlinx.serialization.asConverterFactory
+import com.example.taskyapplication.agenda.items.reminder.data.db.ReminderDao
+import com.example.taskyapplication.agenda.items.reminder.domain.ReminderLocalDataSource
+import com.example.taskyapplication.agenda.items.reminder.domain.ReminderLocalDataSourceImpl
+import com.example.taskyapplication.agenda.items.task.data.local.dao.PendingTaskDao
+import com.example.taskyapplication.agenda.items.task.data.local.dao.TaskDao
+import com.example.taskyapplication.agenda.items.task.domain.LocalDataSource
+import com.example.taskyapplication.agenda.items.task.domain.TaskLocalDataSource
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
 import dagger.hilt.android.qualifiers.ApplicationContext
 import dagger.hilt.components.SingletonComponent
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.SupervisorJob
-import kotlinx.serialization.json.Json
-import okhttp3.MediaType.Companion.toMediaType
-import okhttp3.OkHttpClient
-import retrofit2.Retrofit
 import javax.inject.Singleton
 
 @InstallIn(SingletonComponent::class)
 @Module
 object DatabaseModule {
 
-    private val json = Json {
-        ignoreUnknownKeys = true
-        coerceInputValues = true
-    }
-
-    @Provides
+    // REMINDERS
     @Singleton
-    fun provideAgendaOkHttpClient(
-    ): OkHttpClient {
-        return OkHttpClient.Builder().build()
+    @Provides
+    fun provideReminderDao(database: AgendaDatabase): ReminderDao {
+        return database.reminderDao()
     }
 
     @Singleton
     @Provides
-    fun provideTaskApi(): TaskApiService {
-        return Retrofit.Builder()
-            .baseUrl(BuildConfig.BASE_URL)
-            .client(provideAgendaOkHttpClient())
-            .addConverterFactory(
-                json.asConverterFactory(
-                    "application/json".toMediaType()
-                )
-            )
-            .build()
-            .create(TaskApiService::class.java)
-    }
+    fun provideReminderLocalDataSource(
+        dao: ReminderDao
+    ): ReminderLocalDataSource = ReminderLocalDataSourceImpl(dao)
 
+// TASKS
     @Singleton
     @Provides
     fun provideLocalDataSource(
         dao: TaskDao
     ): LocalDataSource = TaskLocalDataSource(dao)
-
-    @Singleton
-    @Provides
-    fun provideRemoteDataSource(
-        apiService: TaskApiService
-    ): RemoteDataSource = TaskRemoteDataSource(apiService)
-
-    @Singleton // Provide always the same instance
-    @Provides
-    fun providesCoroutineScope(): CoroutineScope {
-        return CoroutineScope(SupervisorJob() + Dispatchers.Default)
-    }
-
-    @Singleton
-    @Provides
-    fun provideTaskRepository(
-        localDataSource: LocalDataSource,
-        remoteDataSource: RemoteDataSource,
-        pendingTaskDao: PendingTaskDao,
-        scope: CoroutineScope
-        ): TaskRepository =
-        OfflineFirstTaskRepository(
-           localDataSource,
-            remoteDataSource,
-            pendingTaskDao,
-            scope
-        )
 
     @Provides
     @Singleton
@@ -106,7 +55,7 @@ object DatabaseModule {
 
     @Provides
     @Singleton
-    fun provideTaskDatabase(@ApplicationContext context: Context): AgendaDatabase {
+    fun provideAgendaDatabase(@ApplicationContext context: Context): AgendaDatabase {
         return Room.databaseBuilder(
                 context = context,
                 klass = AgendaDatabase::class.java,
