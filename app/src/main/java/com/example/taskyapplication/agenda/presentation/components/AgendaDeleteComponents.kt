@@ -6,9 +6,7 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.width
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.HorizontalDivider
@@ -30,9 +28,9 @@ import com.example.taskyapplication.ui.theme.TaskyTypography
 
 @Composable
 fun AgendaItemDeleteTextButton(
+    itemToDelete: String,
     modifier: Modifier = Modifier,
     onClick: () -> Unit,
-    itemToDelete: String,
     isEnabled: Boolean = false
 ) {
     Column(
@@ -66,9 +64,10 @@ fun AgendaItemDeleteTextButton(
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun DeleteItemBottomSheet(
+    itemToDelete: String,
     modifier: Modifier = Modifier,
     onDeleteTask: () -> Unit = {},
-    onCancelDelete: () -> Unit = {}
+    onCancelDelete: () -> Unit = {},
 ) {
     ModalBottomSheet(
         modifier = modifier,
@@ -101,12 +100,11 @@ fun DeleteItemBottomSheet(
                         .fillMaxWidth()
                         .padding(vertical = 16.dp),
                     verticalAlignment = Alignment.CenterVertically,
-                    horizontalArrangement = Arrangement.SpaceEvenly
+                    horizontalArrangement = Arrangement.spacedBy(space = 16.dp)
                 ) {
                     OutlinedButton(
                         modifier = Modifier
-                            .height(52.dp)
-                            .width(156.dp),
+                            .weight(1f),
                         border = BorderStroke(
                             width = 1.dp,
                             color = taskyColors.onSurfaceVariant,
@@ -117,12 +115,14 @@ fun DeleteItemBottomSheet(
                             contentColor = taskyColors.onSurface,
                         )
                     ) {
-                        Text(text = stringResource(android.R.string.cancel))
+                        Text(
+                            modifier = Modifier.padding(vertical = 12.dp),
+                            text = stringResource(android.R.string.cancel).uppercase()
+                        )
                     }
                     OutlinedButton(
                         modifier = Modifier
-                            .height(52.dp)
-                            .width(156.dp),
+                            .weight(1f),
                         border = BorderStroke(
                             width = 1.dp,
                             color = taskyColors.error,
@@ -133,7 +133,10 @@ fun DeleteItemBottomSheet(
                             contentColor = taskyColors.onPrimary,
                         )
                     ) {
-                        Text(text = stringResource(R.string.delete_text_button))
+                        Text(
+                            modifier = Modifier.padding(vertical = 12.dp),
+                            text = stringResource(R.string.delete_text_button, itemToDelete.uppercase())
+                        )
                     }
                 }
             }
@@ -153,5 +156,7 @@ fun DeleteButtonPreview() {
 @Preview(showBackground = true)
 @Composable
 fun DeleteBottomSheetPreview() {
-    DeleteItemBottomSheet()
+    DeleteItemBottomSheet(
+        itemToDelete = "Task"
+    )
 }
