@@ -5,7 +5,7 @@ import androidx.compose.ui.graphics.Color
 // Light values
 val Link_Light = Color(0xFF8E97FD)
 val Error_Light = Color(0xFFF34B51)
-val Outline_Light = Color(0xFF8E97FD)
+val Outline_Light = Color(0xFFB7C6DE)
 val PrimaryBackground = Color(0xFF16161C)
 val TextOnPrimary = Color(0xFFFFFFFF)
 val SecondaryBackground = Color(0xFFFFFFFF)

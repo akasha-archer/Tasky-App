@@ -28,6 +28,7 @@ fun AgendaItemDateTimeRow(
     onClickTime: () -> Unit = {},
     onClickDate: () -> Unit = {},
     isEditing: Boolean = false,
+    timeRowLabel: String = "At",
     dateText: String,
     timeText: String
 ) {
@@ -41,7 +42,7 @@ fun AgendaItemDateTimeRow(
         Text(
             modifier = Modifier
                 .padding(end = 12.dp),
-            text = stringResource(R.string.start_time_label),
+            text = timeRowLabel,
             style = TaskyTypography.bodyMedium,
             color = taskyColors.primary
         )
