@@ -32,4 +32,5 @@
     <string name="edit_header_date_format">dd MMMM yyyy</string>
     <string name="save_item_after_edit">Save</string>
     <string name="date_picker_heading">Select Date</string>
+    <string name="event_photos_section">Photos</string>
 </resources>

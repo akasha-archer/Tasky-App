@@ -1,7 +1,7 @@
 package com.example.taskyapplication.agenda.items.event.presentation
 
+import android.net.Uri
 import com.example.taskyapplication.agenda.data.model.ReminderOptions
-import com.example.taskyapplication.agenda.items.event.data.EventPhoto
 import java.time.LocalDate
 import java.time.LocalTime
 import java.time.format.DateTimeFormatter
@@ -11,7 +11,7 @@ data class EventUiState(
     val id: String = "",
     val title: String = "Edit your title",
     val description: String = "Edit your description",
-    val photos: List<EventPhoto> = emptyList(),
+    val photos: List<Uri> = emptyList(),
     val startTime: String = LocalTime.now().format(
         DateTimeFormatter.ofLocalizedTime(FormatStyle.SHORT)),
     val startDate: String = LocalDate.now().format(

@@ -95,8 +95,8 @@ dependencies {
     implementation(libs.androidx.compose.runtime.livedata)
     implementation(libs.androidx.datastore)
     implementation(libs.androidx.room)
+    implementation(libs.coil.compose)
     coreLibraryDesugaring(libs.desugar.jdk.libs)
-
 
     ksp(libs.hilt.compiler)
     ksp(libs.room.compiler)

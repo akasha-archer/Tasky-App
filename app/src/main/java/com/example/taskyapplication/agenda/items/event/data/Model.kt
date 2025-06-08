@@ -1,5 +1,7 @@
 package com.example.taskyapplication.agenda.items.event.data
 
+import android.net.Uri
+
 data class CreateEventRequest(
     val id: String,
     val title: String,
@@ -9,10 +11,6 @@ data class CreateEventRequest(
     val remindAt: String,
     val attendeeIds: List<String>
 )
-
-//data class PhotoRequest(
-//
-//)
 
 data class UpdateEventRequest(
     val id: String,
@@ -35,7 +33,6 @@ data class Attendee(
     val remindAt: Long
 )
 
-data class EventPhoto(
-    val key: String,
-    val url: String
+data class NetworkPhotoRequest(
+    val photo: Uri
 )

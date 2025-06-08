@@ -9,7 +9,7 @@ data class CreatedEventResponse(
     val remindAt: Long,
     val host: String,
     val attendees: List<Attendee>,
-    val photos: List<EventPhoto>
+    val photos: List<EventPhotoResponse>
 )
 
 data class UpdatedEventResponse(
@@ -22,7 +22,7 @@ data class UpdatedEventResponse(
     val host: String,
     val isUserEventCreator: Boolean,
     val attendees: List<Attendee>,
-    val photos: List<EventPhoto>
+    val photos: List<EventPhotoResponse>
 )
 
 data class FetchedEventResponse(
@@ -35,7 +35,7 @@ data class FetchedEventResponse(
     val host: String,
     val isUserEventCreator: Boolean,
     val attendees: List<Attendee>,
-    val photos: List<EventPhoto>
+    val photos: List<EventPhotoResponse>
 )
 
 data class UpdatedEventAttendeeResponse(
@@ -61,4 +61,9 @@ data class FetchedAttendeeDetailsResponse(
     val email: String,
     val fullName: String,
     val userId: String
+)
+
+data class EventPhotoResponse(
+    val key: String,
+    val url: String
 )

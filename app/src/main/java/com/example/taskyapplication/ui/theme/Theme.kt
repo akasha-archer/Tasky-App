@@ -55,7 +55,8 @@ data class TaskyColors(
     val inputHintGray: Color = InputHintGray,
     val inputFieldGray: Color = InputFieldGray,
     val validInput: Color = InputSuccess,
-    val textFieldFocusBorder: Color = TextFieldFocusBorder
+    val textFieldFocusBorder: Color = TextFieldFocusBorder,
+    val surfaceHigh: Color = SurfaceHigher
 )
 
 private val DarkTaskyColors = TaskyColors(
@@ -71,7 +72,8 @@ private val DarkTaskyColors = TaskyColors(
     inputHintGray = InputHintGray_Dark,
     inputFieldGray = InputFieldGray_Dark,
     validInput = InputSuccess_Dark,
-    textFieldFocusBorder = TextFieldFocusBorder_Dark
+    textFieldFocusBorder = TextFieldFocusBorder_Dark,
+    surfaceHigh = SurfaceHigher_Dark
 )
 
 private val LightTaskyColors = TaskyColors(
@@ -88,7 +90,8 @@ private val LightTaskyColors = TaskyColors(
     inputHintGray = InputHintGray,
     inputFieldGray = InputFieldGray,
     validInput = InputSuccess,
-    textFieldFocusBorder = TextFieldFocusBorder
+    textFieldFocusBorder = TextFieldFocusBorder,
+    surfaceHigh = SurfaceHigher
 )
 
 @Composable
