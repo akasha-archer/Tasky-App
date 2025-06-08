@@ -22,7 +22,7 @@ interface TaskApiService {
         @Body request: UpdateTaskBody
     ): Response<Unit>
 
-    @GET("/task")
+    @GET("/task/{taskId}")
     suspend fun getTaskById(
         @Query("taskId") taskId: String
     ): Response<GetTaskResponse>

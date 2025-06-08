@@ -1,6 +1,12 @@
 package com.example.taskyapplication.agenda.di
 
 import com.example.taskyapplication.BuildConfig
+import com.example.taskyapplication.agenda.items.event.domain.EventLocalDataSource
+import com.example.taskyapplication.agenda.items.event.domain.EventOfflineFirstRepository
+import com.example.taskyapplication.agenda.items.event.domain.EventRemoteDataSource
+import com.example.taskyapplication.agenda.items.event.domain.EventRemoteDataSourceImpl
+import com.example.taskyapplication.agenda.items.event.domain.EventRepository
+import com.example.taskyapplication.agenda.items.event.network.EventApiService
 import com.example.taskyapplication.agenda.items.reminder.domain.ReminderLocalDataSource
 import com.example.taskyapplication.agenda.items.reminder.domain.ReminderOfflineFirstRepository
 import com.example.taskyapplication.agenda.items.reminder.domain.ReminderRemoteDataSource
@@ -50,6 +56,41 @@ object AgendaNetworkModule {
     fun providesCoroutineScope(): CoroutineScope {
         return CoroutineScope(SupervisorJob() + Dispatchers.Default)
     }
+
+    // EVENTS
+    @Singleton
+    @Provides
+    fun provideEventApi(): EventApiService {
+        return Retrofit.Builder()
+            .baseUrl(BuildConfig.BASE_URL)
+            .client(provideAgendaOkHttpClient())
+            .addConverterFactory(
+                json.asConverterFactory(
+                    "application/json".toMediaType()
+                )
+            )
+            .build()
+            .create(EventApiService::class.java)
+    }
+
+    @Singleton
+    @Provides
+    fun provideEventRemoteDataSource(
+        apiService: EventApiService
+    ): EventRemoteDataSource = EventRemoteDataSourceImpl(apiService)
+
+    @Singleton
+    @Provides
+    fun provideEventRepository(
+        localDataSource: EventLocalDataSource,
+        remoteDataSource: EventRemoteDataSource,
+//        scope: CoroutineScope
+    ): EventRepository =
+        EventOfflineFirstRepository(
+            localDataSource,
+            remoteDataSource,
+//            scope
+        )
 
     // REMINDERS
     @Singleton

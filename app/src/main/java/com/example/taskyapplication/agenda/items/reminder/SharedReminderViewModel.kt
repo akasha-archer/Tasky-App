@@ -38,14 +38,17 @@ class SharedReminderViewModel @Inject constructor(
                 if (newTitle.isBlank() && newDescription.isBlank()) {
                     return
                 }
-                val newTaskId: String = UUID.randomUUID().toString()
-                _reminderUiState.update {
-                    it.copy(
-                        id = newTaskId
-                    )
+                if (_reminderUiState.value.id.isEmpty()) {
+                    _reminderUiState.update {
+                        it.copy(
+                            id = UUID.randomUUID().toString()
+                        )
+                    }
                 }
-                val reminderUiState = ReminderUiState(
-                    id = newTaskId,
+                val newReminderId = _reminderUiState.value.id
+
+                val newReminder = ReminderUiState(
+                    id = newReminderId,
                     title = newTitle,
                     description = newDescription,
                     time = reminderStartTime,
@@ -177,7 +180,6 @@ class SharedReminderViewModel @Inject constructor(
                     it.copy(isEditingItem = false)
                 }
             }
-            is AgendaItemAction.SaveSelectedPhotos -> TODO()
         }
     }
 }

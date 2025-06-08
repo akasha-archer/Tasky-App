@@ -24,5 +24,6 @@ data class EventUiState(
     val isEditingItem: Boolean = false,
     val isEditingDate: Boolean = false,
     val isEditingTime: Boolean = false,
-    val isEditingEvent: Boolean = false
+    val isEditingEvent: Boolean = false,
+    val isEditingReminder: Boolean = false
 )

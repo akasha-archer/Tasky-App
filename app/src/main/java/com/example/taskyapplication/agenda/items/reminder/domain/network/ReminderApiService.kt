@@ -22,12 +22,12 @@ interface ReminderApiService {
         @Body request: UpdateReminderBody
     ): Response<Unit>
 
-    @GET("/reminder")
+    @GET("/reminder/{reminderId}")
     suspend fun getReminderById(
         @Query("reminderId") reminderId: String
     ): Response<GetTaskResponse>
 
-    @DELETE("/reminder")
+    @DELETE("/reminder/{reminderId}")
     suspend fun deleteReminderById(
         @Query("reminderId") reminderId: String
     ): Response<Unit>

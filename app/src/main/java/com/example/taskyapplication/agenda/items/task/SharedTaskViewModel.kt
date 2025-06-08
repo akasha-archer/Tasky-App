@@ -39,13 +39,16 @@ class SharedTaskViewModel @Inject constructor(
                 if (newTitle.isBlank() || newDescription.isBlank()) {
                     return
                 }
-                val newTaskId: String = UUID.randomUUID().toString()
-                _uiState.update {
-                    it.copy(
-                        id = newTaskId
-                    )
+                if (_uiState.value.id.isEmpty()) {
+                    _uiState.update {
+                        it.copy(
+                            id = UUID.randomUUID().toString()
+                        )
+                    }
                 }
-                val taskUiState = TaskUiState(
+                val newTaskId = _uiState.value.id
+
+                val newTask = TaskUiState(
                     id = newTaskId,
                     title = newTitle,
                     description = newDescription,
@@ -55,7 +58,7 @@ class SharedTaskViewModel @Inject constructor(
                 )
                 viewModelScope.launch {
                     repository.createNewTask(
-                        taskUiState.asTaskNetworkModel()
+                        newTask.asTaskNetworkModel()
                     )
                 }
                 _uiState.update {
@@ -178,7 +181,6 @@ class SharedTaskViewModel @Inject constructor(
                     it.copy(isEditingItem = false)
                 }
             }
-            is AgendaItemAction.SaveSelectedPhotos -> TODO()
         }
     }
 }

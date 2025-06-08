@@ -1,6 +1,5 @@
 package com.example.taskyapplication.agenda
 
-import android.net.Uri
 import com.example.taskyapplication.agenda.data.model.ReminderOptions
 
 sealed interface AgendaItemAction {
@@ -9,7 +8,6 @@ sealed interface AgendaItemAction {
     data class SetTime(val time: String): AgendaItemAction
     data class SetDate(val date: String): AgendaItemAction
     data class SetReminderTime(val reminder: ReminderOptions): AgendaItemAction
-    data class SaveSelectedPhotos(val eventPhotos: List<Uri>): AgendaItemAction
     data object CloseDetailScreen: AgendaItemAction
     data object LaunchDateTimeEditScreen: AgendaItemAction
     data object CancelEdit: AgendaItemAction

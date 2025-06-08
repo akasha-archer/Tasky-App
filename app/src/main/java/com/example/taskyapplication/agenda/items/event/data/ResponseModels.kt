@@ -52,7 +52,7 @@ data class UpdatedEventPhotoResponse(
     val url: String,
 )
 
-data class FetchedAttendeeResponse(
+data class FetchAttendeeResponse(
     val doesUserExist: Boolean,
     val attendee: FetchedAttendeeDetailsResponse
 )
