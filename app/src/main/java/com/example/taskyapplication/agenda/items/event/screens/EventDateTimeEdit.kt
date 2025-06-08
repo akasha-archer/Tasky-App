@@ -1,6 +1,5 @@
 package com.example.taskyapplication.agenda.items.event.screens
 
-import android.net.Uri
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.PickVisualMediaRequest
 import androidx.activity.result.contract.ActivityResultContracts
@@ -36,7 +35,6 @@ import com.example.taskyapplication.agenda.presentation.components.AgendaItem
 import com.example.taskyapplication.agenda.presentation.components.AgendaItemDateTimeRow
 import com.example.taskyapplication.agenda.presentation.components.AgendaItemDeleteTextButton
 import com.example.taskyapplication.agenda.presentation.components.AgendaTitleRow
-import com.example.taskyapplication.agenda.presentation.components.DetailScreenHeader
 import com.example.taskyapplication.agenda.presentation.components.EditScreenHeader
 import com.example.taskyapplication.agenda.presentation.components.ReminderTimeRow
 import com.example.taskyapplication.ui.theme.TaskyDesignSystem.Companion.taskyColors
