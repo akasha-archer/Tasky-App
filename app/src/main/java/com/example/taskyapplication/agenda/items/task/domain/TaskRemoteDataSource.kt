@@ -1,7 +1,5 @@
 package com.example.taskyapplication.agenda.items.task.domain
 
-import android.os.Build
-import androidx.annotation.RequiresApi
 import com.example.taskyapplication.agenda.items.task.data.network.models.GetTaskResponse
 import com.example.taskyapplication.agenda.items.task.data.network.models.TaskNetworkModel
 import com.example.taskyapplication.agenda.items.task.data.network.models.UpdateTaskBody

@@ -11,7 +11,6 @@ import com.example.taskyapplication.domain.utils.EmptyResult
 import com.example.taskyapplication.domain.utils.Result
 import com.example.taskyapplication.domain.utils.safeApiCall
 import okhttp3.MultipartBody
-import java.io.File
 import javax.inject.Inject
 
 interface EventRemoteDataSource {

@@ -3,7 +3,6 @@ package com.example.taskyapplication.agenda.items.reminder.domain.network
 import com.example.taskyapplication.agenda.items.reminder.data.models.ReminderNetworkModel
 import com.example.taskyapplication.agenda.items.reminder.data.models.ReminderResponse
 import com.example.taskyapplication.agenda.items.reminder.data.models.UpdateReminderNetworkModel
-import com.example.taskyapplication.agenda.items.task.data.network.models.GetTaskResponse
 import retrofit2.Response
 import retrofit2.http.Body
 import retrofit2.http.DELETE
