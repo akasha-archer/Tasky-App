@@ -23,7 +23,6 @@ class TaskRemoteDataSource @Inject constructor(
     private val taskApi: TaskApiService
 ): RemoteDataSource {
 
-//    @RequiresApi(Build.VERSION_CODES.O)
     override suspend fun getTask(taskId: String): Result<GetTaskResponse, DataError.Network> {
         return safeApiCall {
             taskApi.getTaskById(taskId)

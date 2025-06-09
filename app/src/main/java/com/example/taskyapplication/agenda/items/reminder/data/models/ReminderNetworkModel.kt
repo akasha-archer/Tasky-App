@@ -17,7 +17,7 @@ data class ReminderNetworkModel(
 
 
 @Serializable
-data class UpdateReminderBody(
+data class UpdateReminderNetworkModel(
     @SerialName("id")
     override val itemId: String,
     override val title: String,

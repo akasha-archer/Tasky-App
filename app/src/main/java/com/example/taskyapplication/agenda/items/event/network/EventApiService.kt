@@ -5,6 +5,7 @@ import com.example.taskyapplication.agenda.items.event.data.CreatedEventResponse
 import com.example.taskyapplication.agenda.items.event.data.FetchAttendeeResponse
 import com.example.taskyapplication.agenda.items.event.data.FetchedEventResponse
 import com.example.taskyapplication.agenda.items.event.data.UpdateEventNetworkModel
+import com.example.taskyapplication.agenda.items.event.data.UpdatedEventResponse
 import okhttp3.MultipartBody
 import retrofit2.Response
 import retrofit2.http.DELETE
@@ -21,7 +22,7 @@ interface EventApiService {
     @POST("/event")
     suspend fun createEvent(
         @Part("create_event_request") createEventRequest: CreateEventNetworkModel,
-        @Part files: List<MultipartBody.Part?>
+        @Part eventPhotos: List<MultipartBody.Part>
     ): Response<CreatedEventResponse>
 
     @GET("event/{eventId}")
@@ -33,8 +34,8 @@ interface EventApiService {
     @PUT("event")
     suspend fun updateEvent(
         @Part("update_event_request") updateEventRequest: UpdateEventNetworkModel,
-        @Part files: List<MultipartBody.Part?>
-    ): Response<Unit>
+        @Part eventPhotos: List<MultipartBody.Part>
+    ): Response<UpdatedEventResponse>
 
     @DELETE("event/{eventId}")
     suspend fun deleteEvent(

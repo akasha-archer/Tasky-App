@@ -8,6 +8,7 @@ sealed interface AgendaItemAction {
     data class SetTime(val time: String): AgendaItemAction
     data class SetDate(val date: String): AgendaItemAction
     data class SetReminderTime(val reminder: ReminderOptions): AgendaItemAction
+    data class DeleteItem(val id: String): AgendaItemAction
     data object CloseDetailScreen: AgendaItemAction
     data object LaunchDateTimeEditScreen: AgendaItemAction
     data object CancelEdit: AgendaItemAction

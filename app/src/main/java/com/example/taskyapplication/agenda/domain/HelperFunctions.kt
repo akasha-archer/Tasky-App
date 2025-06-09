@@ -13,10 +13,24 @@ import java.io.IOException
 import java.text.SimpleDateFormat
 import java.time.Instant
 import java.time.LocalDate
+import java.time.LocalDateTime
 import java.time.LocalTime
 import java.time.ZoneId
 import java.time.format.DateTimeFormatter
 import java.util.Locale
+
+fun combineDateAndTime(date: String, time: String): Long {
+    val dateTime = LocalDateTime.of(
+        LocalDate.parse(
+            date,
+            DateTimeFormatter.ofLocalizedDate(java.time.format.FormatStyle.MEDIUM)
+        ),
+        LocalTime.parse(time, DateTimeFormatter.ofLocalizedTime(java.time.format.FormatStyle.SHORT))
+    )
+    return dateTime.atZone(ZoneId.systemDefault()).toInstant().toEpochMilli()
+}
+
+fun calculateNotificationTime(reminderTime: Long, startTime: Long) = startTime - reminderTime
 
 fun Long.toDateAsString(): String =
     LocalDate.ofInstant(Instant.ofEpochMilli(this), ZoneId.systemDefault())
@@ -57,3 +71,15 @@ fun Uri.toImageByteArray(contentResolver: ContentResolver): ByteArray? {
         null
     }
 }
+
+fun getReminderOptionFromMillis(millis: Long): ReminderOptions {
+    return when (millis) {
+        ReminderOptions.TEN_MINUTES_BEFORE.asLong -> ReminderOptions.TEN_MINUTES_BEFORE
+        ReminderOptions.THIRTY_MINUTES_BEFORE.asLong -> ReminderOptions.THIRTY_MINUTES_BEFORE
+        ReminderOptions.ONE_HOUR_BEFORE.asLong -> ReminderOptions.ONE_HOUR_BEFORE
+        ReminderOptions.SIX_HOURS_BEFORE.asLong -> ReminderOptions.SIX_HOURS_BEFORE
+        ReminderOptions.ONE_DAY_BEFORE.asLong -> ReminderOptions.ONE_DAY_BEFORE
+        else -> ReminderOptions.THIRTY_MINUTES_BEFORE // default value
+    }
+}
+

@@ -24,7 +24,7 @@ class ImageMultiPartProvider @Inject constructor() {
 
                 // The part name is crucial for the server to identify the files.
                 // A common convention is "files" or "images[]".
-                val part = MultipartBody.Part.createFormData("files", file.name, requestFile)
+                val part = MultipartBody.Part.createFormData("images", file.name, requestFile)
                 parts.add(part)
             }
         }

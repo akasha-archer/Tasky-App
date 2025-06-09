@@ -1,7 +1,8 @@
 package com.example.taskyapplication.agenda.items.reminder.domain.network
 
 import com.example.taskyapplication.agenda.items.reminder.data.models.ReminderNetworkModel
-import com.example.taskyapplication.agenda.items.reminder.data.models.UpdateReminderBody
+import com.example.taskyapplication.agenda.items.reminder.data.models.ReminderResponse
+import com.example.taskyapplication.agenda.items.reminder.data.models.UpdateReminderNetworkModel
 import com.example.taskyapplication.agenda.items.task.data.network.models.GetTaskResponse
 import retrofit2.Response
 import retrofit2.http.Body
@@ -19,13 +20,13 @@ interface ReminderApiService {
 
     @PUT("/reminder")
     suspend fun updateReminder(
-        @Body request: UpdateReminderBody
+        @Body request: UpdateReminderNetworkModel
     ): Response<Unit>
 
     @GET("/reminder/{reminderId}")
     suspend fun getReminderById(
         @Query("reminderId") reminderId: String
-    ): Response<GetTaskResponse>
+    ): Response<ReminderResponse>
 
     @DELETE("/reminder/{reminderId}")
     suspend fun deleteReminderById(
