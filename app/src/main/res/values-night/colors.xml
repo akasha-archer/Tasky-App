@@ -1,4 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <color name="date_time_background">#FF242428</color>
+    <color name="cloud_offline_icon">#808B9BB2</color>
 </resources>

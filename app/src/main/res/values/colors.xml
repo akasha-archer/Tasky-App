@@ -9,4 +9,5 @@
     <color name="white">#FFFFFFFF</color>
     <color name="splash_background">#FF279f70</color>
     <color name="date_time_background">#FFF2F3F7</color>
+    <color name="cloud_offline_icon">#76808FB2</color>
 </resources>
