@@ -28,11 +28,6 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.example.taskyapplication.TaskyBaseScreen
 import com.example.taskyapplication.agenda.AgendaItemAction
 import com.example.taskyapplication.agenda.data.model.ReminderOptions
-import com.example.taskyapplication.agenda.data.model.ReminderTimeItem.Companion.REMINDER_ONE_DAY_BEFORE
-import com.example.taskyapplication.agenda.data.model.ReminderTimeItem.Companion.REMINDER_ONE_HOUR_BEFORE
-import com.example.taskyapplication.agenda.data.model.ReminderTimeItem.Companion.REMINDER_SIX_HOURS_BEFORE
-import com.example.taskyapplication.agenda.data.model.ReminderTimeItem.Companion.REMINDER_TEN_MINUTES_BEFORE
-import com.example.taskyapplication.agenda.data.model.ReminderTimeItem.Companion.REMINDER_THIRTY_MINUTES_BEFORE
 import com.example.taskyapplication.agenda.domain.getReminderOption
 import com.example.taskyapplication.agenda.domain.toDateAsString
 import com.example.taskyapplication.agenda.items.reminder.SharedReminderViewModel

@@ -25,7 +25,6 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.example.taskyapplication.TaskyBaseScreen
-import com.example.taskyapplication.agenda.AgendaItemAction
 import com.example.taskyapplication.agenda.items.event.EventItemAction
 import com.example.taskyapplication.agenda.items.event.components.PhotoRow
 import com.example.taskyapplication.agenda.items.event.components.PhotoRowEmptyState
