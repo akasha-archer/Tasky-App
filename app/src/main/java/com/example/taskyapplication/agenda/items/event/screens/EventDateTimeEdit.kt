@@ -35,6 +35,7 @@ import com.example.taskyapplication.agenda.presentation.components.AgendaItem
 import com.example.taskyapplication.agenda.presentation.components.AgendaItemDateTimeRow
 import com.example.taskyapplication.agenda.presentation.components.AgendaItemDeleteTextButton
 import com.example.taskyapplication.agenda.presentation.components.AgendaTitleRow
+import com.example.taskyapplication.agenda.presentation.components.DeleteItemBottomSheet
 import com.example.taskyapplication.agenda.presentation.components.EditScreenHeader
 import com.example.taskyapplication.agenda.presentation.components.ReminderTimeRow
 import com.example.taskyapplication.ui.theme.TaskyDesignSystem.Companion.taskyColors
@@ -74,6 +75,7 @@ fun EventDateTimeScreen(
                 )
             },
             mainContent = {
+                var showDeleteBottomSheet by remember { mutableStateOf(false) }
                 Box(
                     modifier = Modifier.fillMaxSize()
                 ) {
@@ -163,10 +165,26 @@ fun EventDateTimeScreen(
                             modifier = Modifier
                                 .padding(bottom = 36.dp)
                                 .align(Alignment.BottomEnd),
-                            onClick = { },
-                            itemToDelete = agendaItem.uppercase(),
+                            onClick = {
+                                showDeleteBottomSheet = true
+                            },
+                            itemToDelete = "Event".uppercase(),
                             isEnabled = state.id.isNotEmpty()
                         )
+                        if (showDeleteBottomSheet) {
+                            DeleteItemBottomSheet(
+                                modifier = Modifier,
+                                isLoading = state.isDeletingItem,
+                                isButtonEnabled = !state.isDeletingItem,
+                                onDeleteTask = {
+                                    onAction(EventItemAction.DeleteEvent(state.id))
+                                    showDeleteBottomSheet = false
+                                },
+                                onCancelDelete = {
+                                    showDeleteBottomSheet = false
+                                }
+                            )
+                        }
                     }
                 }
             }
