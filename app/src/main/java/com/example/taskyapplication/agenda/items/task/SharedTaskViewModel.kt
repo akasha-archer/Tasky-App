@@ -3,7 +3,7 @@ package com.example.taskyapplication.agenda.items.task
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.taskyapplication.agenda.AgendaItemAction
-import com.example.taskyapplication.agenda.core.AgendaItemEvent
+import com.example.taskyapplication.agenda.common.AgendaItemEvent
 import com.example.taskyapplication.agenda.items.task.data.mappers.asTaskNetworkModel
 import com.example.taskyapplication.agenda.items.task.data.mappers.asUpdateTaskNetworkModel
 import com.example.taskyapplication.agenda.items.task.domain.TaskRepository

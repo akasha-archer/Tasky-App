@@ -49,6 +49,18 @@ val TaskyTypography = Typography(
         lineHeight = 20.sp,
         letterSpacing = 0.1.sp
     ),
+    headlineSmall = TextStyle(
+        fontFamily = interFamily500,
+        fontSize = 14.sp,
+        lineHeight = 20.sp,
+        letterSpacing = 0.1.sp
+    ),
+    headlineMedium = TextStyle(
+        fontFamily = interFamily600,
+        fontSize = 20.sp,
+        lineHeight = 24.sp,
+        letterSpacing = 0.0.sp
+    ),
     headlineLarge = TextStyle(
         fontFamily = interFamily700,
         fontSize = 28.sp,

@@ -79,13 +79,6 @@ fun PhotoRow(
     modifier: Modifier = Modifier,
     photos: List<Uri> = emptyList(),
 ) {
-    var selectedImageUris by remember { mutableStateOf<List<Uri>>(emptyList()) }
-//    val photoLauncher = rememberLauncherForActivityResult(
-//        contract = ActivityResultContracts.PickMultipleVisualMedia(),
-//        onResult = { uris ->
-//            selectedImageUris = uris
-//        }
-//    )
     Column(
         modifier = modifier
             .fillMaxWidth()

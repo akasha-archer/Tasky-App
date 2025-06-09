@@ -11,6 +11,12 @@ import kotlin.time.Duration.Companion.hours
 import kotlin.time.Duration.Companion.minutes
 import kotlin.time.DurationUnit
 
+enum class VisitorStatus(val value: String) {
+    ALL("All"),
+    GOING("Going"),
+    NOT_GOING("Not Going")
+}
+
 enum class ReminderOptions(val value: Duration, val timeString: String, val asLong: Long) {
     TEN_MINUTES_BEFORE(10L.minutes, REMINDER_TEN_MINUTES_BEFORE, 10L.minutes.toLong(DurationUnit.MILLISECONDS)),
     THIRTY_MINUTES_BEFORE(30L.minutes, REMINDER_THIRTY_MINUTES_BEFORE, 30L.minutes.toLong(DurationUnit.MILLISECONDS)),

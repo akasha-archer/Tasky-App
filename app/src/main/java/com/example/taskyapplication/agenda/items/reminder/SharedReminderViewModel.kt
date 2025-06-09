@@ -3,7 +3,7 @@ package com.example.taskyapplication.agenda.items.reminder
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.taskyapplication.agenda.AgendaItemAction
-import com.example.taskyapplication.agenda.core.AgendaItemEvent
+import com.example.taskyapplication.agenda.common.AgendaItemEvent
 import com.example.taskyapplication.agenda.items.reminder.data.models.toReminderNetworkModel
 import com.example.taskyapplication.agenda.items.reminder.data.models.toUpdateReminderNetworkModel
 import com.example.taskyapplication.agenda.items.reminder.domain.ReminderRepository
