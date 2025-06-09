@@ -3,11 +3,14 @@ package com.example.taskyapplication.agenda.presentation.components
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.material3.ButtonDefaults
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.ModalBottomSheet
@@ -64,8 +67,9 @@ fun AgendaItemDeleteTextButton(
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun DeleteItemBottomSheet(
-    itemToDelete: String,
     modifier: Modifier = Modifier,
+    isLoading: Boolean = false,
+    isButtonEnabled: Boolean = false,
     onDeleteTask: () -> Unit = {},
     onCancelDelete: () -> Unit = {},
 ) {
@@ -110,6 +114,7 @@ fun DeleteItemBottomSheet(
                             color = taskyColors.onSurfaceVariant,
                         ),
                         onClick = onCancelDelete,
+                        enabled = isButtonEnabled,
                         colors = ButtonDefaults.buttonColors(
                             containerColor = taskyColors.surface,
                             contentColor = taskyColors.onSurface,
@@ -117,7 +122,8 @@ fun DeleteItemBottomSheet(
                     ) {
                         Text(
                             modifier = Modifier.padding(vertical = 12.dp),
-                            text = stringResource(android.R.string.cancel).uppercase()
+                            text = stringResource(android.R.string.cancel).uppercase(),
+                            style = TaskyTypography.labelMedium
                         )
                     }
                     OutlinedButton(
@@ -131,12 +137,29 @@ fun DeleteItemBottomSheet(
                         colors = ButtonDefaults.buttonColors(
                             containerColor = taskyColors.error,
                             contentColor = taskyColors.onPrimary,
+                            disabledContainerColor = taskyColors.onSurface.copy(alpha = 0.7f),
                         )
                     ) {
-                        Text(
-                            modifier = Modifier.padding(vertical = 12.dp),
-                            text = stringResource(R.string.delete_text_button, itemToDelete.uppercase())
-                        )
+                        Box(
+                            modifier = Modifier
+                                .fillMaxWidth(),
+                            contentAlignment = Alignment.Center
+                        ) {
+                            CircularProgressIndicator(
+                                modifier = Modifier
+                                    .size(36.dp)
+                                    .alpha(if (isLoading) 1f else 0f),
+                                strokeWidth = 1.5.dp,
+                                color = taskyColors.onPrimary
+                            )
+                            Text(
+                                modifier = Modifier
+                                    .alpha(if (isLoading) 0f else 1f)
+                                    .padding(vertical = 12.dp),
+                                text = stringResource(R.string.delete_bottom_sheet_button).uppercase(),
+                                style = TaskyTypography.labelMedium,
+                            )
+                        }
                     }
                 }
             }
@@ -156,7 +179,5 @@ fun DeleteButtonPreview() {
 @Preview(showBackground = true)
 @Composable
 fun DeleteBottomSheetPreview() {
-    DeleteItemBottomSheet(
-        itemToDelete = "Task"
-    )
+    DeleteItemBottomSheet()
 }

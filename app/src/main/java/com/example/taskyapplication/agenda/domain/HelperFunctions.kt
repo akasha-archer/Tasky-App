@@ -1,18 +1,36 @@
 package com.example.taskyapplication.agenda.domain
 
+import android.content.ContentResolver
+import android.net.Uri
 import com.example.taskyapplication.agenda.data.model.ReminderOptions
 import com.example.taskyapplication.agenda.data.model.ReminderTimeItem.Companion.REMINDER_ONE_DAY_BEFORE
 import com.example.taskyapplication.agenda.data.model.ReminderTimeItem.Companion.REMINDER_ONE_HOUR_BEFORE
 import com.example.taskyapplication.agenda.data.model.ReminderTimeItem.Companion.REMINDER_SIX_HOURS_BEFORE
 import com.example.taskyapplication.agenda.data.model.ReminderTimeItem.Companion.REMINDER_TEN_MINUTES_BEFORE
 import com.example.taskyapplication.agenda.data.model.ReminderTimeItem.Companion.REMINDER_THIRTY_MINUTES_BEFORE
+import java.io.ByteArrayOutputStream
+import java.io.IOException
 import java.text.SimpleDateFormat
 import java.time.Instant
 import java.time.LocalDate
+import java.time.LocalDateTime
 import java.time.LocalTime
 import java.time.ZoneId
 import java.time.format.DateTimeFormatter
 import java.util.Locale
+
+fun combineDateAndTime(date: String, time: String): Long {
+    val dateTime = LocalDateTime.of(
+        LocalDate.parse(
+            date,
+            DateTimeFormatter.ofLocalizedDate(java.time.format.FormatStyle.MEDIUM)
+        ),
+        LocalTime.parse(time, DateTimeFormatter.ofLocalizedTime(java.time.format.FormatStyle.SHORT))
+    )
+    return dateTime.atZone(ZoneId.systemDefault()).toInstant().toEpochMilli()
+}
+
+fun calculateNotificationTime(reminderTime: Long, startTime: Long) = startTime - reminderTime
 
 fun Long.toDateAsString(): String =
     LocalDate.ofInstant(Instant.ofEpochMilli(this), ZoneId.systemDefault())
@@ -40,3 +58,28 @@ fun getReminderOption(
         else -> ReminderOptions.THIRTY_MINUTES_BEFORE // default value
     }
 }
+
+fun Uri.toImageByteArray(contentResolver: ContentResolver): ByteArray? {
+    return try {
+        contentResolver.openInputStream(this)?.use { inputStream ->
+            val outputStream = ByteArrayOutputStream()
+            inputStream.copyTo(outputStream)
+            outputStream.toByteArray()
+        }
+    } catch (e: IOException) {
+        e.printStackTrace()
+        null
+    }
+}
+
+fun getReminderOptionFromMillis(millis: Long): ReminderOptions {
+    return when (millis) {
+        ReminderOptions.TEN_MINUTES_BEFORE.asLong -> ReminderOptions.TEN_MINUTES_BEFORE
+        ReminderOptions.THIRTY_MINUTES_BEFORE.asLong -> ReminderOptions.THIRTY_MINUTES_BEFORE
+        ReminderOptions.ONE_HOUR_BEFORE.asLong -> ReminderOptions.ONE_HOUR_BEFORE
+        ReminderOptions.SIX_HOURS_BEFORE.asLong -> ReminderOptions.SIX_HOURS_BEFORE
+        ReminderOptions.ONE_DAY_BEFORE.asLong -> ReminderOptions.ONE_DAY_BEFORE
+        else -> ReminderOptions.THIRTY_MINUTES_BEFORE // default value
+    }
+}
+

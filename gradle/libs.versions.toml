@@ -27,6 +27,7 @@ hiltNavigation = "1.2.0"
 composeRuntime = "1.8.2"
 roomVersion = "2.7.1"
 desugar_jdk_libs = "2.1.5"
+coilCompose = "3.2.0"
 
 [libraries]
 androidx-activity = { module = "androidx.activity:activity", version.ref = "activity" }
@@ -64,6 +65,7 @@ androidx-compose-runtime-livedata = { group = "androidx.compose.runtime", name =
 room-compiler = { group = "androidx.room", name = "room-compiler", version.ref="roomVersion"}
 androidx-room = { group = "androidx.room", name = "room-ktx", version.ref="roomVersion"}
 desugar_jdk_libs = { module = "com.android.tools:desugar_jdk_libs", version.ref = "desugar_jdk_libs" }
+coil-compose = { module = "io.coil-kt.coil3:coil-compose", version.ref = "coilCompose" }
 
 [plugins]
 android-application = { id = "com.android.application", version.ref = "agp" }

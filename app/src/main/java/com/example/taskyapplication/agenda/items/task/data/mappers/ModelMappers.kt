@@ -91,7 +91,7 @@ fun TaskUiState.asTaskNetworkModel() = TaskNetworkModel(
     isDone = isDone
 )
 
-fun TaskUiState.asUpdateTaskModel() = UpdateTaskBody(
+fun TaskUiState.asUpdateTaskNetworkModel() = UpdateTaskBody(
     itemId = id,
     title = title,
     description = description,

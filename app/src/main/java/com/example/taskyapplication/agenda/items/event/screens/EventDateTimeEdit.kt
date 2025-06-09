@@ -1,5 +1,8 @@
-package com.example.taskyapplication.agenda.items.reminder.presentation.screens
+package com.example.taskyapplication.agenda.items.event.screens
 
+import androidx.activity.compose.rememberLauncherForActivityResult
+import androidx.activity.result.PickVisualMediaRequest
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
@@ -13,80 +16,67 @@ import androidx.compose.material.icons.outlined.CheckCircle
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.example.taskyapplication.TaskyBaseScreen
 import com.example.taskyapplication.agenda.AgendaItemAction
-import com.example.taskyapplication.agenda.items.reminder.SharedReminderViewModel
-import com.example.taskyapplication.agenda.items.reminder.presentation.ReminderUiState
+import com.example.taskyapplication.agenda.items.event.components.PhotoRow
+import com.example.taskyapplication.agenda.items.event.components.PhotoRowEmptyState
+import com.example.taskyapplication.agenda.items.event.presentation.EventUiState
 import com.example.taskyapplication.agenda.presentation.components.AgendaDescriptionText
 import com.example.taskyapplication.agenda.presentation.components.AgendaIconTextRow
 import com.example.taskyapplication.agenda.presentation.components.AgendaItem
 import com.example.taskyapplication.agenda.presentation.components.AgendaItemDateTimeRow
 import com.example.taskyapplication.agenda.presentation.components.AgendaItemDeleteTextButton
 import com.example.taskyapplication.agenda.presentation.components.AgendaTitleRow
-import com.example.taskyapplication.agenda.presentation.components.DetailScreenHeader
+import com.example.taskyapplication.agenda.presentation.components.EditScreenHeader
 import com.example.taskyapplication.agenda.presentation.components.ReminderTimeRow
-import com.example.taskyapplication.main.presentation.components.TaskyScaffold
 import com.example.taskyapplication.ui.theme.TaskyDesignSystem.Companion.taskyColors
 import com.example.taskyapplication.ui.theme.TaskyTypography
 
 @Composable
-fun ReminderDetailRoot(
+fun EventDateTimeScreen(
     modifier: Modifier = Modifier,
-    onClickEdit: () -> Unit = {},
-    onClickClose: () -> Unit = {},
-    reminderViewModel: SharedReminderViewModel,
+    agendaItem: String = "Event",
+    onAction: (AgendaItemAction) -> Unit = {},
+    isEditScreen: Boolean = true,
+    state: EventUiState
 ) {
-    val uiState by reminderViewModel.reminderUiState.collectAsStateWithLifecycle()
-    TaskyScaffold(
-        mainContent = {
-            ReminderDetailScreen(
-                modifier = modifier,
-                onAction = { action ->
-                    when (action) {
-                        AgendaItemAction.LaunchDateTimeEditScreen -> onClickEdit()
-                        AgendaItemAction.CloseDetailScreen -> onClickClose()
-                        else -> Unit
-                    }
-                    reminderViewModel.executeActions(action)
-                },
-                state = uiState,
-            )
+    var selectedImageUris by remember { mutableStateOf(state.photos) }
+    val photoLauncher = rememberLauncherForActivityResult(
+        contract = ActivityResultContracts.PickMultipleVisualMedia(),
+        onResult = { uris ->
+            selectedImageUris = uris
         }
     )
-}
 
-@Composable
-fun ReminderDetailScreen(
-    modifier: Modifier = Modifier,
-    agendaItem: String = "Reminder",
-    onAction: (AgendaItemAction) -> Unit = {},
-    state: ReminderUiState,
-    isEditScreen: Boolean = false
-) {
     Column(
         modifier = modifier
             .padding(top = 48.dp)
     ) {
         TaskyBaseScreen(
             screenHeader = {
-                DetailScreenHeader(
-                    onClickEdit = {
-                        onAction(AgendaItemAction.LaunchDateTimeEditScreen)
+                EditScreenHeader(
+                    itemToEdit = "Event",
+                    onClickSave = {
+                        onAction(AgendaItemAction.SaveDateTimeEdit)
+                        onAction(AgendaItemAction.SaveSelectedPhotos(selectedImageUris))
                     },
-                    onClickClose = {
-                        onAction(AgendaItemAction.CloseDetailScreen)
+                    onClickCancel = {
+                        onAction(AgendaItemAction.CancelEdit)
                     }
                 )
             },
             mainContent = {
                 Box(
-                    modifier = Modifier.fillMaxSize()) {
+                    modifier = Modifier.fillMaxSize()
+                ) {
                     Box(
                         modifier = Modifier
                             .align(Alignment.TopCenter)
@@ -130,11 +120,36 @@ fun ReminderDetailScreen(
                                     isEditing = isEditScreen,
                                 )
                             },
-                            agendaItemStartTime = {
+                            eventMedia = {
+                                if (state.photos.isEmpty()) {
+                                    PhotoRowEmptyState(
+                                        launchPhotoPicker = {
+                                            photoLauncher.launch(
+                                                PickVisualMediaRequest(ActivityResultContracts.PickVisualMedia.ImageOnly)
+                                            )
+                                        },
+                                    )
+                                } else {
+                                    PhotoRow(
+                                        modifier = Modifier,
+                                        photos = selectedImageUris
+                                    )
+                                }
+                            },
+                            agendaItemStartTime = {  // event starting time
                                 AgendaItemDateTimeRow(
                                     isEditing = isEditScreen,
-                                    timeText = state.time,
-                                    dateText = state.date,
+                                    timeRowLabel = "From",
+                                    timeText = state.startTime,
+                                    dateText = state.startDate,
+                                )
+                            },
+                            agendaItemEndTime = {  // event end time
+                                AgendaItemDateTimeRow(
+                                    isEditing = isEditScreen,
+                                    timeRowLabel = "To",
+                                    timeText = state.endTime,
+                                    dateText = state.endDate,
                                 )
                             },
                             agendaItemReminderTime = {
@@ -148,22 +163,21 @@ fun ReminderDetailScreen(
                             modifier = Modifier
                                 .padding(bottom = 36.dp)
                                 .align(Alignment.BottomEnd),
-                            onClick = {  },
+                            onClick = { },
                             itemToDelete = agendaItem.uppercase(),
                             isEnabled = state.id.isNotEmpty()
                         )
                     }
-                } // end Box enclosing screen content
+                }
             }
         )
     }
 }
 
-
 @Preview(showBackground = true)
 @Composable
-fun BaseReminderScreenPreview() {
-    ReminderDetailScreen(
-        state = ReminderUiState(),
+fun EventDateTimePreview() {
+    EventDateTimeScreen(
+        state = EventUiState()
     )
 }

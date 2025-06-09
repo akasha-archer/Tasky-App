@@ -3,11 +3,18 @@ package com.example.taskyapplication.agenda.items.reminder
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.taskyapplication.agenda.AgendaItemAction
+import com.example.taskyapplication.agenda.core.AgendaItemEvent
+import com.example.taskyapplication.agenda.items.reminder.data.models.toReminderNetworkModel
+import com.example.taskyapplication.agenda.items.reminder.data.models.toUpdateReminderNetworkModel
 import com.example.taskyapplication.agenda.items.reminder.domain.ReminderRepository
 import com.example.taskyapplication.agenda.items.reminder.presentation.ReminderUiState
+import com.example.taskyapplication.domain.utils.DataError
+import com.example.taskyapplication.domain.utils.Result
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
+import kotlinx.coroutines.flow.receiveAsFlow
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
@@ -19,6 +26,9 @@ class SharedReminderViewModel @Inject constructor(
     private val reminderRepository: ReminderRepository
 ) : ViewModel() {
 
+    private val agendaEventChannel = Channel<AgendaItemEvent>()
+    val agendaEvents = agendaEventChannel.receiveAsFlow()
+
     private val _reminderUiState = MutableStateFlow(ReminderUiState())
     val reminderUiState = _reminderUiState.stateIn(
         scope = viewModelScope,
@@ -26,63 +36,127 @@ class SharedReminderViewModel @Inject constructor(
         initialValue = ReminderUiState()
     )
 
-    fun executeActions(action: AgendaItemAction) {
-        when (action) {
-            AgendaItemAction.SaveAgendaItemUpdates -> {
-                val newTitle = _reminderUiState.value.title
-                val newDescription = _reminderUiState.value.description
-                val reminderStartTime = _reminderUiState.value.time
-                val reminderDate = _reminderUiState.value.date
-                val reminderNotificationTime = _reminderUiState.value.remindAt
+    private fun isNewReminder(currentId: String) = currentId.isEmpty() || currentId.isBlank()
 
-                if (newTitle.isBlank() && newDescription.isBlank()) {
-                    return
-                }
-                val newTaskId: String = UUID.randomUUID().toString()
+    private fun createOrUpdateReminder() {
+        viewModelScope.launch {
+            // Implementation for creating or updating a task
+            _reminderUiState.update { it.copy(isEditingItem = true) }
+            val newTitle = _reminderUiState.value.title
+            val newDescription = _reminderUiState.value.description
+            val reminderTime = _reminderUiState.value.time
+            val reminderDate = _reminderUiState.value.date
+            val reminderNotificationTime = _reminderUiState.value.remindAt
+            val currentTaskId = _reminderUiState.value.id
+
+            var newTaskId = ""
+            if (isNewReminder(currentTaskId)) {
                 _reminderUiState.update {
                     it.copy(
-                        id = newTaskId
+                        id = UUID.randomUUID().toString()
                     )
                 }
-                val reminderUiState = ReminderUiState(
-                    id = newTaskId,
-                    title = newTitle,
-                    description = newDescription,
-                    time = reminderStartTime,
-                    date = reminderDate,
-                    remindAt = reminderNotificationTime
-                )
-                viewModelScope.launch {
-//                    reminderRepository.createNewReminder(
-//
-//                    )
-                }
-                _reminderUiState.update {
-                    it.copy(isEditingItem = false)
-                }
+                newTaskId = _reminderUiState.value.id
             }
 
+            val reminderToCreateOrUpdate = ReminderUiState(
+                id = if (isNewReminder(currentTaskId)) newTaskId else currentTaskId,
+                title = newTitle,
+                description = newDescription,
+                time = reminderTime,
+                date = reminderDate,
+                remindAt = reminderNotificationTime
+            )
+
+            val result = if (isNewReminder(currentTaskId)) {
+                reminderRepository.createNewReminder(
+                    reminderToCreateOrUpdate.toReminderNetworkModel()
+                )
+            } else {
+                reminderRepository.updateReminder(
+                    reminderToCreateOrUpdate.toUpdateReminderNetworkModel()
+                )
+            }
+
+            _reminderUiState.update {
+                it.copy(isEditingItem = false)
+            }
+
+            when (result) {
+                is Result.Error -> {
+                    if (result.error == DataError.Network.NO_INTERNET) {
+                        agendaEventChannel.send(
+                            AgendaItemEvent.NewItemCreatedError(
+                                errorMessage = "Item not updated. Please check your internet connection."
+                            )
+                        )
+                    } else {
+                        agendaEventChannel.send(
+                            AgendaItemEvent.NewItemCreatedError(
+                                "Something went wrong. Please try again later."
+                            )
+                        )
+                    }
+                }
+
+                is Result.Success -> {
+                    agendaEventChannel.send(AgendaItemEvent.NewItemCreatedSuccess)
+                }
+            }
+        }
+    }
+
+
+    private fun deleteReminder(reminderId: String) {
+        viewModelScope.launch {
+            _reminderUiState.update { it.copy(isDeletingItem = true) }
+            val result = reminderRepository.deleteReminder(reminderId)
+            _reminderUiState.update { it.copy(isDeletingItem = false) }
+
+            when (result) {
+                is Result.Error -> {
+                    if (result.error == DataError.Network.NO_INTERNET) {
+                        agendaEventChannel.send(
+                            AgendaItemEvent.DeleteError(
+                                errorMessage = "Item not deleted. Please check your internet connection."
+                            )
+                        )
+                    } else {
+                        agendaEventChannel.send(
+                            AgendaItemEvent.DeleteError(
+                                "Something went wrong. Please try again later."
+                            )
+                        )
+                    }
+                }
+
+                is Result.Success -> {
+                    agendaEventChannel.send(AgendaItemEvent.DeleteSuccess)
+                }
+            }
+        }
+    }
+
+    fun executeActions(action: AgendaItemAction) {
+        when (action) {
+            AgendaItemAction.SaveAgendaItemUpdates -> { createOrUpdateReminder() }
             is AgendaItemAction.SetTitle -> {
                 viewModelScope.launch {
                     _reminderUiState.update { it.copy(title = action.title) }
                 }
             }
-
             is AgendaItemAction.SetDate -> {
                 _reminderUiState.update { it.copy(
                     date = action.date,
                     isEditingDate = false
                 ) }
             }
-
             is AgendaItemAction.SetDescription -> {
                 _reminderUiState.update { it.copy(description = action.description) }
             }
-
             is AgendaItemAction.SetReminderTime -> {
                 _reminderUiState.update { it.copy(remindAt = action.reminder) }
             }
-
             is AgendaItemAction.SetTime -> {
                 _reminderUiState.update {
                     it.copy(
@@ -91,65 +165,56 @@ class SharedReminderViewModel @Inject constructor(
                     )
                 }
             }
+            is AgendaItemAction.DeleteItem -> { deleteReminder(action.id) }
 
             AgendaItemAction.ShowDatePicker -> {
                 _reminderUiState.update { it.copy(isEditingDate = true) }
             }
-
             AgendaItemAction.HideDatePicker -> {
                 _reminderUiState.update {
                     it.copy(isEditingDate = false)
                 }
             }
-
             AgendaItemAction.ShowReminderDropDown -> {
                 _reminderUiState.update {
                     it.copy(isEditingReminder = true)
                 }
             }
-
             AgendaItemAction.HideReminderDropDown -> {
                 _reminderUiState.update {
                     it.copy(isEditingReminder = false)
                 }
             }
-
             AgendaItemAction.ShowTimePicker -> {
                 _reminderUiState.update {
                     it.copy(isEditingTime = true)
                 }
             }
-
             AgendaItemAction.HideTimePicker -> {
                 _reminderUiState.update {
                     it.copy(isEditingTime = false)
                 }
             }
-
             AgendaItemAction.CloseEditDescriptionScreen -> {
                 _reminderUiState.update {
                     it.copy(isEditingItem = false)
                 }
             }
-
             AgendaItemAction.CloseEditTitleScreen -> {
                 _reminderUiState.update {
                     it.copy(isEditingItem = false)
                 }
             }
-
             AgendaItemAction.LaunchEditDescriptionScreen -> {
                 _reminderUiState.update {
                     it.copy(isEditingItem = true)
                 }
             }
-
             AgendaItemAction.LaunchEditTitleScreen -> {
                 _reminderUiState.update {
                     it.copy(isEditingItem = true)
                 }
             }
-
             AgendaItemAction.CancelEdit -> {
                 _reminderUiState.update {
                     it.copy(
@@ -160,18 +225,15 @@ class SharedReminderViewModel @Inject constructor(
                     )
                 }
             }
-
             AgendaItemAction.LaunchDateTimeEditScreen -> {
                 _reminderUiState.update {
                     it.copy(isEditingItem = true)
                 }
             }
-
             AgendaItemAction.CloseDetailScreen -> {
                 Unit
                 // go back to Agenda screen
             }
-
             AgendaItemAction.SaveDateTimeEdit -> {
                 _reminderUiState.update {
                     it.copy(isEditingItem = false)

@@ -21,7 +21,8 @@ data class TaskUiState(
     val isEditingItem: Boolean = false,
     val isEditingDate: Boolean = false,
     val isEditingTime: Boolean = false,
-    val isEditingReminder: Boolean = false
+    val isEditingReminder: Boolean = false,
+    val isDeletingItem: Boolean = false
 )
 
 fun TaskDto.toTaskUiState() = TaskUiState(

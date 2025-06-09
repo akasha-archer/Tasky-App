@@ -108,9 +108,9 @@ fun TaskEditDateTimeScreen(
                     },
                     onClickCancel = {
                         onAction(AgendaItemAction.CancelEdit)
-                        onAction(AgendaItemAction.SetTime(previousTime))
-                        onAction(AgendaItemAction.SetDate(previousDate))
-                        onAction(AgendaItemAction.SetReminderTime(previousReminder))
+//                        onAction(AgendaItemAction.SetTime(previousTime))
+//                        onAction(AgendaItemAction.SetDate(previousDate))
+//                        onAction(AgendaItemAction.SetReminderTime(previousReminder))
                     }
                 )
             },

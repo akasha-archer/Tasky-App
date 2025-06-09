@@ -34,7 +34,8 @@ fun AgendaItem(
     agendaItemReminderTime: @Composable () -> Unit,
     launchDatePicker: (@Composable () -> Unit)? = null,
     launchTimePicker: (@Composable () -> Unit)? = null,
-    launchReminderDropDown: (@Composable () -> Unit)? = null
+    launchReminderDropDown: (@Composable () -> Unit)? = null,
+//    agendaItemDeleteButton: @Composable () -> Unit,
 ) {
     Column(
         modifier = modifier,
@@ -65,6 +66,8 @@ fun AgendaItem(
         agendaItemReminderTime()
         Spacer(Modifier.height(20.dp))
         AgendaScreenDivider()
+
+//        agendaItemDeleteButton()
     }
     if (launchDatePicker != null) {
         launchDatePicker()

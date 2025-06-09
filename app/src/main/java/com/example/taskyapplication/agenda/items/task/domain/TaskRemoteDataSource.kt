@@ -1,7 +1,5 @@
 package com.example.taskyapplication.agenda.items.task.domain
 
-import android.os.Build
-import androidx.annotation.RequiresApi
 import com.example.taskyapplication.agenda.items.task.data.network.models.GetTaskResponse
 import com.example.taskyapplication.agenda.items.task.data.network.models.TaskNetworkModel
 import com.example.taskyapplication.agenda.items.task.data.network.models.UpdateTaskBody
@@ -23,7 +21,6 @@ class TaskRemoteDataSource @Inject constructor(
     private val taskApi: TaskApiService
 ): RemoteDataSource {
 
-//    @RequiresApi(Build.VERSION_CODES.O)
     override suspend fun getTask(taskId: String): Result<GetTaskResponse, DataError.Network> {
         return safeApiCall {
             taskApi.getTaskById(taskId)
