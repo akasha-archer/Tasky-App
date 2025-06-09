@@ -1,6 +1,7 @@
 package com.example.taskyapplication.auth.domain
 
 import androidx.compose.foundation.text.input.TextFieldState
+import com.example.taskyapplication.agenda.domain.toInitials
 import kotlinx.serialization.Serializable
 
 @Serializable
@@ -31,7 +32,10 @@ data class RegisterUserState(
     val isPasswordValid: Boolean = false,
     val isRegistering: Boolean = false,
     val canRegister: Boolean = false
-)
+) {
+    val userInitials: String
+        get() = fullName.text.toString().toInitials()
+}
 
 data class LoginUserState(
     val email: TextFieldState = TextFieldState(),

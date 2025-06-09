@@ -19,6 +19,10 @@ import java.time.ZoneId
 import java.time.format.DateTimeFormatter
 import java.util.Locale
 
+fun String.toInitials(): String {
+    return this.split(" ").mapNotNull { it.firstOrNull()?.toString() }.reduce { acc, s -> acc + s }
+}
+
 fun combineDateAndTime(date: String, time: String): Long {
     val dateTime = LocalDateTime.of(
         LocalDate.parse(

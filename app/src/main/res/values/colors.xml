@@ -10,4 +10,7 @@
     <color name="splash_background">#FF279f70</color>
     <color name="date_time_background">#FFF2F3F7</color>
     <color name="cloud_offline_icon">#76808FB2</color>
+    <color name="event_card">#FFCAEF45</color>
+    <color name="task_card">#FF279F70</color>
+    <color name="reminder_card">#FFF2F3F7</color>
 </resources>

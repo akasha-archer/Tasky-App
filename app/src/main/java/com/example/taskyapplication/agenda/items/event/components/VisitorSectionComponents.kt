@@ -37,6 +37,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.example.taskyapplication.R
 import com.example.taskyapplication.agenda.data.model.VisitorStatus
+import com.example.taskyapplication.agenda.domain.toInitials
 import com.example.taskyapplication.agenda.items.event.data.Attendee
 import com.example.taskyapplication.ui.theme.TaskyDesignSystem.Companion.taskyColors
 import com.example.taskyapplication.ui.theme.TaskyTypography
@@ -129,10 +130,6 @@ fun VisitorChips(
             )
         }
     }
-}
-
-private fun String.toInitials(): String {
-    return this.split(" ").mapNotNull { it.firstOrNull()?.toString() }.reduce { acc, s -> acc + s }
 }
 
 @Composable
