@@ -1,11 +1,8 @@
 package com.example.taskyapplication.agenda.items.event.data.db
 
-import android.net.Uri
 import androidx.room.ColumnInfo
 import androidx.room.Entity
 import androidx.room.PrimaryKey
-import com.example.taskyapplication.agenda.items.event.data.Attendee
-import com.example.taskyapplication.agenda.items.event.data.EventPhotoResponse
 
 @Entity(tableName = "events")
 data class EventEntity(
