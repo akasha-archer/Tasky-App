@@ -16,6 +16,9 @@ import androidx.compose.material3.rememberDatePickerState
 import androidx.compose.material3.rememberTimePickerState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -35,6 +38,7 @@ import com.example.taskyapplication.agenda.presentation.components.AgendaItem
 import com.example.taskyapplication.agenda.presentation.components.AgendaItemDateTimeRow
 import com.example.taskyapplication.agenda.presentation.components.AgendaItemDeleteTextButton
 import com.example.taskyapplication.agenda.presentation.components.AgendaTitleRow
+import com.example.taskyapplication.agenda.presentation.components.DeleteItemBottomSheet
 import com.example.taskyapplication.agenda.presentation.components.EditScreenHeader
 import com.example.taskyapplication.agenda.presentation.components.ReminderDropDown
 import com.example.taskyapplication.agenda.presentation.components.ReminderTimeRow
@@ -115,6 +119,7 @@ fun TaskEditDateTimeScreen(
                 )
             },
             mainContent = {
+                var showDeleteBottomSheet by remember { mutableStateOf(false) }
                 Box(
                     modifier = Modifier.fillMaxSize()
                 ) {
@@ -246,9 +251,26 @@ fun TaskEditDateTimeScreen(
                             modifier = Modifier
                                 .padding(bottom = 36.dp)
                                 .align(Alignment.BottomEnd),
-                            onClick = {},
-                            itemToDelete = "Task".uppercase()
+                            onClick = {
+                                showDeleteBottomSheet = true
+                            },
+                            itemToDelete = "Task".uppercase(),
+                            isEnabled = state.id.isNotEmpty()
                         )
+                        if (showDeleteBottomSheet) {
+                            DeleteItemBottomSheet(
+                                modifier = Modifier,
+                                isLoading = state.isDeletingItem,
+                                isButtonEnabled = !state.isDeletingItem,
+                                onDeleteTask = {
+                                    onAction(AgendaItemAction.DeleteItem(state.id))
+                                    showDeleteBottomSheet = false
+                                },
+                                onCancelDelete = {
+                                    showDeleteBottomSheet = false
+                                }
+                            )
+                        }
                     }
                 }
             }

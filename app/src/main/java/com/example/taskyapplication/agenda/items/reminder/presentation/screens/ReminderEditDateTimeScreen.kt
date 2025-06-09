@@ -16,6 +16,9 @@ import androidx.compose.material3.rememberDatePickerState
 import androidx.compose.material3.rememberTimePickerState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -25,11 +28,6 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.example.taskyapplication.TaskyBaseScreen
 import com.example.taskyapplication.agenda.AgendaItemAction
 import com.example.taskyapplication.agenda.data.model.ReminderOptions
-import com.example.taskyapplication.agenda.data.model.ReminderTimeItem.Companion.REMINDER_ONE_DAY_BEFORE
-import com.example.taskyapplication.agenda.data.model.ReminderTimeItem.Companion.REMINDER_ONE_HOUR_BEFORE
-import com.example.taskyapplication.agenda.data.model.ReminderTimeItem.Companion.REMINDER_SIX_HOURS_BEFORE
-import com.example.taskyapplication.agenda.data.model.ReminderTimeItem.Companion.REMINDER_TEN_MINUTES_BEFORE
-import com.example.taskyapplication.agenda.data.model.ReminderTimeItem.Companion.REMINDER_THIRTY_MINUTES_BEFORE
 import com.example.taskyapplication.agenda.domain.getReminderOption
 import com.example.taskyapplication.agenda.domain.toDateAsString
 import com.example.taskyapplication.agenda.items.reminder.SharedReminderViewModel
@@ -40,6 +38,7 @@ import com.example.taskyapplication.agenda.presentation.components.AgendaItem
 import com.example.taskyapplication.agenda.presentation.components.AgendaItemDateTimeRow
 import com.example.taskyapplication.agenda.presentation.components.AgendaItemDeleteTextButton
 import com.example.taskyapplication.agenda.presentation.components.AgendaTitleRow
+import com.example.taskyapplication.agenda.presentation.components.DeleteItemBottomSheet
 import com.example.taskyapplication.agenda.presentation.components.EditScreenHeader
 import com.example.taskyapplication.agenda.presentation.components.ReminderDropDown
 import com.example.taskyapplication.agenda.presentation.components.ReminderTimeRow
@@ -62,6 +61,7 @@ fun ReminderEditDateTimeRoot(
     TaskyScaffold(
         modifier = modifier,
         mainContent = {
+            var showDeleteBottomSheet by remember { mutableStateOf(false) }
             ReminderEditDateTimeScreen(
                 modifier = Modifier,
                 state = uiState,
@@ -120,6 +120,7 @@ fun ReminderEditDateTimeScreen(
                 )
             },
             mainContent = {
+                var showDeleteBottomSheet by remember { mutableStateOf(false) }
                 Box(
                     modifier = Modifier.fillMaxSize()
                 ) {
@@ -251,9 +252,26 @@ fun ReminderEditDateTimeScreen(
                             modifier = Modifier
                                 .padding(bottom = 36.dp)
                                 .align(Alignment.BottomEnd),
-                            onClick = {},
-                            itemToDelete = "Task".uppercase()
+                            onClick = {
+                                showDeleteBottomSheet = true
+                            },
+                            itemToDelete = "Reminder".uppercase(),
+                            isEnabled = state.id.isNotEmpty()
                         )
+                        if (showDeleteBottomSheet) {
+                            DeleteItemBottomSheet(
+                                modifier = Modifier,
+                                isLoading = state.isDeletingItem,
+                                isButtonEnabled = !state.isDeletingItem,
+                                onDeleteTask = {
+                                    onAction(AgendaItemAction.DeleteItem(state.id))
+                                    showDeleteBottomSheet = false
+                                },
+                                onCancelDelete = {
+                                    showDeleteBottomSheet = false
+                                }
+                            )
+                        }
                     }
                 }
             }

@@ -1,8 +1,10 @@
 package com.example.taskyapplication.agenda.items.event.data.db
 
+import androidx.room.Dao
 import androidx.room.Query
 import androidx.room.Upsert
 
+@Dao
 interface EventDao {
 
     @Query("SELECT * FROM events WHERE id = :eventId")

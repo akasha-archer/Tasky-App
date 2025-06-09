@@ -22,10 +22,6 @@ import androidx.compose.material.icons.filled.Add
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.scale
 import androidx.compose.ui.graphics.Color
@@ -79,13 +75,6 @@ fun PhotoRow(
     modifier: Modifier = Modifier,
     photos: List<Uri> = emptyList(),
 ) {
-    var selectedImageUris by remember { mutableStateOf<List<Uri>>(emptyList()) }
-//    val photoLauncher = rememberLauncherForActivityResult(
-//        contract = ActivityResultContracts.PickMultipleVisualMedia(),
-//        onResult = { uris ->
-//            selectedImageUris = uris
-//        }
-//    )
     Column(
         modifier = modifier
             .fillMaxWidth()

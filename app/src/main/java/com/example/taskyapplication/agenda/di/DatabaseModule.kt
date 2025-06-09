@@ -33,7 +33,7 @@ object DatabaseModule {
 
     @Singleton
     @Provides
-    fun provideReminderLocalDataSource(
+    fun provideEventLocalDataSource(
         dao: EventDao
     ): EventLocalDataSource = EventLocalDataSourceImpl(dao)
 

@@ -1,4 +1,4 @@
-package com.example.taskyapplication.agenda.core
+package com.example.taskyapplication.agenda.common
 
 sealed class AgendaItemEvent {
     data object NewItemCreatedSuccess : AgendaItemEvent()

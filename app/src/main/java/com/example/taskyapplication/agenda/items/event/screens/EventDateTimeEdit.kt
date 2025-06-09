@@ -25,7 +25,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.example.taskyapplication.TaskyBaseScreen
-import com.example.taskyapplication.agenda.AgendaItemAction
+import com.example.taskyapplication.agenda.items.event.EventItemAction
 import com.example.taskyapplication.agenda.items.event.components.PhotoRow
 import com.example.taskyapplication.agenda.items.event.components.PhotoRowEmptyState
 import com.example.taskyapplication.agenda.items.event.presentation.EventUiState
@@ -35,6 +35,7 @@ import com.example.taskyapplication.agenda.presentation.components.AgendaItem
 import com.example.taskyapplication.agenda.presentation.components.AgendaItemDateTimeRow
 import com.example.taskyapplication.agenda.presentation.components.AgendaItemDeleteTextButton
 import com.example.taskyapplication.agenda.presentation.components.AgendaTitleRow
+import com.example.taskyapplication.agenda.presentation.components.DeleteItemBottomSheet
 import com.example.taskyapplication.agenda.presentation.components.EditScreenHeader
 import com.example.taskyapplication.agenda.presentation.components.ReminderTimeRow
 import com.example.taskyapplication.ui.theme.TaskyDesignSystem.Companion.taskyColors
@@ -44,7 +45,7 @@ import com.example.taskyapplication.ui.theme.TaskyTypography
 fun EventDateTimeScreen(
     modifier: Modifier = Modifier,
     agendaItem: String = "Event",
-    onAction: (AgendaItemAction) -> Unit = {},
+    onAction: (EventItemAction) -> Unit = {},
     isEditScreen: Boolean = true,
     state: EventUiState
 ) {
@@ -65,15 +66,16 @@ fun EventDateTimeScreen(
                 EditScreenHeader(
                     itemToEdit = "Event",
                     onClickSave = {
-                        onAction(AgendaItemAction.SaveDateTimeEdit)
-                        onAction(AgendaItemAction.SaveSelectedPhotos(selectedImageUris))
+                        onAction(EventItemAction.SaveDateTimeEdit)
+                        onAction(EventItemAction.SaveSelectedPhotos(selectedImageUris))
                     },
                     onClickCancel = {
-                        onAction(AgendaItemAction.CancelEdit)
+                        onAction(EventItemAction.CancelEdit)
                     }
                 )
             },
             mainContent = {
+                var showDeleteBottomSheet by remember { mutableStateOf(false) }
                 Box(
                     modifier = Modifier.fillMaxSize()
                 ) {
@@ -163,10 +165,26 @@ fun EventDateTimeScreen(
                             modifier = Modifier
                                 .padding(bottom = 36.dp)
                                 .align(Alignment.BottomEnd),
-                            onClick = { },
-                            itemToDelete = agendaItem.uppercase(),
+                            onClick = {
+                                showDeleteBottomSheet = true
+                            },
+                            itemToDelete = "Event".uppercase(),
                             isEnabled = state.id.isNotEmpty()
                         )
+                        if (showDeleteBottomSheet) {
+                            DeleteItemBottomSheet(
+                                modifier = Modifier,
+                                isLoading = state.isDeletingItem,
+                                isButtonEnabled = !state.isDeletingItem,
+                                onDeleteTask = {
+                                    onAction(EventItemAction.DeleteEvent(state.id))
+                                    showDeleteBottomSheet = false
+                                },
+                                onCancelDelete = {
+                                    showDeleteBottomSheet = false
+                                }
+                            )
+                        }
                     }
                 }
             }
