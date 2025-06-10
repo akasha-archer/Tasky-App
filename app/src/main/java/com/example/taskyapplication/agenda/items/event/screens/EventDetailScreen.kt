@@ -139,7 +139,7 @@ fun EventDetailScreen(
                             },
                             eventMedia = {
                                 if (state.photos.isNotEmpty()) {
-                                    PhotoRow(photos = state.photos)
+                                    PhotoRow(detailPhotos = state.photos)
                                 }
                             },
                             agendaItemStartTime = {  // event starting time

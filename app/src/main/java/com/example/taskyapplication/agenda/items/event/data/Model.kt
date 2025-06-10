@@ -1,7 +1,9 @@
 package com.example.taskyapplication.agenda.items.event.data
 
 import android.net.Uri
+import kotlinx.serialization.Serializable
 
+@Serializable
 data class CreateEventNetworkModel(
     val id: String,
     val title: String,
@@ -12,6 +14,7 @@ data class CreateEventNetworkModel(
     val attendeeIds: List<String>
 )
 
+@Serializable
 data class UpdateEventNetworkModel(
     val id: String,
     val title: String,
@@ -24,6 +27,7 @@ data class UpdateEventNetworkModel(
     val isGoing: Boolean
 )
 
+@Serializable
 data class Attendee(
     val email: String,
     val fullName: String,
@@ -33,18 +37,6 @@ data class Attendee(
     val remindAt: Long
 )
 
-data class NetworkPhotoRequest(
-    val photo: Uri
-)
-
-data class EventDto(
-    val id: String,
-    val title: String,
-    val description: String?,
-    val from: Long,
-    val to: Long,
-    val remindAt: Long,
-    val host: String,
-    val attendees: List<Attendee>,
-    val photos: List<EventPhotoResponse>
+data class NetworkPhotoDto(
+    val photos: List<Uri> = emptyList()
 )

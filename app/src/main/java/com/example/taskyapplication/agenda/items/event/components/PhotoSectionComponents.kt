@@ -1,6 +1,5 @@
 package com.example.taskyapplication.agenda.items.event.components
 
-import android.net.Uri
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
@@ -32,6 +31,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import coil3.compose.AsyncImage
 import com.example.taskyapplication.R
+import com.example.taskyapplication.agenda.items.event.domain.EventImageItem
 import com.example.taskyapplication.ui.theme.TaskyDesignSystem.Companion.taskyColors
 import com.example.taskyapplication.ui.theme.TaskyTypography
 
@@ -72,7 +72,8 @@ fun PhotoRowEmptyState(
 @Composable
 fun PhotoRow(
     modifier: Modifier = Modifier,
-    photos: List<Uri> = emptyList(),
+    detailPhotos: List<String> = emptyList(),
+    photosToShow: List<EventImageItem> = emptyList(),
 ) {
     Column(
         modifier = modifier
@@ -96,7 +97,7 @@ fun PhotoRow(
             contentPadding = PaddingValues(12.dp),
             horizontalArrangement = Arrangement.spacedBy(8.dp),
         ) {
-            items(photos) { photo ->
+            items(photosToShow) { photo ->
                 AsyncImage(
                     model = photo,
                     contentDescription = "event photo",
@@ -109,7 +110,7 @@ fun PhotoRow(
                         )
                 )
             }
-            if (photos.size < 10)
+            if (photosToShow.size < 10)
                 item {
                     AddPhotoButton()
                 }

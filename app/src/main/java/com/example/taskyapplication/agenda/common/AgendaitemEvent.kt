@@ -7,5 +7,4 @@ sealed class AgendaItemEvent {
     data class NewItemCreatedError(val errorMessage: String): AgendaItemEvent()
     data class UpdateItemError(val errorMessage: String): AgendaItemEvent()
     data class DeleteError(val errorMessage: String): AgendaItemEvent()
-
 }

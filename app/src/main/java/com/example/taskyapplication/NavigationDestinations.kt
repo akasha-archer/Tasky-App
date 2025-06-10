@@ -18,7 +18,7 @@ import com.example.taskyapplication.agenda.items.event.screens.EventDescriptionR
 import com.example.taskyapplication.agenda.items.event.screens.EventDetailRoot
 import com.example.taskyapplication.agenda.items.event.screens.EventEditDateTimeRoot
 import com.example.taskyapplication.agenda.items.event.screens.EventTitleRoot
-import com.example.taskyapplication.agenda.items.main.presentation.AgendaMainScreen
+import com.example.taskyapplication.agenda.items.main.presentation.AgendaMainRoot
 import com.example.taskyapplication.agenda.items.reminder.SharedReminderViewModel
 import com.example.taskyapplication.agenda.items.reminder.presentation.screens.ReminderDetailRoot
 import com.example.taskyapplication.agenda.items.reminder.presentation.screens.ReminderEditDateTimeRoot
@@ -40,7 +40,7 @@ fun NavigationRoot(
     NavHost(
         modifier = modifier,
         navController = navController,
-        startDestination = NavigationRoutes.ReminderEditGraph
+        startDestination = NavigationRoutes.AgendaScreen
             //NavigationRoutes.TaskScreen
 //            when {
 //            isLoggedIn -> NavigationRoutes.AgendaScreen
@@ -266,7 +266,11 @@ fun NavigationRoot(
         }
 
         composable<NavigationRoutes.AgendaScreen> {
-            AgendaMainScreen()
+            AgendaMainRoot(
+                launchNewEventScreen = { navController.navigate(NavigationRoutes.EventDateTime) },
+                launchNewReminderScreen = { navController.navigate(NavigationRoutes.ReminderDateTime) },
+                launchNewTaskScreen = { navController.navigate(NavigationRoutes.TaskEditDateTime) }
+            )
         }
 
     }

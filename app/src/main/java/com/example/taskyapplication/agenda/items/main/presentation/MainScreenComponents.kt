@@ -3,6 +3,7 @@ package com.example.taskyapplication.agenda.items.main.presentation
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
@@ -37,17 +38,20 @@ import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import com.example.taskyapplication.R
+import com.example.taskyapplication.agenda.domain.AgendaScreenCalendarList
 import com.example.taskyapplication.agenda.domain.buildAgendaScreenCalendar
 import com.example.taskyapplication.agenda.items.main.data.AgendaItemType
-import com.example.taskyapplication.agenda.items.main.data.AgendaScreenUi
+import com.example.taskyapplication.agenda.items.main.data.AgendaSummary
 import com.example.taskyapplication.ui.theme.TaskyDesignSystem.Companion.taskyColors
 import com.example.taskyapplication.ui.theme.TaskyTypography
 
 @Composable
 fun AgendaSummary(
-modifier: Modifier = Modifier,
-agendaScreenUi: AgendaScreenUi
+    modifier: Modifier = Modifier,
+    dateHeading: String,
+    dailySummary: List<AgendaSummary>
 ) {
     Column(
         modifier = modifier
@@ -57,13 +61,14 @@ agendaScreenUi: AgendaScreenUi
     ) {
         Text(
             modifier = Modifier,
-            text = agendaScreenUi.displayDateHeading,
+            text = dateHeading,
             style = TaskyTypography.headlineLarge.copy(
-                color = taskyColors.primary
+                color = taskyColors.primary,
+                fontSize = 24.sp
             )
         )
         LazyColumn {
-            items(agendaScreenUi.itemsForSelectedDate) {item ->
+            items(dailySummary) { item ->
                 AgendaItemCard(
                     modifier = Modifier,
                     agendaItemType = item.type,
@@ -82,10 +87,10 @@ agendaScreenUi: AgendaScreenUi
 @Composable
 fun AgendaScreenScrollableDates(
     modifier: Modifier = Modifier,
-    dateList: List<Pair<String, String>> = buildAgendaScreenCalendar(),
+    dateList: List<AgendaScreenCalendarList> = buildAgendaScreenCalendar(),
     onSelectDate: (String) -> Unit = {},
 ) {
-    val initialIndex = 16
+    val initialIndex = 15
     val lazyGridState = rememberLazyGridState(
         initialFirstVisibleItemIndex = initialIndex
     )
@@ -100,8 +105,8 @@ fun AgendaScreenScrollableDates(
     ) {
         items(dateList) { item ->
             AgendaScreenCalendarDateItem(
-                dayOfWeekInitial = item.first[0],
-                dateOfMonth = item.second,
+                dayOfWeekInitial = item.dayOfWeek[0],
+                dateOfMonth = item.dayOfMonth,
                 isSelected = false
             )
         }
@@ -110,10 +115,10 @@ fun AgendaScreenScrollableDates(
 
 @Composable
 fun AgendaScreenCalendarDateItem(
-modifier: Modifier = Modifier,
-dayOfWeekInitial: Char,
-dateOfMonth: String,
-isSelected: Boolean = false
+    modifier: Modifier = Modifier,
+    dayOfWeekInitial: Char,
+    dateOfMonth: String,
+    isSelected: Boolean = false
 ) {
     Column(
         modifier = modifier
@@ -121,7 +126,8 @@ isSelected: Boolean = false
             .background(
                 color = taskyColors.onPrimary,
                 shape = RoundedCornerShape(32.dp)
-            ).padding(12.dp),
+            )
+            .padding(12.dp),
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.Center
     ) {
@@ -228,6 +234,9 @@ fun MainScreenHeader(
     modifier: Modifier = Modifier,
     launchDatePicker: () -> Unit = {},
     launchLogoutDropDown: () -> Unit = {},
+    onLogoutClick: () -> Unit = {},
+    onDismissRequest: () -> Unit = {},
+    showLogoutDropDown: Boolean = false,
     userInitials: String = "AB"
 ) {
     Row(
@@ -275,21 +284,31 @@ fun MainScreenHeader(
                     .padding(start = 4.dp)
                     .clickable { launchDatePicker() }
             )
-            Text(
-                text = userInitials,
+            Box(
                 modifier = Modifier
-                    .clickable { launchLogoutDropDown() }
-                    .drawBehind {
-                        drawRoundRect(
-                            color = Color(0xFF76808F),
-                            cornerRadius = CornerRadius(40.dp.toPx())
-                        )
-                    }
-                    .padding(horizontal = 12.dp, vertical = 12.dp),
-                style = TaskyTypography.labelMedium.copy(
-                    color = taskyColors.inputFieldGray
+            ) {
+                Text(
+                    text = userInitials,
+                    modifier = Modifier
+                        .clickable { launchLogoutDropDown() }
+                        .drawBehind {
+                            drawRoundRect(
+                                color = Color(0xFF76808F),
+                                cornerRadius = CornerRadius(40.dp.toPx())
+                            )
+                        }
+                        .padding(horizontal = 12.dp, vertical = 12.dp),
+                    style = TaskyTypography.labelMedium.copy(
+                        color = taskyColors.inputFieldGray
+                    )
                 )
-            )
+                MainScreenLogoutMenu(
+                    modifier = Modifier,
+                    onLogoutClick = onLogoutClick,
+                    onDismissRequest = onDismissRequest,
+                    isExpanded = showLogoutDropDown
+                )
+            }
         }
     }
 }
@@ -297,12 +316,12 @@ fun MainScreenHeader(
 @Composable
 fun MainScreenFab(
     modifier: Modifier = Modifier,
-    launchPopupMenu: () -> Unit = {}
+    onClickFab: () -> Unit = {}
 ) {
     FloatingActionButton(
         modifier = modifier
             .padding(16.dp),
-        onClick = { launchPopupMenu() },
+        onClick = onClickFab,
         containerColor = taskyColors.primary,
         contentColor = taskyColors.onPrimary,
         shape = RoundedCornerShape(12.dp),
@@ -344,9 +363,9 @@ fun CardPreview() {
 @Composable
 fun CalendarItemPreview() {
     AgendaScreenCalendarDateItem(
-      dayOfWeekInitial = 'M',
-      dateOfMonth = "15",
-      isSelected = true,
+        dayOfWeekInitial = 'M',
+        dateOfMonth = "15",
+        isSelected = true,
     )
 }
 

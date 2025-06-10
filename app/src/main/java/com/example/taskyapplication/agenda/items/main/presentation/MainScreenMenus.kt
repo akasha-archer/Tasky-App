@@ -15,6 +15,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import com.example.taskyapplication.agenda.items.main.data.AgendaItemType
 import com.example.taskyapplication.ui.theme.TaskyDesignSystem.Companion.taskyColors
 import com.example.taskyapplication.ui.theme.TaskyTypography
 
@@ -32,7 +33,7 @@ fun MenuText(
 }
 
 @Composable
-fun LogoutMenu(
+fun MainScreenLogoutMenu(
     modifier: Modifier = Modifier,
     onLogoutClick: () -> Unit,
     onDismissRequest: () -> Unit = {},
@@ -66,7 +67,7 @@ fun LogoutMenu(
 fun FabPopupMenu(
     modifier: Modifier = Modifier,
     onDismissRequest: () -> Unit = {},
-    navigateToScreen: (screen: String) -> Unit,
+    navigateToScreen: (AgendaItemType) -> Unit,
     isExpanded: Boolean = false
 ) {
     DropdownMenu(
@@ -79,7 +80,7 @@ fun FabPopupMenu(
         onDismissRequest = onDismissRequest,
         content = {
             DropdownMenuItem(
-                onClick = { navigateToScreen },
+                onClick = { navigateToScreen(AgendaItemType.EVENT) },
                 leadingIcon = {
                     Icon(
                         imageVector = Icons.Outlined.DateRange,
@@ -93,7 +94,7 @@ fun FabPopupMenu(
             )
 
             DropdownMenuItem(
-                onClick = { navigateToScreen },
+                onClick = { navigateToScreen(AgendaItemType.TASK) },
                 leadingIcon = {
                     Icon(
                         imageVector = Icons.Outlined.CheckCircle,
@@ -107,7 +108,7 @@ fun FabPopupMenu(
             )
 
             DropdownMenuItem(
-                onClick = { navigateToScreen },
+                onClick = { navigateToScreen(AgendaItemType.REMINDER) },
                 leadingIcon = {
                     Icon(
                         imageVector = Icons.Outlined.Notifications,
@@ -186,7 +187,7 @@ fun FabDropDownMenuPreview() {
 @Preview(showBackground = true)
 @Composable
 fun LogoutMenuPreview() {
-    LogoutMenu(
+    MainScreenLogoutMenu(
         onLogoutClick = {},
         isExpanded = true
     )

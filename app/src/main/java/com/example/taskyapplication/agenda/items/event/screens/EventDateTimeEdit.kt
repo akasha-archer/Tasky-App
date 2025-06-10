@@ -1,5 +1,6 @@
 package com.example.taskyapplication.agenda.items.event.screens
 
+import android.net.Uri
 import android.widget.Toast
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.PickVisualMediaRequest
@@ -14,7 +15,10 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.material.Icon
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.outlined.CheckCircle
+import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Text
+import androidx.compose.material3.rememberDatePickerState
+import androidx.compose.material3.rememberTimePickerState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -29,10 +33,12 @@ import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.example.taskyapplication.TaskyBaseScreen
 import com.example.taskyapplication.agenda.common.AgendaItemEvent
+import com.example.taskyapplication.agenda.domain.toDateAsString
 import com.example.taskyapplication.agenda.items.event.EventItemAction
 import com.example.taskyapplication.agenda.items.event.SharedEventViewModel
 import com.example.taskyapplication.agenda.items.event.components.PhotoRow
 import com.example.taskyapplication.agenda.items.event.components.PhotoRowEmptyState
+import com.example.taskyapplication.agenda.items.event.domain.EventImageItem
 import com.example.taskyapplication.agenda.items.event.presentation.EventUiState
 import com.example.taskyapplication.agenda.presentation.components.AgendaDescriptionText
 import com.example.taskyapplication.agenda.presentation.components.AgendaIconTextRow
@@ -43,6 +49,8 @@ import com.example.taskyapplication.agenda.presentation.components.AgendaTitleRo
 import com.example.taskyapplication.agenda.presentation.components.DeleteItemBottomSheet
 import com.example.taskyapplication.agenda.presentation.components.EditScreenHeader
 import com.example.taskyapplication.agenda.presentation.components.ReminderTimeRow
+import com.example.taskyapplication.agenda.presentation.components.TaskyDatePicker
+import com.example.taskyapplication.agenda.presentation.components.TaskyTimePicker
 import com.example.taskyapplication.domain.utils.ObserveAsEvents
 import com.example.taskyapplication.main.presentation.components.TaskyScaffold
 import com.example.taskyapplication.ui.theme.TaskyDesignSystem.Companion.taskyColors
@@ -128,6 +136,7 @@ fun EventEditDateTimeRoot(
     )
 }
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun EventDateTimeScreen(
     modifier: Modifier = Modifier,
@@ -136,13 +145,28 @@ fun EventDateTimeScreen(
     isEditScreen: Boolean = true,
     state: EventUiState
 ) {
-    var selectedImageUris by remember { mutableStateOf(state.photos) }
+    // persisted photos are stored and displayed as urls
+    var selectedImageUris by remember { mutableStateOf<List<Uri>>(emptyList()) }
+    val persistedImageUrls: List<String> = state.photos
+
+    // This list gets populated when the user picks new photos
+    val newImageUris: List<Uri> = selectedImageUris
+
+    val urlItems = persistedImageUrls.map { EventImageItem.PersistedImage(it) }
+    val uriItems = newImageUris.map { EventImageItem.NewImage(it) }
+    val combinedImageList = urlItems + uriItems
+
     val photoLauncher = rememberLauncherForActivityResult(
         contract = ActivityResultContracts.PickMultipleVisualMedia(),
         onResult = { uris ->
             selectedImageUris = uris
         }
     )
+    val datePickerState = rememberDatePickerState()
+    val timePickerState = rememberTimePickerState(
+        is24Hour = false
+    )
+    val timeOfDay = if (timePickerState.isAfternoon) "PM" else "AM"
 
     Column(
         modifier = modifier
@@ -202,12 +226,18 @@ fun EventDateTimeScreen(
                                 AgendaTitleRow(
                                     agendaItemTitle = state.title,
                                     isEditing = isEditScreen,
+                                    onClickEdit = {
+                                        onAction(EventItemAction.LaunchEditTitleScreen)
+                                    }
                                 )
                             },
                             agendaItemDescription = {
                                 AgendaDescriptionText(
                                     agendaItemDescription = state.description,
                                     isEditing = isEditScreen,
+                                    onClickEdit = {
+                                        onAction(EventItemAction.LaunchEditDescriptionScreen)
+                                    }
                                 )
                             },
                             eventMedia = {
@@ -222,7 +252,7 @@ fun EventDateTimeScreen(
                                 } else {
                                     PhotoRow(
                                         modifier = Modifier,
-                                        photos = selectedImageUris
+                                        photosToShow = combinedImageList
                                     )
                                 }
                             },
@@ -232,6 +262,12 @@ fun EventDateTimeScreen(
                                     timeRowLabel = "From",
                                     timeText = state.startTime,
                                     dateText = state.startDate,
+                                    onClickTime = {
+                                        onAction(EventItemAction.ShowTimePicker)
+                                    },
+                                    onClickDate = {
+                                        onAction(EventItemAction.ShowDatePicker)
+                                    },
                                 )
                             },
                             agendaItemEndTime = {  // event end time
@@ -240,14 +276,58 @@ fun EventDateTimeScreen(
                                     timeRowLabel = "To",
                                     timeText = state.endTime,
                                     dateText = state.endDate,
+                                    onClickTime = {
+                                        onAction(EventItemAction.ShowTimePicker)
+                                    },
+                                    onClickDate = {
+                                        onAction(EventItemAction.ShowDatePicker)
+                                    },
                                 )
                             },
                             agendaItemReminderTime = {
                                 ReminderTimeRow(
                                     reminderTime = state.remindAt.timeString,
                                     isEditing = isEditScreen,
+                                    onClickDropDown = {
+                                        onAction(EventItemAction.ShowReminderDropDown)
+                                    }
                                 )
-                            }
+                            },
+                            launchDatePicker = { // date - time pickers
+                                if (state.isEditingDate) {
+                                    TaskyDatePicker(
+                                        datePickerState = datePickerState,
+                                        onDismiss = {
+                                            onAction(EventItemAction.HideDatePicker)
+                                        },
+                                        onConfirm = {
+                                            onAction(
+                                                EventItemAction.SetStartDate(
+                                                    datePickerState.selectedDateMillis?.toDateAsString()
+                                                        ?: state.startDate
+                                                )
+                                            )
+                                        },
+                                    )
+                                }
+                            },
+                            launchTimePicker = {
+                                if (state.isEditingTime) {
+                                    TaskyTimePicker(
+                                        timePickerState = timePickerState,
+                                        onDismiss = {
+                                            onAction(EventItemAction.HideTimePicker)
+                                        },
+                                        onConfirm = {
+                                            onAction(
+                                                EventItemAction.SetStartTime(
+                                                    timePickerState.hour.toString() + ":" + timePickerState.minute.toString() + " $timeOfDay"
+                                                )
+                                            )
+                                        },
+                                    )
+                                }
+                            }, // end date - time pickers
                         )
                         AgendaItemDeleteTextButton(
                             modifier = Modifier
@@ -284,6 +364,6 @@ fun EventDateTimeScreen(
 @Composable
 fun EventDateTimePreview() {
     EventDateTimeScreen(
-        state = EventUiState()
+        state = EventUiState(),
     )
 }

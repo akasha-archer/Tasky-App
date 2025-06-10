@@ -63,7 +63,7 @@ fun EventEditDescriptionScreen(
     onAction: (EventItemAction) -> Unit = {},
     state: EventUiState
 ) {
-    var tempTitle by remember { mutableStateOf(state.title) }
+    var tempDescription by remember { mutableStateOf(state.description) }
     val focusManager = LocalFocusManager.current
 
     TaskyBaseScreen(
@@ -79,7 +79,7 @@ fun EventEditDescriptionScreen(
                 EditInputHeader(
                     itemToEdit = "Description",
                     onClickSave = {
-                        onAction(EventItemAction.SetTitle(tempTitle))
+                        onAction(EventItemAction.SetDescription(tempDescription))
                     },
                     onClickCancel = {
                         onAction(EventItemAction.CancelEdit)
@@ -98,9 +98,9 @@ fun EventEditDescriptionScreen(
                     modifier = Modifier
                         .padding(horizontal = 24.dp, vertical = 32.dp)
                         .fillMaxSize(),
-                    value = tempTitle,
+                    value = tempDescription,
                     onValueChange = {
-                        tempTitle = it
+                        tempDescription = it
                     },
                     textStyle = TaskyTypography.bodyLarge
                         .copy(

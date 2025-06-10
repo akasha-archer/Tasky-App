@@ -11,7 +11,8 @@ data class EventUiState(
     val id: String = "",
     val title: String = "Edit your title",
     val description: String = "Edit your description",
-    val photos: List<Uri> = emptyList(),
+    val photos: List<String> = emptyList(),
+    val networkPhotos: List<Uri> = emptyList(),
     val attendeeIds: List<String> = emptyList(),
     val deletedPhotoKeys: List<String> = emptyList(),
     val startTime: String = LocalTime.now().format(

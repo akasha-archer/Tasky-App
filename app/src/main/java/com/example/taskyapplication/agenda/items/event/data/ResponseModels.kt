@@ -1,5 +1,8 @@
 package com.example.taskyapplication.agenda.items.event.data
 
+import kotlinx.serialization.Serializable
+
+@Serializable
 data class CreatedEventResponse(
     val id: String,
     val title: String,
@@ -8,10 +11,11 @@ data class CreatedEventResponse(
     val to: Long,
     val remindAt: Long,
     val host: String,
-    val attendees: List<Attendee>,
+    val attendees: List<CreatedEventAttendeeResponse>,
     val photos: List<EventPhotoResponse>
 )
 
+@Serializable
 data class UpdatedEventResponse(
     val id: String,
     val title: String,
@@ -21,10 +25,11 @@ data class UpdatedEventResponse(
     val remindAt: Long,
     val host: String,
     val isUserEventCreator: Boolean,
-    val attendees: List<Attendee>,
+    val attendees: List<UpdatedEventAttendeeResponse>,
     val photos: List<EventPhotoResponse>
 )
 
+@Serializable
 data class FetchedEventResponse(
     val id: String,
     val title: String,
@@ -34,10 +39,21 @@ data class FetchedEventResponse(
     val remindAt: Long,
     val host: String,
     val isUserEventCreator: Boolean,
-    val attendees: List<Attendee>,
+    val attendees: List<FetchedEventAttendeeResponse>,
     val photos: List<EventPhotoResponse>
 )
 
+@Serializable
+data class FetchedEventAttendeeResponse(
+    val email: String,
+    val fullName: String,
+    val userId: String,
+    val eventId: String,
+    val isGoing: Boolean,
+    val remindAt: Long
+)
+
+@Serializable
 data class UpdatedEventAttendeeResponse(
     val email: String,
     val fullName: String,
@@ -47,22 +63,31 @@ data class UpdatedEventAttendeeResponse(
     val remindAt: Long
 )
 
-data class UpdatedEventPhotoResponse(
-    val key: String,
-    val url: String,
+
+@Serializable
+data class CreatedEventAttendeeResponse(
+    val email: String,
+    val fullName: String,
+    val userId: String,
+    val eventId: String,
+    val isGoing: Boolean,
+    val remindAt: Long
 )
 
-data class FetchAttendeeResponse(
+@Serializable
+data class GetAttendeeResponse(
     val doesUserExist: Boolean,
-    val attendee: FetchedAttendeeDetailsResponse
+    val attendee: VerifyAttendeeResponse
 )
 
-data class FetchedAttendeeDetailsResponse(
+@Serializable
+data class VerifyAttendeeResponse(
     val email: String,
     val fullName: String,
     val userId: String
 )
 
+@Serializable
 data class EventPhotoResponse(
     val key: String,
     val url: String

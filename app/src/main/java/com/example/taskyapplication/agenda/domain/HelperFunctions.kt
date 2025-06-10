@@ -32,9 +32,22 @@ fun combineDateAndTime(date: String, time: String): Long {
 
 fun calculateNotificationTime(reminderTime: Long, startTime: Long) = startTime - reminderTime
 
-fun Long.toDateAsString(): String =
+fun Long.toDayMonthAsString(): String =
     LocalDate.ofInstant(Instant.ofEpochMilli(this), ZoneId.systemDefault())
+        .format(DateTimeFormatter.ofPattern("dd MMM"))
+
+fun Long.toDateAsString(): String {
+    val dateToConvert = if (this < System.currentTimeMillis()) {
+        System.currentTimeMillis()
+    } else {
+        this
+    }
+
+    return if (dateToConvert == System.currentTimeMillis()) "Today" else
+     LocalDate.ofInstant(Instant.ofEpochMilli(dateToConvert), ZoneId.systemDefault())
         .format(DateTimeFormatter.ofPattern("dd MMM yyyy"))
+}
+
 
 fun Long.toTimeAsString(): String =
     LocalTime.ofInstant(Instant.ofEpochMilli(this), ZoneId.systemDefault())
@@ -70,15 +83,21 @@ fun getReminderOptionFromMillis(millis: Long): ReminderOptions {
     }
 }
 
-fun buildAgendaScreenCalendar(): List<Pair<String, String>> {
+data class AgendaScreenCalendarList(
+    val dayOfWeek: String,
+    val dayOfMonth: String,
+    val dateValue: Long
+)
+
+fun buildAgendaScreenCalendar(): List<AgendaScreenCalendarList> {
     val daysBefore = 15L
     val daysAfter = 15L
 
     // today's date
     val today = LocalDate.now()
 
-    // Create a list to hold the formatted dates
-    val dateList = mutableListOf<Pair<String, String>>()
+//    val dateList = mutableListOf<Pair<String, String>>()
+    val dateListWithDate = mutableListOf<AgendaScreenCalendarList>()
 
     // Define the desired date format (e.g., "Mon 26")
     val dateFormatter = DateTimeFormatter.ofPattern("d", Locale.getDefault())
@@ -87,7 +106,13 @@ fun buildAgendaScreenCalendar(): List<Pair<String, String>> {
     // Loop from 15 days before to 15 days after today
     for (i in -daysBefore..daysAfter) {
         val date = today.plusDays(i)
-        dateList.add(Pair(date.format(dayFormatter), date.format(dateFormatter)))
+//        dateList.add(Pair(date.format(dayFormatter), date.format(dateFormatter)))
+        dateListWithDate.add(
+            AgendaScreenCalendarList(
+            dayOfWeek = date.format(dayFormatter),
+            dayOfMonth = date.format(dateFormatter),
+            dateValue = date.toEpochDay()
+        ))
     }
-    return dateList
+    return dateListWithDate
 }

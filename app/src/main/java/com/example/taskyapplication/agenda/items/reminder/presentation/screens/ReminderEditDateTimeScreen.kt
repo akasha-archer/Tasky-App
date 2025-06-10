@@ -159,7 +159,7 @@ fun ReminderEditDateTimeScreen(
         TaskyBaseScreen(
             screenHeader = {
                 EditScreenHeader(
-                    itemToEdit = "Task",
+                    itemToEdit = "Reminder",
                     onClickSave = {
                         onAction(AgendaItemAction.SaveDateTimeEdit)
                         onAction(AgendaItemAction.SaveAgendaItemUpdates)

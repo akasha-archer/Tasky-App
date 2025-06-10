@@ -1,7 +1,40 @@
 package com.example.taskyapplication.agenda.items.main.data
 
-//data class AgendaItemsResponse(
-//    val events: List<Event>,
-//    val tasks: List<Task>,
-//    val reminders: List<Reminder>
-//)
+import com.example.taskyapplication.agenda.items.event.data.EventPhotoResponse
+import com.example.taskyapplication.agenda.items.event.data.GetAttendeeResponse
+
+// Response for fetching full agenda
+data class AgendaItemsResponse(
+    val events: List<Event>,
+    val tasks: List<Task>,
+    val reminders: List<Reminder>
+)
+
+data class Event(
+    val id: String,
+    val title: String,
+    val description: String,
+    val from: Long,
+    val to: Long,
+    val remindAt: Long,
+    val host: String,
+    val attendees: List<GetAttendeeResponse>,
+    val photos: List<EventPhotoResponse>
+)
+
+data class Task(
+    val id: String,
+    val title: String,
+    val description: String,
+    val time: Long,
+    val remindAt: Long,
+    val isDone: Boolean
+)
+
+data class Reminder(
+    val id: String,
+    val title: String,
+    val description: String,
+    val time: Long,
+    val remindAt: Long
+)
