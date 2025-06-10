@@ -62,3 +62,9 @@ enum class AgendaItemType(val color: Int) {
     TASK(color = R.color.task_card),
     REMINDER(color = R.color.reminder_card)
 }
+
+enum class AgendaSummaryMenuOption {
+    OPEN,
+    EDIT,
+    DELETE
+}

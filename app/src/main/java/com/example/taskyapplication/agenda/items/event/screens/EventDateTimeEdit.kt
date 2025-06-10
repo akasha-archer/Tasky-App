@@ -28,6 +28,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.example.taskyapplication.TaskyBaseScreen
+import com.example.taskyapplication.agenda.AgendaItemAction
 import com.example.taskyapplication.agenda.common.AgendaItemEvent
 import com.example.taskyapplication.agenda.items.event.EventItemAction
 import com.example.taskyapplication.agenda.items.event.SharedEventViewModel
@@ -202,12 +203,18 @@ fun EventDateTimeScreen(
                                 AgendaTitleRow(
                                     agendaItemTitle = state.title,
                                     isEditing = isEditScreen,
+                                    onClickEdit = {
+                                        onAction(EventItemAction.LaunchEditTitleScreen)
+                                    }
                                 )
                             },
                             agendaItemDescription = {
                                 AgendaDescriptionText(
                                     agendaItemDescription = state.description,
                                     isEditing = isEditScreen,
+                                    onClickEdit = {
+                                        onAction(EventItemAction.LaunchEditDescriptionScreen)
+                                    }
                                 )
                             },
                             eventMedia = {
@@ -232,6 +239,12 @@ fun EventDateTimeScreen(
                                     timeRowLabel = "From",
                                     timeText = state.startTime,
                                     dateText = state.startDate,
+                                    onClickTime = {
+                                        onAction(EventItemAction.ShowTimePicker)
+                                    },
+                                    onClickDate = {
+                                        onAction(EventItemAction.ShowDatePicker)
+                                    },
                                 )
                             },
                             agendaItemEndTime = {  // event end time
@@ -240,12 +253,21 @@ fun EventDateTimeScreen(
                                     timeRowLabel = "To",
                                     timeText = state.endTime,
                                     dateText = state.endDate,
+                                    onClickTime = {
+                                        onAction(EventItemAction.ShowTimePicker)
+                                    },
+                                    onClickDate = {
+                                        onAction(EventItemAction.ShowDatePicker)
+                                    },
                                 )
                             },
                             agendaItemReminderTime = {
                                 ReminderTimeRow(
                                     reminderTime = state.remindAt.timeString,
                                     isEditing = isEditScreen,
+                                    onClickDropDown = {
+                                        onAction(EventItemAction.ShowReminderDropDown)
+                                    }
                                 )
                             }
                         )

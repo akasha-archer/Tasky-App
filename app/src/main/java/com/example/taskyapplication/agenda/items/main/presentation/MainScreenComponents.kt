@@ -297,12 +297,12 @@ fun MainScreenHeader(
 @Composable
 fun MainScreenFab(
     modifier: Modifier = Modifier,
-    launchPopupMenu: () -> Unit = {}
+    onClickFab: () -> Unit = {}
 ) {
     FloatingActionButton(
         modifier = modifier
             .padding(16.dp),
-        onClick = { launchPopupMenu() },
+        onClick = onClickFab,
         containerColor = taskyColors.primary,
         contentColor = taskyColors.onPrimary,
         shape = RoundedCornerShape(12.dp),
