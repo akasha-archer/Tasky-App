@@ -47,7 +47,7 @@ class SharedEventViewModel @Inject constructor(
             _eventUiState.update { it.copy(isEditingItem = true) }
             val newTitle = _eventUiState.value.title
             val newDescription = _eventUiState.value.description
-            val eventPhotos = _eventUiState.value.photos
+            val networkPhotos = _eventUiState.value.networkPhotos
             val eventAttendees = _eventUiState.value.attendeeIds
             val eventStartTime = _eventUiState.value.startTime
             val eventEndTime = _eventUiState.value.endTime
@@ -66,7 +66,7 @@ class SharedEventViewModel @Inject constructor(
                 id = if (isNewEvent(currentId)) eventId else currentId,
                 title = newTitle,
                 description = newDescription,
-                photos = eventPhotos,
+                networkPhotos = networkPhotos,
                 attendeeIds = eventAttendees,
                 startTime = eventStartTime,
                 endTime = eventEndTime,
@@ -77,12 +77,12 @@ class SharedEventViewModel @Inject constructor(
             val result = if (isNewEvent(currentId)) {
                 eventRepository.createNewEvent(
                     eventToCreateOrUpdate.toCreateEventNetworkModel(),
-                    imageMultiPartProvider.createMultipartParts(applicationContext,eventPhotos)
+                    imageMultiPartProvider.createMultipartParts(applicationContext, networkPhotos)
                 )
             } else {
                 eventRepository.updateEvent(
                     eventToCreateOrUpdate.toUpdateEventNetworkModel(),
-                    imageMultiPartProvider.createMultipartParts(applicationContext,eventPhotos)
+                    imageMultiPartProvider.createMultipartParts(applicationContext, networkPhotos)
                 )
             }
             _eventUiState.update { it.copy(isEditingItem = false) }
@@ -161,8 +161,11 @@ class SharedEventViewModel @Inject constructor(
 
             is EventItemAction.SaveSelectedPhotos -> {
                 _eventUiState.update { it.copy(
-                    photos = action.eventPhotos,
+                    networkPhotos = action.eventPhotos,
                 ) }
+//                _eventUiState.update { it.copy(
+//                    photos = action.eventPhotos,
+//                ) }
             }
 
             is EventItemAction.SetEndDate -> {

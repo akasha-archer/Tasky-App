@@ -33,7 +33,7 @@ fun MenuText(
 }
 
 @Composable
-fun LogoutMenu(
+fun MainScreenLogoutMenu(
     modifier: Modifier = Modifier,
     onLogoutClick: () -> Unit,
     onDismissRequest: () -> Unit = {},
@@ -187,7 +187,7 @@ fun FabDropDownMenuPreview() {
 @Preview(showBackground = true)
 @Composable
 fun LogoutMenuPreview() {
-    LogoutMenu(
+    MainScreenLogoutMenu(
         onLogoutClick = {},
         isExpanded = true
     )

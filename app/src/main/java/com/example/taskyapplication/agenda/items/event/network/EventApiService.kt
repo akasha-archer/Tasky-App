@@ -2,7 +2,7 @@ package com.example.taskyapplication.agenda.items.event.network
 
 import com.example.taskyapplication.agenda.items.event.data.CreateEventNetworkModel
 import com.example.taskyapplication.agenda.items.event.data.CreatedEventResponse
-import com.example.taskyapplication.agenda.items.event.data.FetchAttendeeResponse
+import com.example.taskyapplication.agenda.items.event.data.GetAttendeeResponse
 import com.example.taskyapplication.agenda.items.event.data.FetchedEventResponse
 import com.example.taskyapplication.agenda.items.event.data.UpdateEventNetworkModel
 import com.example.taskyapplication.agenda.items.event.data.UpdatedEventResponse
@@ -22,7 +22,7 @@ interface EventApiService {
     @POST("/event")
     suspend fun createEvent(
         @Part("create_event_request") createEventRequest: CreateEventNetworkModel,
-        @Part eventPhotos: List<MultipartBody.Part>
+        @Part images: List<MultipartBody.Part>
     ): Response<CreatedEventResponse>
 
     @GET("event/{eventId}")
@@ -34,7 +34,7 @@ interface EventApiService {
     @PUT("event")
     suspend fun updateEvent(
         @Part("update_event_request") updateEventRequest: UpdateEventNetworkModel,
-        @Part eventPhotos: List<MultipartBody.Part>
+        @Part images: List<MultipartBody.Part>
     ): Response<UpdatedEventResponse>
 
     @DELETE("event/{eventId}")
@@ -45,7 +45,7 @@ interface EventApiService {
     @GET("/attendee/{email}")
     suspend fun getAttendee(
         @Query("email") attendeeEmail: String
-    ): Response<FetchAttendeeResponse>
+    ): Response<GetAttendeeResponse>
 
     @DELETE("/attendee/{eventId}")
     suspend fun deleteAttendee(
