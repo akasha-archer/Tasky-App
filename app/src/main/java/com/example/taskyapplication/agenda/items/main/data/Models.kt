@@ -1,30 +1,60 @@
 package com.example.taskyapplication.agenda.items.main.data
 
 import com.example.taskyapplication.R
-import com.example.taskyapplication.ui.theme.TaskyDesignSystem.Companion.taskyColors
-
-// event light green
-// tasks dark green
-// reminders gray
+import java.time.LocalDate
 
 data class AgendaScreenUi(
-    val displayDateHeading: String,
-    val selectedDate: String,
-    val itemsForSelectedDate: List<AgendaItemSummary>
+    val displayDateHeading: String = "Today",
+    val selectedDate: String = LocalDate.now().toString(),
+    val itemsForSelectedDate: List<AgendaItemSummary> = emptyList()
 )
 
-data class AgendaItemSummary(
-    val description: String,
-    val title: String,
-    val date: String,
-    val time: String,
-    val type: String
-)
+interface AgendaItemSummary {
+    val id: String
+    val description: String
+    val title: String
+    val startDate: String
+    val startTime: String
+    val type: AgendaItemType
+}
+
+data class AgendaReminderSummary(
+    override val id: String = "",
+    override val description: String = "",
+    override val title: String = "",
+    override val startDate: String = "",
+    override val startTime: String = "",
+    override val type: AgendaItemType = AgendaItemType.REMINDER,
+): AgendaItemSummary
+
+data class AgendaTaskSummary(
+    override val id: String = "",
+    override val description: String = "",
+    override val title: String = "",
+    override val startDate: String = "",
+    override val startTime: String = "",
+    override val type: AgendaItemType = AgendaItemType.REMINDER,
+): AgendaItemSummary
+
+data class AgendaEventSummary(
+    override val id: String = "",
+    override val description: String = "",
+    override val title: String = "",
+    override val startDate: String = "",
+    override val startTime: String = "",
+    override val type: AgendaItemType = AgendaItemType.REMINDER,
+    val isAttendee: Boolean = false,
+): AgendaItemSummary
 
 data class deletedAgendaItems(
     val deletedEventIds: List<String>,
     val deletedTaskIds: List<String>,
     val deletedReminderIds: List<String>
+)
+
+data class AgendaScreenCalendar(
+    val dayOfWeek: Char,
+    val dayOfMonth: Int,
 )
 
 enum class AgendaItemType(val color: Int) {
