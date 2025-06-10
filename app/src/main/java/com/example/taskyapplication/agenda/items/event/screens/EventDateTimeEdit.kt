@@ -28,7 +28,6 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.example.taskyapplication.TaskyBaseScreen
-import com.example.taskyapplication.agenda.AgendaItemAction
 import com.example.taskyapplication.agenda.common.AgendaItemEvent
 import com.example.taskyapplication.agenda.items.event.EventItemAction
 import com.example.taskyapplication.agenda.items.event.SharedEventViewModel
