@@ -1,5 +1,6 @@
 package com.example.taskyapplication.agenda.items.event.screens
 
+import android.widget.Toast
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.PickVisualMediaRequest
 import androidx.activity.result.contract.ActivityResultContracts
@@ -22,10 +23,14 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.example.taskyapplication.TaskyBaseScreen
+import com.example.taskyapplication.agenda.common.AgendaItemEvent
 import com.example.taskyapplication.agenda.items.event.EventItemAction
+import com.example.taskyapplication.agenda.items.event.SharedEventViewModel
 import com.example.taskyapplication.agenda.items.event.components.PhotoRow
 import com.example.taskyapplication.agenda.items.event.components.PhotoRowEmptyState
 import com.example.taskyapplication.agenda.items.event.presentation.EventUiState
@@ -38,8 +43,90 @@ import com.example.taskyapplication.agenda.presentation.components.AgendaTitleRo
 import com.example.taskyapplication.agenda.presentation.components.DeleteItemBottomSheet
 import com.example.taskyapplication.agenda.presentation.components.EditScreenHeader
 import com.example.taskyapplication.agenda.presentation.components.ReminderTimeRow
+import com.example.taskyapplication.domain.utils.ObserveAsEvents
+import com.example.taskyapplication.main.presentation.components.TaskyScaffold
 import com.example.taskyapplication.ui.theme.TaskyDesignSystem.Companion.taskyColors
 import com.example.taskyapplication.ui.theme.TaskyTypography
+
+@Composable
+fun EventEditDateTimeRoot(
+    modifier: Modifier = Modifier,
+    onClickSave: () -> Unit,
+    onClickCancel: () -> Unit,
+    onSelectEditTitle: () -> Unit,
+    onSelectEditDescription: () -> Unit,
+    eventViewModel: SharedEventViewModel
+) {
+    val uiState by eventViewModel.eventUiState.collectAsStateWithLifecycle()
+    val context = LocalContext.current
+
+    ObserveAsEvents(eventViewModel.agendaEvents) { event ->
+        when (event) {
+            is AgendaItemEvent.DeleteError -> {
+                Toast.makeText(
+                    context,
+                    event.errorMessage,
+                    Toast.LENGTH_SHORT
+                ).show()
+            }
+            AgendaItemEvent.DeleteSuccess -> {
+                Toast.makeText(
+                    context,
+                    "Event has been deleted",
+                    Toast.LENGTH_SHORT
+                ).show()
+            }
+            is AgendaItemEvent.NewItemCreatedError -> {
+                Toast.makeText(
+                    context,
+                    event.errorMessage,
+                    Toast.LENGTH_SHORT
+                ).show()
+            }
+            AgendaItemEvent.NewItemCreatedSuccess -> {
+                Toast.makeText(
+                    context,
+                    "Your new Event has been created",
+                    Toast.LENGTH_SHORT
+                ).show()
+            }
+            is AgendaItemEvent.UpdateItemError -> {
+                Toast.makeText(
+                    context,
+                    event.errorMessage,
+                    Toast.LENGTH_SHORT
+                ).show()
+            }
+            AgendaItemEvent.UpdateItemSuccess -> {
+                Toast.makeText(
+                    context,
+                    "Your Event has been updated successfully",
+                    Toast.LENGTH_SHORT
+                ).show()
+            }
+        }
+    }
+
+    TaskyScaffold(
+        modifier = modifier,
+        mainContent = {
+            EventDateTimeScreen(
+                modifier = modifier,
+                state = uiState,
+                onAction = { action ->
+                    when(action) {
+                        EventItemAction.SaveDateTimeEdit -> onClickSave()
+                        EventItemAction.CancelEdit -> onClickCancel()
+                        EventItemAction.LaunchEditTitleScreen -> onSelectEditTitle()
+                        EventItemAction.LaunchEditDescriptionScreen -> onSelectEditDescription()
+                        else -> { Unit }
+                    }
+                    eventViewModel.executeActions(action)
+                }
+            )
+        }
+    )
+}
 
 @Composable
 fun EventDateTimeScreen(
@@ -68,6 +155,7 @@ fun EventDateTimeScreen(
                     onClickSave = {
                         onAction(EventItemAction.SaveDateTimeEdit)
                         onAction(EventItemAction.SaveSelectedPhotos(selectedImageUris))
+                        onAction(EventItemAction.SaveAgendaItemUpdates)
                     },
                     onClickCancel = {
                         onAction(EventItemAction.CancelEdit)

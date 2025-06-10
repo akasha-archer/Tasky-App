@@ -67,12 +67,6 @@ class SharedTaskViewModel @Inject constructor(
                 date = taskDate,
                 remindAt = reminderTime
             )
-//            if (newTitle.isBlank() || newDescription.isBlank()) {
-//                agendaEventChannel.send(
-//                    AgendaItemEvent.NewItemCreatedError(
-//                        "Title and description cannot be empty."
-//                    )
-//                )
 
             val result = if (isNewTask(currentTaskId)) {
                 repository.createNewTask(

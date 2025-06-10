@@ -2,4 +2,7 @@
 <resources>
     <color name="date_time_background">#FF242428</color>
     <color name="cloud_offline_icon">#808B9BB2</color>
+    <color name="event_card">#FFCAEF45</color>
+    <color name="task_card">#FF279F70</color>
+    <color name="reminder_card">#FFF2F3F7</color>
 </resources>

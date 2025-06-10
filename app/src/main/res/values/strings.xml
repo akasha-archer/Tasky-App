@@ -15,7 +15,6 @@
     <string name="show_password">hide password entry</string>
     <string name="account_signup_prompt">DON\'T HAVE AN ACCOUNT?</string>
     <string name="api_base_url">https://tasky.pl-coding.com/</string>
-    <string name="event_host">Creator</string>
 
 <!-- Agenda strings -->
     <string name="reminder_ten_minutes">10 minutes before</string>
@@ -33,5 +32,13 @@
     <string name="edit_header_date_format">dd MMMM yyyy</string>
     <string name="save_item_after_edit">Save</string>
     <string name="date_picker_heading">Select Date</string>
+
+<!-- Event strings -->
+    <string name="add_visitor">Add Visitor</string>
+    <string name="event_email_hint">Email address</string>
+    <string name="add_visitor_button">Add</string>
     <string name="event_photos_section">Photos</string>
+    <string name="event_host">Creator</string>
+    <string name="add_attendee_error_message">This email does not exist</string>
+
 </resources>

@@ -1,5 +1,6 @@
 package com.example.taskyapplication.agenda.items.task.presentation.screens
 
+import android.widget.Toast
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxHeight
@@ -22,11 +23,13 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.example.taskyapplication.TaskyBaseScreen
 import com.example.taskyapplication.agenda.AgendaItemAction
+import com.example.taskyapplication.agenda.common.AgendaItemEvent
 import com.example.taskyapplication.agenda.data.model.ReminderOptions
 import com.example.taskyapplication.agenda.domain.getReminderOption
 import com.example.taskyapplication.agenda.domain.toDateAsString
@@ -44,6 +47,7 @@ import com.example.taskyapplication.agenda.presentation.components.ReminderDropD
 import com.example.taskyapplication.agenda.presentation.components.ReminderTimeRow
 import com.example.taskyapplication.agenda.presentation.components.TaskyDatePicker
 import com.example.taskyapplication.agenda.presentation.components.TaskyTimePicker
+import com.example.taskyapplication.domain.utils.ObserveAsEvents
 import com.example.taskyapplication.main.presentation.components.TaskyScaffold
 import com.example.taskyapplication.ui.theme.TaskyDesignSystem.Companion.taskyColors
 import com.example.taskyapplication.ui.theme.TaskyTypography
@@ -58,6 +62,55 @@ fun TaskEditDateTimeRoot(
     taskViewModel: SharedTaskViewModel
 ) {
     val uiState by taskViewModel.uiState.collectAsStateWithLifecycle()
+    val context = LocalContext.current
+
+    ObserveAsEvents(taskViewModel.agendaEvents) { event ->
+        when (event) {
+            is AgendaItemEvent.DeleteError -> {
+                Toast.makeText(
+                    context,
+                    event.errorMessage,
+                    Toast.LENGTH_SHORT
+                ).show()
+            }
+            AgendaItemEvent.DeleteSuccess -> {
+                Toast.makeText(
+                    context,
+                    "Task has been deleted",
+                    Toast.LENGTH_SHORT
+                ).show()
+            }
+            is AgendaItemEvent.NewItemCreatedError -> {
+                Toast.makeText(
+                    context,
+                    event.errorMessage,
+                    Toast.LENGTH_SHORT
+                ).show()
+            }
+            AgendaItemEvent.NewItemCreatedSuccess -> {
+                Toast.makeText(
+                    context,
+                    "Your new Task has been created",
+                    Toast.LENGTH_SHORT
+                ).show()
+            }
+            is AgendaItemEvent.UpdateItemError -> {
+                Toast.makeText(
+                    context,
+                    event.errorMessage,
+                    Toast.LENGTH_SHORT
+                ).show()
+            }
+            AgendaItemEvent.UpdateItemSuccess -> {
+                Toast.makeText(
+                    context,
+                    "Your new Task has been updated successfully",
+                    Toast.LENGTH_SHORT
+                ).show()
+            }
+        }
+    }
+
     TaskyScaffold(
         modifier = modifier,
         mainContent = {
@@ -92,12 +145,10 @@ fun TaskEditDateTimeScreen(
         is24Hour = false
     )
     val timeOfDay = if (timePickerState.isAfternoon) "PM" else "AM"
-
     // if user changed the date or time, but cancels the edit,
     // we want to display the values that were previously entered
     val previousDate = state.date
     val previousTime = state.time
-    val previousReminder = state.remindAt
 
     Column(
         modifier = modifier
@@ -109,12 +160,10 @@ fun TaskEditDateTimeScreen(
                     itemToEdit = "Task",
                     onClickSave = {
                         onAction(AgendaItemAction.SaveDateTimeEdit)
+                        onAction(AgendaItemAction.SaveAgendaItemUpdates)
                     },
                     onClickCancel = {
                         onAction(AgendaItemAction.CancelEdit)
-//                        onAction(AgendaItemAction.SetTime(previousTime))
-//                        onAction(AgendaItemAction.SetDate(previousDate))
-//                        onAction(AgendaItemAction.SetReminderTime(previousReminder))
                     }
                 )
             },
