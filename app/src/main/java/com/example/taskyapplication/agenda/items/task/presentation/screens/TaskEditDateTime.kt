@@ -47,7 +47,6 @@ import com.example.taskyapplication.agenda.presentation.components.ReminderDropD
 import com.example.taskyapplication.agenda.presentation.components.ReminderTimeRow
 import com.example.taskyapplication.agenda.presentation.components.TaskyDatePicker
 import com.example.taskyapplication.agenda.presentation.components.TaskyTimePicker
-import com.example.taskyapplication.auth.register.RegistrationEvent
 import com.example.taskyapplication.domain.utils.ObserveAsEvents
 import com.example.taskyapplication.main.presentation.components.TaskyScaffold
 import com.example.taskyapplication.ui.theme.TaskyDesignSystem.Companion.taskyColors
