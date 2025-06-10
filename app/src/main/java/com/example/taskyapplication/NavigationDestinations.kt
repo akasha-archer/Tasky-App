@@ -14,6 +14,12 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.ViewModel
 import androidx.navigation.NavBackStackEntry
 import androidx.navigation.navigation
+import com.example.taskyapplication.agenda.items.event.SharedEventViewModel
+import com.example.taskyapplication.agenda.items.event.screens.EventDescriptionRoot
+import com.example.taskyapplication.agenda.items.event.screens.EventDetailRoot
+import com.example.taskyapplication.agenda.items.event.screens.EventEditDateTimeRoot
+import com.example.taskyapplication.agenda.items.event.screens.EventTitleRoot
+import com.example.taskyapplication.agenda.items.main.presentation.AgendaMainScreen
 import com.example.taskyapplication.agenda.items.reminder.SharedReminderViewModel
 import com.example.taskyapplication.agenda.items.reminder.presentation.screens.ReminderDetailRoot
 import com.example.taskyapplication.agenda.items.reminder.presentation.screens.ReminderEditDateTimeRoot
@@ -161,7 +167,67 @@ fun NavigationRoot(
                     reminderViewModel = viewmodel
                 )
             }
-        } // end task subgraph
+        } // end reminder subgraph
+
+        // Event screens subgraph
+        navigation<NavigationRoutes.EventEditGraph>(
+            startDestination = NavigationRoutes.EventDetail
+        ) {
+            composable<NavigationRoutes.EventDetail> { entry ->
+                val viewmodel = entry.sharedViewModel<SharedEventViewModel>(navController)
+                EventDetailRoot(
+                    onClickEdit = {
+                        navController.navigate(NavigationRoutes.EventDateTime)
+                    },
+                    onClickClose = {
+                        navController.navigate(NavigationRoutes.AgendaScreen)
+                    },
+                    eventViewModel = viewmodel
+                )
+            }
+            composable<NavigationRoutes.EventDateTime> { entry ->
+                val viewmodel = entry.sharedViewModel<SharedEventViewModel>(navController)
+                EventEditDateTimeRoot(
+                    onClickCancel = {
+                        navController.navigateUp()
+                    },
+                    onClickSave = {
+                        navController.navigateUp()
+                    },
+                    onSelectEditTitle = {
+                        navController.navigate(NavigationRoutes.EventEditTitle)
+                    },
+                    onSelectEditDescription = {
+                        navController.navigate(NavigationRoutes.EventEditDescription)
+                    },
+                    eventViewModel = viewmodel
+                )
+            }
+            composable<NavigationRoutes.EventEditTitle> { entry ->
+                val viewmodel = entry.sharedViewModel<SharedEventViewModel>(navController)
+                EventTitleRoot(
+                    onClickSave = {
+                        navController.navigateUp()
+                    },
+                    onClickCancel = {
+                        navController.navigateUp()
+                    },
+                    eventViewModel = viewmodel
+                )
+            }
+            composable<NavigationRoutes.EventEditDescription> { entry ->
+                val viewmodel = entry.sharedViewModel<SharedEventViewModel>(navController)
+                EventDescriptionRoot(
+                    onClickSave = {
+                        navController.navigateUp()
+                    },
+                    onClickCancel = {
+                        navController.navigateUp()
+                    },
+                    eventViewModel = viewmodel
+                )
+            }
+        } // end event subgraph
 
         composable<NavigationRoutes.RegisterScreen> {
             RegisterScreenRoot(
@@ -201,7 +267,7 @@ fun NavigationRoot(
         }
 
         composable<NavigationRoutes.AgendaScreen> {
-            AgendaScreen()
+            AgendaMainScreen()
         }
 
     }
@@ -226,11 +292,17 @@ sealed interface NavigationRoutes {
     @Serializable
     data object RegisterScreen : NavigationRoutes
 
+    @Serializable // route for nested graph for Auth screens that lead to Agenda
+    data object AuthToAgendaGraph: NavigationRoutes
+
     @Serializable // route for nested graph for Task screens
     data object TaskEditGraph: NavigationRoutes
 
     @Serializable // route for nested graph for Task screens
     data object ReminderEditGraph: NavigationRoutes
+
+    @Serializable // route for nested graph for Event screens
+    data object EventEditGraph: NavigationRoutes
 
     @Serializable
     data object AgendaScreen : NavigationRoutes
@@ -261,4 +333,16 @@ sealed interface NavigationRoutes {
 
     @Serializable
     data object ReminderEditTitle : NavigationRoutes
+
+    @Serializable
+    data object EventDetail : NavigationRoutes
+
+    @Serializable
+    data object EventDateTime : NavigationRoutes
+
+    @Serializable
+    data object EventEditDescription : NavigationRoutes
+
+    @Serializable
+    data object EventEditTitle : NavigationRoutes
 }

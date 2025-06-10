@@ -21,8 +21,11 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.example.taskyapplication.TaskyBaseScreen
 import com.example.taskyapplication.agenda.AgendaItemAction
+import com.example.taskyapplication.agenda.items.event.EventItemAction
+import com.example.taskyapplication.agenda.items.event.SharedEventViewModel
 import com.example.taskyapplication.agenda.items.event.components.PhotoRow
 import com.example.taskyapplication.agenda.items.event.presentation.EventUiState
 import com.example.taskyapplication.agenda.presentation.components.AgendaDescriptionText
@@ -34,14 +37,41 @@ import com.example.taskyapplication.agenda.presentation.components.AgendaTitleRo
 import com.example.taskyapplication.agenda.presentation.components.DeleteItemBottomSheet
 import com.example.taskyapplication.agenda.presentation.components.DetailScreenHeader
 import com.example.taskyapplication.agenda.presentation.components.ReminderTimeRow
+import com.example.taskyapplication.main.presentation.components.TaskyScaffold
 import com.example.taskyapplication.ui.theme.TaskyDesignSystem.Companion.taskyColors
 import com.example.taskyapplication.ui.theme.TaskyTypography
+
+@Composable
+fun EventDetailRoot(
+    modifier: Modifier = Modifier,
+    onClickEdit: () -> Unit = {},
+    onClickClose: () -> Unit = {},
+    eventViewModel: SharedEventViewModel
+) {
+    val uiState by eventViewModel.eventUiState.collectAsStateWithLifecycle()
+    TaskyScaffold(
+        mainContent = {
+            EventDetailScreen(
+                modifier = modifier,
+                onAction = { action ->
+                    when (action) {
+                        EventItemAction.LaunchDateTimeEditScreen -> onClickEdit()
+                        EventItemAction.CloseDetailScreen -> onClickClose()
+                        else -> Unit
+                    }
+                    eventViewModel.executeActions(action)
+                },
+                state = uiState,
+            )
+        }
+    )
+}
 
 @Composable
 fun EventDetailScreen(
     modifier: Modifier = Modifier,
     agendaItem: String = "Event",
-    onAction: (AgendaItemAction) -> Unit = {},
+    onAction: (EventItemAction) -> Unit = {},
     isEditScreen: Boolean = false,
     state: EventUiState
 ) {
@@ -53,10 +83,10 @@ fun EventDetailScreen(
             screenHeader = {
                 DetailScreenHeader(
                     onClickEdit = {
-                        onAction(AgendaItemAction.LaunchDateTimeEditScreen)
+                        onAction(EventItemAction.LaunchDateTimeEditScreen)
                     },
                     onClickClose = {
-                        onAction(AgendaItemAction.CloseDetailScreen)
+                        onAction(EventItemAction.CloseDetailScreen)
                     }
                 )
             },
@@ -150,7 +180,7 @@ fun EventDetailScreen(
                                 isLoading = state.isDeletingItem,
                                 isButtonEnabled = !state.isDeletingItem,
                                 onDeleteTask = {
-                                    onAction(AgendaItemAction.DeleteItem(state.id))
+                                    onAction(EventItemAction.DeleteEvent(state.id))
                                     showDeleteBottomSheet = false
                                 },
                                 onCancelDelete = {

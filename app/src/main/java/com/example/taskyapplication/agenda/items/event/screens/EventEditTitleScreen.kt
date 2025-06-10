@@ -20,17 +20,47 @@ import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.example.taskyapplication.TaskyBaseScreen
-import com.example.taskyapplication.agenda.AgendaItemAction
+import com.example.taskyapplication.agenda.items.event.EventItemAction
+import com.example.taskyapplication.agenda.items.event.SharedEventViewModel
 import com.example.taskyapplication.agenda.items.event.presentation.EventUiState
 import com.example.taskyapplication.agenda.presentation.components.EditInputHeader
+import com.example.taskyapplication.main.presentation.components.TaskyScaffold
 import com.example.taskyapplication.ui.theme.TaskyDesignSystem.Companion.taskyColors
 import com.example.taskyapplication.ui.theme.TaskyTypography
 
 @Composable
+fun EventTitleRoot(
+    modifier: Modifier = Modifier,
+    onClickSave: () -> Unit,
+    onClickCancel: () -> Unit,
+    eventViewModel: SharedEventViewModel
+) {
+    val uiState by eventViewModel.eventUiState.collectAsStateWithLifecycle()
+    TaskyScaffold(
+        modifier = modifier,
+        mainContent = { paddingValues ->
+            EventEditTitleScreen(
+                modifier = Modifier.padding(paddingValues),
+                state = uiState,
+                onAction = { action ->
+                    when (action) {
+                        is EventItemAction.SetTitle -> onClickSave()
+                        is EventItemAction.CancelEdit -> onClickCancel()
+                        else -> { Unit }
+                    }
+                    eventViewModel.executeActions(action)
+                }
+            )
+        }
+    )
+}
+
+@Composable
 fun EventEditTitleScreen(
     modifier: Modifier = Modifier,
-    onAction: (AgendaItemAction) -> Unit = {},
+    onAction: (EventItemAction) -> Unit = {},
     state: EventUiState
 ) {
     var tempTitle by remember { mutableStateOf(state.title) }
@@ -49,10 +79,10 @@ fun EventEditTitleScreen(
                 EditInputHeader(
                     itemToEdit = "Title",
                     onClickSave = {
-                        onAction(AgendaItemAction.SetTitle(tempTitle))
+                        onAction(EventItemAction.SetTitle(tempTitle))
                     },
                     onClickCancel = {
-                        onAction(AgendaItemAction.CancelEdit)
+                        onAction(EventItemAction.CancelEdit)
                     }
                 )
             }
@@ -99,7 +129,6 @@ fun EventEditTitleScreen(
             }
         }
     )
-
 }
 
 @Preview(showBackground = true)

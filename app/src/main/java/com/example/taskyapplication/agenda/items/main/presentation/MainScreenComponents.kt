@@ -39,7 +39,6 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.example.taskyapplication.R
 import com.example.taskyapplication.agenda.domain.buildAgendaScreenCalendar
-import com.example.taskyapplication.agenda.items.main.data.AgendaItemSummary
 import com.example.taskyapplication.agenda.items.main.data.AgendaItemType
 import com.example.taskyapplication.agenda.items.main.data.AgendaScreenUi
 import com.example.taskyapplication.ui.theme.TaskyDesignSystem.Companion.taskyColors
