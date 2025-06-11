@@ -2,14 +2,17 @@ package com.example.taskyapplication.agenda.items.main.data
 
 import com.example.taskyapplication.agenda.items.event.data.EventPhotoResponse
 import com.example.taskyapplication.agenda.items.event.data.GetAttendeeResponse
+import kotlinx.serialization.Serializable
 
-// Response for fetching full agenda
+// Response for fetching agenda for selected date
+@Serializable
 data class AgendaItemsResponse(
     val events: List<Event>,
     val tasks: List<Task>,
     val reminders: List<Reminder>
 )
 
+@Serializable
 data class Event(
     val id: String,
     val title: String,
@@ -22,6 +25,7 @@ data class Event(
     val photos: List<EventPhotoResponse>
 )
 
+@Serializable
 data class Task(
     val id: String,
     val title: String,
@@ -31,6 +35,7 @@ data class Task(
     val isDone: Boolean
 )
 
+@Serializable
 data class Reminder(
     val id: String,
     val title: String,

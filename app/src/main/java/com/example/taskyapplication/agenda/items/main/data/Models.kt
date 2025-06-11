@@ -1,7 +1,21 @@
 package com.example.taskyapplication.agenda.items.main.data
 
 import com.example.taskyapplication.R
+import kotlinx.serialization.Serializable
 import java.time.LocalDate
+
+@Serializable
+data class FullAgenda(
+    val events: List<Event>,
+    val tasks: List<Task>,
+    val reminders: List<Reminder>
+)
+
+data class LocalAgendaSummary(
+    val events: List<AgendaEventSummary>,
+    val tasks: List<AgendaTaskSummary>,
+    val reminders: List<AgendaReminderSummary>
+)
 
 interface AgendaSummary {
     val id: String
@@ -48,7 +62,7 @@ data class AgendaScreenUi(
     val itemsForSelectedDate: List<AgendaSummary> = emptyList()
 )
 
-data class deletedAgendaItems(
+data class DeletedAgendaItems(
     val deletedEventIds: List<String>,
     val deletedTaskIds: List<String>,
     val deletedReminderIds: List<String>
@@ -70,38 +84,3 @@ enum class AgendaSummaryMenuOption {
     EDIT,
     DELETE
 }
-
-//sealed class AgendaSummary(
-//    private val type: AgendaItemType,
-//    private val id: String,
-//    private val title: String,
-//    private val description: String,
-//    private val startDate: String,
-//    private val startTime: String) {
-//     class EventSummary(
-//         type: AgendaItemType = AgendaItemType.EVENT,
-//         id: String,
-//         description: String,
-//         title: String,
-//         startDate: String,
-//         startTime: String,
-//        val isAttendee: Boolean = false,
-//    ): AgendaSummary(type, id, title, description, startDate, startTime)
-//    class TaskSummary(
-//        type: AgendaItemType = AgendaItemType.EVENT,
-//        id: String,
-//        description: String,
-//        title: String,
-//        startDate: String,
-//        startTime: String,
-//        val isDone: Boolean = false,
-//    ): AgendaSummary(type, id, title, description, startDate, startTime)
-//    class ReminderSummary(
-//        type: AgendaItemType = AgendaItemType.EVENT,
-//        id: String,
-//        description: String,
-//        title: String,
-//        startDate: String,
-//        startTime: String,
-//    ): AgendaSummary(type, id, title, description, startDate, startTime)
-//}
