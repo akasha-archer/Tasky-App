@@ -1,13 +1,13 @@
 package com.example.taskyapplication.agenda.items.task.data
 
 import com.example.taskyapplication.agenda.items.task.data.local.dao.PendingTaskDao
+import com.example.taskyapplication.agenda.items.task.data.local.entity.TaskEntity
 import com.example.taskyapplication.agenda.items.task.data.local.entity.asPendingTaskEntity
 import com.example.taskyapplication.agenda.items.task.data.mappers.asTaskDomainModel
 import com.example.taskyapplication.agenda.items.task.data.network.models.TaskNetworkModel
 import com.example.taskyapplication.agenda.items.task.data.network.models.UpdateTaskBody
 import com.example.taskyapplication.agenda.items.task.domain.LocalDataSource
 import com.example.taskyapplication.agenda.items.task.domain.RemoteDataSource
-import com.example.taskyapplication.agenda.items.task.domain.TaskDto
 import com.example.taskyapplication.agenda.items.task.domain.TaskRepository
 import com.example.taskyapplication.domain.utils.DataError
 import com.example.taskyapplication.domain.utils.EmptyResult
@@ -83,7 +83,7 @@ class OfflineFirstTaskRepository @Inject constructor(
         return remoteResult.asEmptyDataResult()
     }
 
-    override suspend fun getTaskById(taskId: String): TaskDto {
+    override suspend fun getTaskById(taskId: String): TaskEntity {
        return localDataSource.getTask(taskId)
     }
 }

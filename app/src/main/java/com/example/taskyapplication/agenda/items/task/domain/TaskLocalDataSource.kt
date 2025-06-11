@@ -4,7 +4,7 @@ import android.database.sqlite.SQLiteFullException
 import android.os.Build
 import androidx.annotation.RequiresApi
 import com.example.taskyapplication.agenda.items.task.data.local.dao.TaskDao
-import com.example.taskyapplication.agenda.items.task.data.mappers.asTaskDomainModel
+import com.example.taskyapplication.agenda.items.task.data.local.entity.TaskEntity
 import com.example.taskyapplication.agenda.items.task.data.mappers.asTaskEntity
 import com.example.taskyapplication.domain.utils.DataError
 import com.example.taskyapplication.domain.utils.Result
@@ -15,7 +15,7 @@ interface LocalDataSource {
     fun getTasks(): Flow<List<TaskDto>>
     suspend fun upsertTask(task: TaskDto): Result<Unit, DataError.Local>
     suspend fun upsertAllTasks(tasks: List<TaskDto>): Result<Unit, DataError.Local>
-    suspend fun getTask(taskId: String): TaskDto
+    suspend fun getTask(taskId: String): TaskEntity
     suspend fun deleteTask(taskId: String)
     suspend fun deleteAllTasks()
 }
@@ -34,8 +34,8 @@ class TaskLocalDataSource @Inject constructor(
         }
     }
 
-    override suspend fun getTask(taskId: String): TaskDto {
-        return dao.getTaskById(taskId).asTaskDomainModel()
+    override suspend fun getTask(taskId: String): TaskEntity {
+        return dao.getTaskById(taskId)
     }
 
     override suspend fun deleteTask(taskId: String) {

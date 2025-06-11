@@ -1,6 +1,9 @@
 package com.example.taskyapplication.agenda.items.main.data
 
 import com.example.taskyapplication.R
+import com.example.taskyapplication.agenda.items.main.data.db.EventSummaryEntity
+import com.example.taskyapplication.agenda.items.main.data.db.ReminderSummaryEntity
+import com.example.taskyapplication.agenda.items.main.data.db.TaskSummaryEntity
 import kotlinx.serialization.Serializable
 import java.time.LocalDate
 
@@ -12,9 +15,9 @@ data class FullAgenda(
 )
 
 data class LocalAgendaSummary(
-    val events: List<AgendaEventSummary>,
-    val tasks: List<AgendaTaskSummary>,
-    val reminders: List<AgendaReminderSummary>
+    val events: List<EventSummaryEntity>,
+    val tasks: List<TaskSummaryEntity>,
+    val reminders: List<ReminderSummaryEntity>
 )
 
 interface AgendaSummary {
@@ -79,7 +82,7 @@ enum class AgendaItemType(val color: Int) {
     REMINDER(color = R.color.reminder_card)
 }
 
-enum class AgendaSummaryMenuOption {
+enum class AgendaSummaryMenuAction {
     OPEN,
     EDIT,
     DELETE

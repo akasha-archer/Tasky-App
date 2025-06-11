@@ -31,6 +31,16 @@ fun GetTaskResponse.asTaskUi() = TaskUiState(
     isDone = isDone
 )
 
+fun TaskEntity.asTaskUi() = TaskUiState(
+    id = id,
+    title = title,
+    description = description,
+    time = time.toDateTime().toFormattedTime(),
+    date = time.toDateTime().toFormattedDate(),
+    remindAt = ReminderOptions.THIRTY_MINUTES_BEFORE,
+    isDone = isDone
+)
+
 fun UpdateTaskBody.asTaskEntity() = TaskEntity(
     id = itemId,
     title = title,

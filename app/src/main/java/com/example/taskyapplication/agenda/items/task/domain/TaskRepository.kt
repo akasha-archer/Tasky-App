@@ -1,5 +1,6 @@
 package com.example.taskyapplication.agenda.items.task.domain
 
+import com.example.taskyapplication.agenda.items.task.data.local.entity.TaskEntity
 import com.example.taskyapplication.agenda.items.task.data.network.models.TaskNetworkModel
 import com.example.taskyapplication.agenda.items.task.data.network.models.UpdateTaskBody
 import com.example.taskyapplication.domain.utils.DataError
@@ -16,7 +17,7 @@ interface TaskRepository {
 
     suspend fun getTaskById(
         taskId: String
-    ): TaskDto
+    ): TaskEntity
 
     suspend fun deleteTask(
         taskId: String

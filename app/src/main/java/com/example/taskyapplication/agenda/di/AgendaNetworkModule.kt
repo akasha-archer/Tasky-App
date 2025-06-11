@@ -90,12 +90,11 @@ object AgendaNetworkModule {
     fun provideAgendaRepository(
         localDataSource: AgendaLocalDataSource,
         remoteDataSource: AgendaRemoteDataSource,
-        scope: CoroutineScope
+//        scope: CoroutineScope
     ): AgendaRepository =
         AgendaOfflineFirstRepository(
             localDataSource,
-            remoteDataSource,
-            scope
+            remoteDataSource
         )
 
     // EVENTS

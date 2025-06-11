@@ -4,18 +4,19 @@ import com.example.taskyapplication.agenda.items.main.data.AgendaItemsResponse
 import com.example.taskyapplication.agenda.items.main.data.DeletedAgendaItems
 import com.example.taskyapplication.agenda.items.main.data.FullAgenda
 import com.example.taskyapplication.domain.utils.DataError
-import com.example.taskyapplication.domain.utils.Result
+import com.example.taskyapplication.domain.utils.EmptyResult
+import retrofit2.Response
 
 interface AgendaRepository {
     suspend fun getAgendaItemsForDate(
         date: Long,
-    ): Result<AgendaItemsResponse, DataError.Network>
+    ): Response<AgendaItemsResponse>
 
     suspend fun syncDeletedItems(
         deletedAgendaItems: DeletedAgendaItems
-    ): Result<Unit, DataError.Network>
+    ): EmptyResult<DataError>
 
     suspend fun fetchFullAgenda(
         fullAgenda: FullAgenda
-    ): Result<Unit, DataError.Network>
+    ): EmptyResult<DataError>
 }

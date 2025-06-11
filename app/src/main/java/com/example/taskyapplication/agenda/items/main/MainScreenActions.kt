@@ -1,9 +1,12 @@
 package com.example.taskyapplication.agenda.items.main
 
-import com.example.taskyapplication.agenda.items.main.data.AgendaSummaryMenuOption
+import com.example.taskyapplication.agenda.items.main.data.AgendaItemType
 
 sealed interface MainScreenAction {
     data object LogoutUser : MainScreenAction
-    data class LaunchItemMenu(val option: AgendaSummaryMenuOption) : MainScreenAction
+//    data class SelectMenuItem(val action: AgendaSummaryMenuAction) : MainScreenAction
     data class SelectAgendaDate(val selectedDate: Long) : MainScreenAction
+    data class ItemToOpen(val itemId: String, val type: AgendaItemType) : MainScreenAction
+    data class ItemToEdit(val itemId: String, val type: AgendaItemType) : MainScreenAction
+    data class ItemToDelete(val itemId: String, val type: AgendaItemType) : MainScreenAction
 }

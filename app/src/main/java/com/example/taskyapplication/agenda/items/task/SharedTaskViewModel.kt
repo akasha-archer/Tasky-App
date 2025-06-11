@@ -5,6 +5,7 @@ import androidx.lifecycle.viewModelScope
 import com.example.taskyapplication.agenda.AgendaItemAction
 import com.example.taskyapplication.agenda.common.AgendaItemEvent
 import com.example.taskyapplication.agenda.items.task.data.mappers.asTaskNetworkModel
+import com.example.taskyapplication.agenda.items.task.data.mappers.asTaskUi
 import com.example.taskyapplication.agenda.items.task.data.mappers.asUpdateTaskNetworkModel
 import com.example.taskyapplication.agenda.items.task.domain.TaskRepository
 import com.example.taskyapplication.agenda.items.task.presentation.TaskUiState
@@ -14,6 +15,7 @@ import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
+import kotlinx.coroutines.flow.onStart
 import kotlinx.coroutines.flow.receiveAsFlow
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
@@ -23,18 +25,35 @@ import javax.inject.Inject
 
 @HiltViewModel
 class SharedTaskViewModel @Inject constructor(
-    private val repository: TaskRepository
+    private val repository: TaskRepository,
+    private val itemId: String?
+//    savedStateHandle: SavedStateHandle
 ) : ViewModel() {
+
+//    private val taskId: String? = savedStateHandle["taskId"]
 
     private val agendaEventChannel = Channel<AgendaItemEvent>()
     val agendaEvents = agendaEventChannel.receiveAsFlow()
 
     private val _uiState = MutableStateFlow(TaskUiState())
-    val uiState = _uiState.stateIn(
+    val uiState = _uiState
+        .onStart{
+            if (itemId != null) {
+                loadExistingTask(itemId)
+            }
+        }
+        .stateIn(
         scope = viewModelScope,
         started = SharingStarted.WhileSubscribed(5000L),
         initialValue = TaskUiState(),
     )
+
+     private fun loadExistingTask(taskId: String) {
+        viewModelScope.launch {
+           val requestedTask = repository.getTaskById(taskId)
+            _uiState.value = requestedTask.asTaskUi()
+        }
+    }
 
     private fun isNewTask(currentId: String) = currentId.isEmpty() || currentId.isBlank()
 
