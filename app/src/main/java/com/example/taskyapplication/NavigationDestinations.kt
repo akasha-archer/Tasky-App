@@ -281,6 +281,7 @@ fun NavigationRoot(
 
                 },
                 openSelectedItem = { itemId, itemType ->
+                    navController.previousBackStackEntry?.savedStateHandle?.set("itemId", itemId)
                     when (itemType) {
                         AgendaItemType.EVENT -> navController.navigate(
                             NavigationRoutes.EventDetail(taskId = itemId)
@@ -294,6 +295,7 @@ fun NavigationRoot(
                     }
                 },
                 editSelectedItem = { itemId, itemType ->
+                    navController.previousBackStackEntry?.savedStateHandle?.set("itemId", itemId)
                     when (itemType) {
                         AgendaItemType.EVENT -> navController.navigate(
                             NavigationRoutes.EventDateTime(taskId = itemId)

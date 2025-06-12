@@ -22,7 +22,7 @@ import androidx.compose.material3.ModalBottomSheet
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
 import androidx.compose.material3.TextFieldDefaults
-import androidx.compose.material3.rememberStandardBottomSheetState
+import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -44,10 +44,11 @@ import com.example.taskyapplication.ui.theme.TaskyTypography
 @Composable
 fun AddAttendeeBottomSheet(
     modifier: Modifier = Modifier,
+    userEmail: String,
     isLoading: Boolean = false,
     isButtonEnabled: Boolean = false,
-    isInvalidEmail: Boolean = false,
-    onAddAttendee: () -> Unit = {},
+    isValidEmail: Boolean = false,
+    onAddAttendee: (String) -> Unit = {},
     onCancelAddAttendee: () -> Unit = {},
 ) {
     val screenWidth = LocalWindowInfo.current.containerSize.width.dp
@@ -55,9 +56,7 @@ fun AddAttendeeBottomSheet(
     ModalBottomSheet(
         modifier = modifier,
         onDismissRequest = { onCancelAddAttendee() },
-        sheetState = rememberStandardBottomSheetState(
-            initialValue = androidx.compose.material3.SheetValue.Expanded,
-        ),
+        sheetState = rememberModalBottomSheetState(),
         containerColor = taskyColors.surface,
         content = {
             Column(
@@ -100,11 +99,11 @@ fun AddAttendeeBottomSheet(
                 TextField(
                     modifier = Modifier
                         .fillMaxWidth(),
-                    value = "",
+                    value = userEmail,
                     onValueChange = {},
                     shape = RoundedCornerShape(12.dp),
                     supportingText = {
-                        if (isInvalidEmail) {
+                        if (isValidEmail) {
                             Text(
                                 modifier = Modifier.padding(bottom = 8.dp),
                                 text = stringResource(R.string.add_attendee_error_message),
@@ -139,7 +138,7 @@ fun AddAttendeeBottomSheet(
                         .height(96.dp)
                         .padding(start = 20.dp, end = 20.dp, top = 16.dp, bottom = 16.dp)
                         .clip(RoundedCornerShape(25.dp)),
-                    onClick = onAddAttendee,
+                    onClick = { onAddAttendee(userEmail) },
                     enabled = isButtonEnabled,
                     colors = ButtonDefaults.buttonColors(
                         containerColor = taskyColors.primary,
@@ -180,5 +179,7 @@ fun AddAttendeeBottomSheet(
 @Preview(showBackground = true)
 @Composable
 fun AddAttendeeBottomSheetPreview() {
-    AddAttendeeBottomSheet()
+    AddAttendeeBottomSheet(
+        userEmail = "william.henry.moody@my-own-personal-domain.com"
+    )
 }

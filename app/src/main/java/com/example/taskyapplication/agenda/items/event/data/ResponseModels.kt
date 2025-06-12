@@ -63,7 +63,6 @@ data class FetchedEventResponse(
 //    val remindAt: Long
 //)
 
-
 @Serializable
 data class AttendeeResponse(
     val email: String,

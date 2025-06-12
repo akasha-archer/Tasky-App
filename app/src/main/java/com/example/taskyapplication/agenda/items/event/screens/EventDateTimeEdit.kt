@@ -23,6 +23,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -38,6 +39,9 @@ import com.example.taskyapplication.agenda.items.event.EventItemAction
 import com.example.taskyapplication.agenda.items.event.SharedEventViewModel
 import com.example.taskyapplication.agenda.items.event.components.PhotoRow
 import com.example.taskyapplication.agenda.items.event.components.PhotoRowEmptyState
+import com.example.taskyapplication.agenda.items.event.components.VisitorHeader
+import com.example.taskyapplication.agenda.items.event.data.AttendeeResponse
+import com.example.taskyapplication.agenda.items.event.data.VerifyAttendeeResponse
 import com.example.taskyapplication.agenda.items.event.domain.EventImageItem
 import com.example.taskyapplication.agenda.items.event.presentation.EventUiState
 import com.example.taskyapplication.agenda.presentation.components.AgendaDescriptionText
@@ -168,6 +172,10 @@ fun EventDateTimeScreen(
     )
     val timeOfDay = if (timePickerState.isAfternoon) "PM" else "AM"
 
+    var showVisitorBottomSheet by rememberSaveable { mutableStateOf(false)}
+    var userEmail by rememberSaveable { mutableStateOf("") }
+    var tempVisitorList by rememberSaveable {mutableStateOf(emptyList<VerifyAttendeeResponse>())}
+
     Column(
         modifier = modifier
             .padding(top = 48.dp)
@@ -292,6 +300,26 @@ fun EventDateTimeScreen(
                                         onAction(EventItemAction.ShowReminderDropDown)
                                     }
                                 )
+                            },
+                            eventVisitorSection = {
+                                VisitorHeader(
+                                    modifier = Modifier,
+                                    isEditingScreen = true,
+                                    onAddNewVisitor = {
+                                        onAction(EventItemAction.AddNewVisitor(userEmail))
+                                    },
+                                    onCancelAddingVisitor = {
+                                        showVisitorBottomSheet = false
+                                    },
+                                    showAddVisitorBottomSheet = {
+                                        showVisitorBottomSheet = true
+                                    },
+                                    isBottomSheetEnabled = showVisitorBottomSheet,
+                                    isLoading = state.isValidatingAttendee,
+                                    isValidEmail = state.isValidUser,
+                                    userEmail = userEmail
+                                    )
+
                             },
                             launchDatePicker = { // date - time pickers
                                 if (state.isEditingDate) {

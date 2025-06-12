@@ -2,6 +2,7 @@ package com.example.taskyapplication.agenda.items.event.presentation
 
 import android.net.Uri
 import com.example.taskyapplication.agenda.data.model.ReminderOptions
+import com.example.taskyapplication.agenda.items.event.data.db.AttendeeEntity
 import java.time.LocalDate
 import java.time.LocalTime
 import java.time.format.DateTimeFormatter
@@ -14,6 +15,7 @@ data class EventUiState(
     val photos: List<String> = emptyList(),
     val networkPhotos: List<Uri> = emptyList(),
     val attendeeIds: List<String> = emptyList(),
+    val attendeeList: List<AttendeeEntity> = emptyList(),
     val deletedPhotoKeys: List<String> = emptyList(),
     val startTime: String = LocalTime.now().format(
         DateTimeFormatter.ofLocalizedTime(FormatStyle.SHORT)),
@@ -24,11 +26,19 @@ data class EventUiState(
     val endDate: String = LocalDate.now().format(
         DateTimeFormatter.ofLocalizedDate(FormatStyle.MEDIUM)),
     val remindAt: ReminderOptions = ReminderOptions.THIRTY_MINUTES_BEFORE,
+    val isValidUser: Boolean = false,
     val isGoingToEvent: Boolean = false,
     val isEditingItem: Boolean = false,
     val isEditingDate: Boolean = false,
     val isEditingTime: Boolean = false,
     val isEditingEvent: Boolean = false,
     val isEditingReminder: Boolean = false,
-    val isDeletingItem: Boolean = false
+    val isDeletingItem: Boolean = false,
+    val isValidatingAttendee: Boolean = false
+)
+
+data class EventAttendeeData(
+    val id: String = "",
+    val fullName: String = "",
+    val email: String = ""
 )

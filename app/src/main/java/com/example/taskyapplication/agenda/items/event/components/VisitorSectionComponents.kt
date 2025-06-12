@@ -4,6 +4,7 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -39,6 +40,8 @@ import com.example.taskyapplication.R
 import com.example.taskyapplication.agenda.data.model.VisitorStatus
 import com.example.taskyapplication.agenda.domain.toInitials
 import com.example.taskyapplication.agenda.items.event.data.Attendee
+import com.example.taskyapplication.agenda.items.event.data.AttendeeResponse
+import com.example.taskyapplication.agenda.items.event.data.VerifyAttendeeResponse
 import com.example.taskyapplication.ui.theme.TaskyDesignSystem.Companion.taskyColors
 import com.example.taskyapplication.ui.theme.TaskyTypography
 
@@ -52,6 +55,7 @@ val chipList = listOf(
 fun VisitorGroup(
     modifier: Modifier = Modifier,
     visitorList: List<Attendee> = emptyList(),
+    userEmail: String,
     isEditingScreen: Boolean = false
 ) {
     Column(
@@ -62,7 +66,8 @@ fun VisitorGroup(
     ) {
         VisitorHeader(
             modifier = Modifier,
-            isEditingScreen = isEditingScreen
+            isEditingScreen = isEditingScreen,
+            userEmail = userEmail
         )
         VisitorChips()
         if (visitorList.isNotEmpty()) {
@@ -241,35 +246,69 @@ fun VisitorNameRowHost(
 @Composable
 fun VisitorHeader(
     modifier: Modifier = Modifier,
-    isEditingScreen: Boolean = false
+    showAddVisitorBottomSheet: () -> Unit = {},
+    onAddNewVisitor: (String) -> Unit = {},
+    onCancelAddingVisitor: () -> Unit = {},
+    userEmail: String,
+    visitorList: List<VerifyAttendeeResponse> = emptyList(),
+    isBottomSheetEnabled: Boolean = false,
+    isLoading: Boolean = false,
+    isEditingScreen: Boolean = false,
+    isValidEmail: Boolean = false
 ) {
-    Row(
-        modifier = modifier
-            .fillMaxWidth()
-            .padding(vertical = 24.dp),
-        horizontalArrangement = Arrangement.SpaceBetween,
-        verticalAlignment = Alignment.CenterVertically
-    ) {
-        Text(
-            text = "Visitors",
-            style = TaskyTypography.headlineMedium.copy(
-                color = taskyColors.primary
+    Column() {
+        Row(
+            modifier = modifier
+                .fillMaxWidth()
+                .padding(vertical = 24.dp),
+            horizontalArrangement = Arrangement.SpaceBetween,
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            Text(
+                text = "Visitors",
+                style = TaskyTypography.headlineMedium.copy(
+                    color = taskyColors.primary
+                )
             )
-        )
-        if (isEditingScreen) {
-            Icon(
-                imageVector = Icons.Default.Add,
-                tint = taskyColors.onSurface,
-                contentDescription = "Add Visitor",
-                modifier = Modifier
-                    .drawBehind {
-                        drawRoundRect(
-                            color = Color(0xFFF2F3F7),
-                            cornerRadius = CornerRadius(3.dp.toPx())
+            if (isEditingScreen) {
+                Box(
+                    modifier = Modifier
+                ) {
+                    Icon(
+                        imageVector = Icons.Default.Add,
+                        tint = taskyColors.onSurface,
+                        contentDescription = "Add Visitor",
+                        modifier = Modifier
+                            .clickable { showAddVisitorBottomSheet() }
+                            .drawBehind {
+                                drawRoundRect(
+                                    color = Color(0xFFF2F3F7),
+                                    cornerRadius = CornerRadius(3.dp.toPx())
+                                )
+                            }
+                            .padding(vertical = 12.dp, horizontal = 12.dp)
+                    )
+                    if (isBottomSheetEnabled) {
+                        AddAttendeeBottomSheet(
+                            modifier = Modifier,
+                            isLoading = false,
+                            userEmail = userEmail,
+                            isButtonEnabled = isLoading,
+                            isValidEmail = isValidEmail,
+                            onAddAttendee = { onAddNewVisitor(userEmail) },
+                            onCancelAddAttendee = { onCancelAddingVisitor() }
                         )
                     }
-                    .padding(vertical = 12.dp, horizontal = 12.dp)
-            )
+                }
+            }
+        } // end of heading row
+        LazyColumn {
+            items(visitorList) { attendee ->
+                VisitorNameRowHost(
+                    modifier = Modifier,
+                    visitorName = attendee.fullName
+                )
+            }
         }
     }
 }
@@ -277,14 +316,25 @@ fun VisitorHeader(
 @Preview(showBackground = true)
 @Composable
 fun VisitorGroupPreview() {
-    VisitorGroup()
+    VisitorGroup(
+        userEmail = "john.mclean@examplepetstore.com"
+    )
 }
 
+val responseList = listOf(
+    VerifyAttendeeResponse(email = "emma@sassy.com", fullName = "Jane Smith", userId = "12"),
+    VerifyAttendeeResponse(email = "emma@sassy.com", fullName = "Emily Brown", userId = "12"),
+    VerifyAttendeeResponse(email = "emma@sassy.com", fullName = "Natasha Jones", userId = "12"),
+    VerifyAttendeeResponse(email = "emma@sassy.com", fullName = "Malia James", userId = "12"),
+)
 
 @Preview(showBackground = true)
 @Composable
 fun VisitorHeaderPreview() {
-    VisitorHeader()
+    VisitorHeader(
+        visitorList = responseList,
+        userEmail = "charlesgdawe@examplepetstore.com"
+    )
 }
 
 @Preview(showBackground = true)

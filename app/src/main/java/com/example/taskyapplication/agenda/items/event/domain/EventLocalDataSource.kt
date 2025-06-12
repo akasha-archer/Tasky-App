@@ -1,6 +1,7 @@
 package com.example.taskyapplication.agenda.items.event.domain
 
 import android.database.sqlite.SQLiteFullException
+import com.example.taskyapplication.agenda.items.event.data.db.AttendeeEntity
 import com.example.taskyapplication.agenda.items.event.data.db.EventDao
 import com.example.taskyapplication.agenda.items.event.data.db.EventEntity
 import com.example.taskyapplication.domain.utils.DataError
@@ -16,6 +17,8 @@ interface EventLocalDataSource {
     suspend fun getEvent(eventId: String): EventEntity
     suspend fun deleteEvent(eventId: String)
     suspend fun deleteAllEvents()
+    suspend fun upsertAttendee(attendee: AttendeeEntity)
+    suspend fun getAttendeesForEvent(eventId: String): List<AttendeeEntity>
 }
 
 class EventLocalDataSourceImpl @Inject constructor(
@@ -58,5 +61,13 @@ class EventLocalDataSourceImpl @Inject constructor(
 
     override suspend fun deleteAllEvents() {
         TODO("Not yet implemented")
+    }
+
+    override suspend fun upsertAttendee(attendee: AttendeeEntity) {
+        eventDao.upsertAttendee(attendee)
+    }
+
+    override suspend fun getAttendeesForEvent(eventId: String): List<AttendeeEntity> {
+        return eventDao.getAttendees()
     }
 }

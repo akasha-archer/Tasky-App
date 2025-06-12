@@ -4,6 +4,7 @@ import android.content.Context
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.taskyapplication.agenda.common.AgendaItemEvent
+import com.example.taskyapplication.agenda.items.event.data.AttendeeResponse
 import com.example.taskyapplication.agenda.items.event.data.toCreateEventNetworkModel
 import com.example.taskyapplication.agenda.items.event.data.toUpdateEventNetworkModel
 import com.example.taskyapplication.agenda.items.event.domain.EventRepository
@@ -11,6 +12,7 @@ import com.example.taskyapplication.agenda.items.event.domain.ImageMultiPartProv
 import com.example.taskyapplication.agenda.items.event.presentation.EventUiState
 import com.example.taskyapplication.domain.utils.DataError
 import com.example.taskyapplication.domain.utils.Result
+import com.example.taskyapplication.domain.utils.map
 import dagger.hilt.android.lifecycle.HiltViewModel
 import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.channels.Channel
@@ -22,6 +24,7 @@ import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import java.util.UUID
 import javax.inject.Inject
+import kotlin.map
 
 @HiltViewModel
 class SharedEventViewModel @Inject constructor(
@@ -111,6 +114,27 @@ class SharedEventViewModel @Inject constructor(
         }
     }
 
+    private fun verifyEventAttendee(email: String) {
+        viewModelScope.launch {
+            _eventUiState.update { it.copy(isValidatingAttendee = true) }
+            val result = eventRepository.validateAttendee(email)
+            _eventUiState.update { it.copy(isValidatingAttendee = false) }
+
+            when (result) {
+                is Result.Error -> {}
+                is Result.Success -> {
+                    if (result.data.doesUserExist) {
+                        _eventUiState.update { it.copy(
+                            isValidUser = true
+                        )
+                        }
+                    }
+
+                }
+            }
+        }
+    }
+
     private fun deleteEventById(eventId: String) {
         viewModelScope.launch {
             _eventUiState.update { it.copy(isDeletingItem = true) }
@@ -193,6 +217,9 @@ class SharedEventViewModel @Inject constructor(
                 ) }
             }
             is EventItemAction.DeleteEvent -> { deleteEventById(action.eventId)}
+            is EventItemAction.AddNewVisitor -> {
+                verifyEventAttendee(action.visitorEmail)
+            }
 
             EventItemAction.ShowDatePicker -> {
                 _eventUiState.update { it.copy(isEditingDate = true) }
@@ -268,7 +295,6 @@ class SharedEventViewModel @Inject constructor(
                     it.copy(isEditingItem = true)
                 }
             }
-
             // go back to Agenda screen
             EventItemAction.CloseDetailScreen -> { Unit }
 

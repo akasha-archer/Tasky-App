@@ -3,6 +3,7 @@ package com.example.taskyapplication.agenda.data.db
 import androidx.room.Database
 import androidx.room.RoomDatabase
 import androidx.room.TypeConverters
+import com.example.taskyapplication.agenda.items.event.data.db.AttendeeEntity
 import com.example.taskyapplication.agenda.items.event.data.db.DbTypeConverters
 import com.example.taskyapplication.agenda.items.event.data.db.EventDao
 import com.example.taskyapplication.agenda.items.event.data.db.EventEntity
@@ -26,7 +27,8 @@ import com.example.taskyapplication.agenda.items.task.data.local.entity.TaskEnti
         EventEntity::class,
         TaskSummaryEntity::class,
         EventSummaryEntity::class,
-        ReminderSummaryEntity::class
+        ReminderSummaryEntity::class,
+        AttendeeEntity::class
     ], version = 1
 )
 @TypeConverters(DbTypeConverters::class)

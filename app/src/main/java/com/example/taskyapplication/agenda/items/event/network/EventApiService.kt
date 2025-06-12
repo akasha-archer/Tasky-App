@@ -43,7 +43,7 @@ interface EventApiService {
     ): Response<Unit>
 
     @GET("/attendee/{email}")
-    suspend fun getAttendee(
+    suspend fun verifyAttendee(
         @Query("email") attendeeEmail: String
     ): Response<GetAttendeeResponse>
 
