@@ -10,11 +10,8 @@ data class ReminderUiState(
     val id: String = "",
     val title: String = "Edit your title",
     val description: String = "Edit your description",
-    val time: String = LocalTime.now().format(
-        DateTimeFormatter.ofLocalizedTime(FormatStyle.SHORT)
-    ),
-    val date: String = LocalDate.now().format(
-        DateTimeFormatter.ofLocalizedDate(FormatStyle.MEDIUM)),
+    val time: LocalTime = LocalTime.now(),
+    val date: LocalDate = LocalDate.now(),
     val remindAt: ReminderOptions = ReminderOptions.THIRTY_MINUTES_BEFORE,
     val isEditingItem: Boolean = false,
     val isEditingDate: Boolean = false,

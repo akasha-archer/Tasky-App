@@ -26,6 +26,7 @@ import com.example.taskyapplication.TaskyBaseScreen
 import com.example.taskyapplication.agenda.items.event.EventItemAction
 import com.example.taskyapplication.agenda.items.event.SharedEventViewModel
 import com.example.taskyapplication.agenda.items.event.components.PhotoRow
+import com.example.taskyapplication.agenda.items.event.components.VisitorHeader
 import com.example.taskyapplication.agenda.items.event.presentation.EventUiState
 import com.example.taskyapplication.agenda.presentation.components.AgendaDescriptionText
 import com.example.taskyapplication.agenda.presentation.components.AgendaIconTextRow
@@ -161,7 +162,20 @@ fun EventDetailScreen(
                                     reminderTime = state.remindAt.timeString,
                                     isEditing = isEditScreen,
                                 )
-                            }
+                            },
+                            eventVisitorSection = {
+                                if (state.attendeeList.isNotEmpty()) {
+                                    val nameList = state.attendeeList.map { it.fullName }
+                                    VisitorHeader(
+                                        modifier = Modifier,
+                                        isEditingScreen = false,
+                                        isBottomSheetEnabled = false,
+                                        isLoading = state.isValidatingAttendee,
+                                        isValidEmail = state.isValidUser,
+                                        visitorList = nameList
+                                    )
+                                }
+                            },
                         )
                         AgendaItemDeleteTextButton(
                             modifier = Modifier

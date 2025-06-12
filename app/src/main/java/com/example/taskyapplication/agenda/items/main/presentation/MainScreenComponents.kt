@@ -42,6 +42,8 @@ import androidx.compose.ui.unit.sp
 import com.example.taskyapplication.R
 import com.example.taskyapplication.agenda.domain.AgendaScreenCalendarList
 import com.example.taskyapplication.agenda.domain.buildAgendaScreenCalendar
+import com.example.taskyapplication.agenda.domain.toDateAsString
+import com.example.taskyapplication.agenda.domain.toTimeAsString
 import com.example.taskyapplication.agenda.items.main.data.AgendaItemType
 import com.example.taskyapplication.agenda.items.main.data.AgendaSummary
 import com.example.taskyapplication.ui.theme.TaskyDesignSystem.Companion.taskyColors
@@ -80,8 +82,8 @@ fun AgendaSummary(
                     agendaItemType = item.type,
                     title = item.title,
                     description = item.description,
-                    time = item.startTime,
-                    date = item.startDate,
+                    time = item.startTime.toTimeAsString(),
+                    date = item.startDate.toDateAsString(),
                     launchPopupMenu = { launchPopupMenu() },
                     onOpenClick = { onOpenClick(item.id, item.type) },
                     onEditClick = { onEditClick(item.id, item.type) },
@@ -176,7 +178,7 @@ fun AgendaItemCard(
 ) {
     Card(
         modifier = modifier
-            .padding(horizontal = 16.dp, vertical = 16.dp)
+            .padding(vertical = 16.dp)
             .fillMaxWidth(),
         shape = RoundedCornerShape(8.dp),
         colors = CardDefaults.cardColors(

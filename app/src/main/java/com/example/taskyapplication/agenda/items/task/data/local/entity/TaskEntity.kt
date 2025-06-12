@@ -3,6 +3,8 @@ package com.example.taskyapplication.agenda.items.task.data.local.entity
 import androidx.room.ColumnInfo
 import androidx.room.Entity
 import androidx.room.PrimaryKey
+import java.time.LocalDate
+import java.time.LocalTime
 
 @Entity(tableName = "tasks")
 data class TaskEntity(
@@ -10,8 +12,8 @@ data class TaskEntity(
     val id: String,
     val title: String,
     val description: String,
-    val time: String,
-    val date: String,
-    @ColumnInfo(name = "remind_at") val remindAt: Long ,
+    val time: LocalTime,
+    val date: LocalDate,
+    @ColumnInfo(name = "remind_at") val remindAt: Long,
     val isDone: Boolean = false
 )

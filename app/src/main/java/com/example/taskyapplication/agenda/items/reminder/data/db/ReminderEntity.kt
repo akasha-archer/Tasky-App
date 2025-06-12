@@ -3,6 +3,8 @@ package com.example.taskyapplication.agenda.items.reminder.data.db
 import androidx.room.ColumnInfo
 import androidx.room.Entity
 import androidx.room.PrimaryKey
+import java.time.LocalDate
+import java.time.LocalTime
 
 @Entity(tableName = "reminders")
 data class ReminderEntity(
@@ -10,7 +12,7 @@ data class ReminderEntity(
     val id: String,
     val title: String,
     val description: String,
-    val time: String,
-    val date: String,
+    val time: LocalTime,
+    val date: LocalDate,
     @ColumnInfo(name = "remind_at") val remindAt: Long
 )

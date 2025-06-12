@@ -41,13 +41,11 @@ fun NavigationRoot(
     NavHost(
         modifier = modifier,
         navController = navController,
-        startDestination = NavigationRoutes.AgendaScreen
-        //NavigationRoutes.TaskScreen
-//            when {
-//            isLoggedIn -> NavigationRoutes.AgendaScreen
-//            isUserRegistered -> NavigationRoutes.LoginScreen
-//            else -> NavigationRoutes.RegisterScreen
-//        }
+        startDestination = when {
+            isLoggedIn -> NavigationRoutes.AgendaScreen
+            isUserRegistered -> NavigationRoutes.LoginScreen
+            else -> NavigationRoutes.RegisterScreen
+        }
     ) {
         // Task screens subgraph
         navigation<NavigationRoutes.TaskEditGraph>(

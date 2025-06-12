@@ -18,6 +18,7 @@ import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
+import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.receiveAsFlow
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
@@ -42,6 +43,9 @@ class SharedEventViewModel @Inject constructor(
         started = SharingStarted.WhileSubscribed(5000L),
         initialValue = EventUiState()
     )
+
+    private val _tempAttendeeList = MutableStateFlow<List<String>>(emptyList())
+    val tempAttendeeList = _tempAttendeeList.asStateFlow()
 
     private fun isNewEvent(currentId: String) = currentId.isEmpty() || currentId.isBlank()
 
@@ -128,8 +132,8 @@ class SharedEventViewModel @Inject constructor(
                             isValidUser = true
                         )
                         }
+                        _tempAttendeeList.update { it + result.data.attendee.fullName }
                     }
-
                 }
             }
         }

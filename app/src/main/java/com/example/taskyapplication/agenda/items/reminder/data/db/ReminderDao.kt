@@ -4,6 +4,7 @@ import androidx.room.Dao
 import androidx.room.Query
 import androidx.room.Upsert
 import kotlinx.coroutines.flow.Flow
+import java.time.LocalDate
 
 @Dao
 interface ReminderDao {
@@ -12,7 +13,7 @@ interface ReminderDao {
     suspend fun getAllReminders(): List<ReminderEntity>
 
     @Query("SELECT * FROM reminders WHERE date = :date ORDER BY time ASC")
-    fun getAllRemindersForSelectedDate(date: Long): Flow<List<ReminderEntity>>
+    fun getAllRemindersForSelectedDate(date: LocalDate): Flow<List<ReminderEntity>>
 
     @Query("SELECT * FROM reminders WHERE id = :reminderId")
     suspend fun getReminderById(reminderId: String): ReminderEntity

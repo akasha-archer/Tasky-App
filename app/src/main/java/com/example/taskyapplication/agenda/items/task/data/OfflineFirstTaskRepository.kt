@@ -26,6 +26,8 @@ class OfflineFirstTaskRepository @Inject constructor(
 
     override suspend fun createNewTask(request: TaskNetworkModel): EmptyResult<DataError> {
         val localResult = localDataSource.upsertTask(request.asTaskEntity())
+        val see = localDataSource.getAllTasks()
+        Log.i("See What is in there", see.toString())
         if (localResult !is Result.Success) {
             Log.e("Error inserting new task", "error: $localResult")
             return localResult.asEmptyDataResult()
@@ -34,11 +36,11 @@ class OfflineFirstTaskRepository @Inject constructor(
         val remoteResult = remoteDataSource.createTask(request)
         return when (remoteResult) {
             is Result.Error -> {
-                Log.e("Error creating task", remoteResult.error.toString())
+                Log.e("Error creating ${request.title} task", remoteResult.error.toString())
                 Result.Error(remoteResult.error)
             }
             is Result.Success -> {
-                Log.e("Task Repository", "Task created successfully")
+                Log.i("Task Repository", "Task created successfully")
                 Result.Success(Unit)
             }
         }

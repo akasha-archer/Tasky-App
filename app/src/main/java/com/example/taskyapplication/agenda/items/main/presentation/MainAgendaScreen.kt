@@ -18,11 +18,13 @@ import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.example.taskyapplication.TaskyBaseScreen
+import com.example.taskyapplication.agenda.domain.asLocalDateValue
 import com.example.taskyapplication.agenda.items.main.AgendaMainViewModel
 import com.example.taskyapplication.agenda.items.main.AgendaMainViewState
 import com.example.taskyapplication.agenda.items.main.MainScreenAction
 import com.example.taskyapplication.agenda.items.main.data.AgendaItemType
 import com.example.taskyapplication.agenda.presentation.components.TaskyDatePicker
+import java.time.LocalDate
 
 @Composable
 fun AgendaMainRoot(
@@ -160,7 +162,7 @@ fun AgendaMainScreen(
                     onConfirm = {
                         onAction(
                             MainScreenAction.SelectAgendaDate(
-                                datePickerState.selectedDateMillis ?: System.currentTimeMillis()
+                                datePickerState.selectedDateMillis?.asLocalDateValue() ?: LocalDate.now()
                             )
                         )
                         showMonthDatePicker = false

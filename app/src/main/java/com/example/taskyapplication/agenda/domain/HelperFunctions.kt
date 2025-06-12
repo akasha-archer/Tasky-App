@@ -19,6 +19,19 @@ fun String.toInitials(): String {
     return this.split(" ").mapNotNull { it.firstOrNull()?.toString() }.reduce { acc, s -> acc + s }
 }
 
+fun LocalDate.toDateAsString(): String =
+    this.format(DateTimeFormatter.ofPattern("dd MMM yyyy"))
+
+fun LocalTime.toTimeAsString(): String =
+    this.format(DateTimeFormatter.ofPattern("h:mm a"))
+
+fun Long.asLocalDateValue(): LocalDate =
+    LocalDateTime.ofInstant(Instant.ofEpochMilli(this), ZoneId.systemDefault()).toLocalDate()
+
+fun Long.asLocalTimeValue(): LocalTime =
+    LocalDateTime.ofInstant(Instant.ofEpochMilli(this), ZoneId.systemDefault()).toLocalTime()
+
+
 //Combine date and time strings to convert to long
 fun convertDateAndTimeStringsToLong(
     timeString: String,
@@ -90,7 +103,6 @@ fun Long.toDateAsString(): String {
     return LocalDate.ofInstant(Instant.ofEpochMilli(this), ZoneId.systemDefault())
         .format(DateTimeFormatter.ofPattern("dd MMM yyyy"))
 }
-
 
 fun Long.toTimeAsString(): String =
     LocalTime.ofInstant(Instant.ofEpochMilli(this), ZoneId.systemDefault())

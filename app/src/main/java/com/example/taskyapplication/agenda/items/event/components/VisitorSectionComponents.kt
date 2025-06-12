@@ -155,7 +155,8 @@ fun VisitorNameRowEdit(
         verticalAlignment = Alignment.CenterVertically
     ) {
         Text( // Visitor Initials
-            text = visitorName.toInitials(),
+            text = "BB",
+                //visitorName.toInitials(),
             modifier = Modifier
                 .drawBehind {
                     drawRoundRect(
@@ -207,7 +208,8 @@ fun VisitorNameRowHost(
         verticalAlignment = Alignment.CenterVertically
     ) {
         Text( // Visitor Initials
-            text = visitorName.toInitials(),
+            text = "BB",
+                //visitorName.toInitials(),
             modifier = Modifier
                 .drawBehind {
                     drawRoundRect(
@@ -249,8 +251,8 @@ fun VisitorHeader(
     showAddVisitorBottomSheet: () -> Unit = {},
     onAddNewVisitor: (String) -> Unit = {},
     onCancelAddingVisitor: () -> Unit = {},
-    userEmail: String,
-    visitorList: List<VerifyAttendeeResponse> = emptyList(),
+    userEmail: String = "",
+    visitorList: List<String> = emptyList(),
     isBottomSheetEnabled: Boolean = false,
     isLoading: Boolean = false,
     isEditingScreen: Boolean = false,
@@ -306,7 +308,7 @@ fun VisitorHeader(
             items(visitorList) { attendee ->
                 VisitorNameRowHost(
                     modifier = Modifier,
-                    visitorName = attendee.fullName
+                    visitorName = attendee
                 )
             }
         }
@@ -321,11 +323,19 @@ fun VisitorGroupPreview() {
     )
 }
 
+//val responseList = listOf(
+//    VerifyAttendeeResponse(email = "emma@sassy.com", fullName = "Jane Smith", userId = "12"),
+//    VerifyAttendeeResponse(email = "emma@sassy.com", fullName = "Emily Brown", userId = "12"),
+//    VerifyAttendeeResponse(email = "emma@sassy.com", fullName = "Natasha Jones", userId = "12"),
+//    VerifyAttendeeResponse(email = "emma@sassy.com", fullName = "Malia James", userId = "12"),
+//)
+
+
 val responseList = listOf(
-    VerifyAttendeeResponse(email = "emma@sassy.com", fullName = "Jane Smith", userId = "12"),
-    VerifyAttendeeResponse(email = "emma@sassy.com", fullName = "Emily Brown", userId = "12"),
-    VerifyAttendeeResponse(email = "emma@sassy.com", fullName = "Natasha Jones", userId = "12"),
-    VerifyAttendeeResponse(email = "emma@sassy.com", fullName = "Malia James", userId = "12"),
+    "Jane Smith",
+     "Emily Brown",
+    "Natasha Jones",
+    "Malia James"
 )
 
 @Preview(showBackground = true)

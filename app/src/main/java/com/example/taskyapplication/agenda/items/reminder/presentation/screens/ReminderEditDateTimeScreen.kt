@@ -31,8 +31,10 @@ import com.example.taskyapplication.TaskyBaseScreen
 import com.example.taskyapplication.agenda.AgendaItemAction
 import com.example.taskyapplication.agenda.common.AgendaItemEvent
 import com.example.taskyapplication.agenda.data.model.ReminderOptions
+import com.example.taskyapplication.agenda.domain.asLocalDateValue
 import com.example.taskyapplication.agenda.domain.getReminderOption
 import com.example.taskyapplication.agenda.domain.toDateAsString
+import com.example.taskyapplication.agenda.domain.toTimeAsString
 import com.example.taskyapplication.agenda.items.reminder.SharedReminderViewModel
 import com.example.taskyapplication.agenda.items.reminder.presentation.ReminderUiState
 import com.example.taskyapplication.agenda.presentation.components.AgendaDescriptionText
@@ -51,6 +53,8 @@ import com.example.taskyapplication.domain.utils.ObserveAsEvents
 import com.example.taskyapplication.main.presentation.components.TaskyScaffold
 import com.example.taskyapplication.ui.theme.TaskyDesignSystem.Companion.taskyColors
 import com.example.taskyapplication.ui.theme.TaskyTypography
+import java.time.LocalDate
+import java.time.LocalTime
 
 @Composable
 fun ReminderEditDateTimeRoot(
@@ -228,8 +232,8 @@ fun ReminderEditDateTimeScreen(
                             },
                             agendaItemStartTime = {
                                 AgendaItemDateTimeRow(
-                                    dateText = state.date.ifEmpty { previousDate },
-                                    timeText = state.time.ifEmpty { previousTime },
+                                    dateText = state.date.toDateAsString().ifEmpty { LocalDate.now().toDateAsString() },
+                                    timeText = state.time.toTimeAsString().ifEmpty { "12:00 AM" },
                                     onClickTime = {
                                         onAction(AgendaItemAction.ShowTimePicker)
                                     },
@@ -275,8 +279,7 @@ fun ReminderEditDateTimeScreen(
                                         onConfirm = {
                                             onAction(
                                                 AgendaItemAction.SetDate(
-                                                    datePickerState.selectedDateMillis?.toDateAsString()
-                                                        ?: state.date
+                                                    datePickerState.selectedDateMillis?.asLocalDateValue() ?: state.date
                                                 )
                                             )
                                         },
@@ -293,7 +296,7 @@ fun ReminderEditDateTimeScreen(
                                         onConfirm = {
                                             onAction(
                                                 AgendaItemAction.SetTime(
-                                                    timePickerState.hour.toString() + ":" + timePickerState.minute.toString() + " $timeOfDay"
+                                                    LocalTime.of(timePickerState.hour, timePickerState.minute)
                                                 )
                                             )
                                         },

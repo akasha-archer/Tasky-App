@@ -24,6 +24,8 @@ import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.example.taskyapplication.TaskyBaseScreen
 import com.example.taskyapplication.agenda.AgendaItemAction
+import com.example.taskyapplication.agenda.domain.toDateAsString
+import com.example.taskyapplication.agenda.domain.toTimeAsString
 import com.example.taskyapplication.agenda.items.reminder.SharedReminderViewModel
 import com.example.taskyapplication.agenda.items.reminder.presentation.ReminderUiState
 import com.example.taskyapplication.agenda.presentation.components.AgendaDescriptionText
@@ -138,8 +140,8 @@ fun ReminderDetailScreen(
                             agendaItemStartTime = {
                                 AgendaItemDateTimeRow(
                                     isEditing = isEditScreen,
-                                    timeText = state.time,
-                                    dateText = state.date,
+                                    timeText = state.time.toTimeAsString(),
+                                    dateText = state.date.toDateAsString(),
                                 )
                             },
                             agendaItemReminderTime = {

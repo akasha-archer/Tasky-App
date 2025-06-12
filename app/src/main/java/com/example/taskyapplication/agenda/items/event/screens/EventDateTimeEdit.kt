@@ -70,6 +70,7 @@ fun EventEditDateTimeRoot(
     eventViewModel: SharedEventViewModel
 ) {
     val uiState by eventViewModel.eventUiState.collectAsStateWithLifecycle()
+    val namelist by eventViewModel.tempAttendeeList.collectAsStateWithLifecycle()
     val context = LocalContext.current
 
     ObserveAsEvents(eventViewModel.agendaEvents) { event ->
@@ -81,6 +82,7 @@ fun EventEditDateTimeRoot(
                     Toast.LENGTH_SHORT
                 ).show()
             }
+
             AgendaItemEvent.DeleteSuccess -> {
                 Toast.makeText(
                     context,
@@ -88,6 +90,7 @@ fun EventEditDateTimeRoot(
                     Toast.LENGTH_SHORT
                 ).show()
             }
+
             is AgendaItemEvent.NewItemCreatedError -> {
                 Toast.makeText(
                     context,
@@ -95,6 +98,7 @@ fun EventEditDateTimeRoot(
                     Toast.LENGTH_SHORT
                 ).show()
             }
+
             AgendaItemEvent.NewItemCreatedSuccess -> {
                 Toast.makeText(
                     context,
@@ -102,6 +106,7 @@ fun EventEditDateTimeRoot(
                     Toast.LENGTH_SHORT
                 ).show()
             }
+
             is AgendaItemEvent.UpdateItemError -> {
                 Toast.makeText(
                     context,
@@ -109,6 +114,7 @@ fun EventEditDateTimeRoot(
                     Toast.LENGTH_SHORT
                 ).show()
             }
+
             AgendaItemEvent.UpdateItemSuccess -> {
                 Toast.makeText(
                     context,
@@ -125,13 +131,16 @@ fun EventEditDateTimeRoot(
             EventDateTimeScreen(
                 modifier = modifier,
                 state = uiState,
+                tempVisitorList = namelist,
                 onAction = { action ->
-                    when(action) {
+                    when (action) {
                         EventItemAction.SaveDateTimeEdit -> onClickSave()
                         EventItemAction.CancelEdit -> onClickCancel()
                         EventItemAction.LaunchEditTitleScreen -> onSelectEditTitle()
                         EventItemAction.LaunchEditDescriptionScreen -> onSelectEditDescription()
-                        else -> { Unit }
+                        else -> {
+                            Unit
+                        }
                     }
                     eventViewModel.executeActions(action)
                 }
@@ -147,6 +156,7 @@ fun EventDateTimeScreen(
     agendaItem: String = "Event",
     onAction: (EventItemAction) -> Unit = {},
     isEditScreen: Boolean = true,
+    tempVisitorList: List<String> = emptyList(),
     state: EventUiState
 ) {
     // persisted photos are stored and displayed as urls
@@ -172,9 +182,13 @@ fun EventDateTimeScreen(
     )
     val timeOfDay = if (timePickerState.isAfternoon) "PM" else "AM"
 
-    var showVisitorBottomSheet by rememberSaveable { mutableStateOf(false)}
+    var showStartTimePicker by rememberSaveable { mutableStateOf(false) }
+    var showStartDatePicker by rememberSaveable { mutableStateOf(false) }
+    var showEndTimePicker by rememberSaveable { mutableStateOf(false) }
+    var showEndDatePicker by rememberSaveable { mutableStateOf(false) }
+
+    var showVisitorBottomSheet by rememberSaveable { mutableStateOf(false) }
     var userEmail by rememberSaveable { mutableStateOf("") }
-    var tempVisitorList by rememberSaveable {mutableStateOf(emptyList<VerifyAttendeeResponse>())}
 
     Column(
         modifier = modifier
@@ -272,9 +286,11 @@ fun EventDateTimeScreen(
                                     dateText = state.startDate,
                                     onClickTime = {
                                         onAction(EventItemAction.ShowTimePicker)
+                                        showStartTimePicker = true
                                     },
                                     onClickDate = {
                                         onAction(EventItemAction.ShowDatePicker)
+                                        showStartDatePicker = true
                                     },
                                 )
                             },
@@ -286,9 +302,11 @@ fun EventDateTimeScreen(
                                     dateText = state.endDate,
                                     onClickTime = {
                                         onAction(EventItemAction.ShowTimePicker)
+                                        showEndTimePicker = true
                                     },
                                     onClickDate = {
                                         onAction(EventItemAction.ShowDatePicker)
+                                        showEndDatePicker = true
                                     },
                                 )
                             },
@@ -317,15 +335,16 @@ fun EventDateTimeScreen(
                                     isBottomSheetEnabled = showVisitorBottomSheet,
                                     isLoading = state.isValidatingAttendee,
                                     isValidEmail = state.isValidUser,
-                                    userEmail = userEmail
-                                    )
-
+                                    userEmail = userEmail,
+                                    visitorList = tempVisitorList
+                                )
                             },
-                            launchDatePicker = { // date - time pickers
-                                if (state.isEditingDate) {
+                            launchDatePicker = { // start date pickers
+                                if (showStartDatePicker) {
                                     TaskyDatePicker(
                                         datePickerState = datePickerState,
                                         onDismiss = {
+                                            showStartDatePicker = false
                                             onAction(EventItemAction.HideDatePicker)
                                         },
                                         onConfirm = {
@@ -335,15 +354,37 @@ fun EventDateTimeScreen(
                                                         ?: state.startDate
                                                 )
                                             )
+                                            showStartDatePicker = false
                                         },
                                     )
-                                }
+                                } // start date picker
+
+                                if (showEndDatePicker) {
+                                    TaskyDatePicker(
+                                        datePickerState = datePickerState,
+                                        onDismiss = {
+                                            onAction(EventItemAction.HideDatePicker)
+                                            showEndDatePicker = false
+                                        },
+                                        onConfirm = {
+                                            onAction(
+                                                EventItemAction.SetEndDate(
+                                                    datePickerState.selectedDateMillis?.toDateAsString()
+                                                        ?: state.startDate
+                                                )
+                                            )
+                                            showEndDatePicker = false
+                                        },
+                                    )
+                                } // end date picker
+
                             },
-                            launchTimePicker = {
-                                if (state.isEditingTime) {
+                            launchTimePicker = { // time pickers
+                                if (showStartTimePicker) {
                                     TaskyTimePicker(
                                         timePickerState = timePickerState,
                                         onDismiss = {
+                                            showStartTimePicker = false
                                             onAction(EventItemAction.HideTimePicker)
                                         },
                                         onConfirm = {
@@ -352,10 +393,29 @@ fun EventDateTimeScreen(
                                                     timePickerState.hour.toString() + ":" + timePickerState.minute.toString() + " $timeOfDay"
                                                 )
                                             )
+                                            showStartTimePicker = false
                                         },
                                     )
-                                }
-                            }, // end date - time pickers
+                                }// start time picker
+
+                                if (showEndTimePicker) {
+                                    TaskyTimePicker(
+                                        timePickerState = timePickerState,
+                                        onDismiss = {
+                                            showEndTimePicker = false
+                                            onAction(EventItemAction.HideTimePicker)
+                                        },
+                                        onConfirm = {
+                                            onAction(
+                                                EventItemAction.SetEndTime(
+                                                    timePickerState.hour.toString() + ":" + timePickerState.minute.toString() + " $timeOfDay"
+                                                )
+                                            )
+                                            showEndTimePicker = false
+                                        },
+                                    )
+                                }// end time picker
+                            },
                         )
                         AgendaItemDeleteTextButton(
                             modifier = Modifier
