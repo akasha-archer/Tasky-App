@@ -2,7 +2,7 @@ package com.example.taskyapplication.agenda.items.main.domain.network
 
 import com.example.taskyapplication.agenda.items.main.data.AgendaItemsResponse
 import com.example.taskyapplication.agenda.items.main.data.DeletedAgendaItems
-import com.example.taskyapplication.agenda.items.main.data.FullAgenda
+import com.example.taskyapplication.agenda.items.main.data.FullAgendaResponse
 import retrofit2.Response
 import retrofit2.http.Body
 import retrofit2.http.GET
@@ -22,6 +22,6 @@ interface AgendaApiService {
 
     @GET("/fullAgenda")
     suspend fun getFullAgenda(
-        @Body fullAgenda: FullAgenda
+        @Body fullAgendaResponse: FullAgendaResponse
     ): Response<Unit>
 }

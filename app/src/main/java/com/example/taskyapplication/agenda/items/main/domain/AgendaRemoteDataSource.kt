@@ -2,7 +2,7 @@ package com.example.taskyapplication.agenda.items.main.domain
 
 import com.example.taskyapplication.agenda.items.main.data.AgendaItemsResponse
 import com.example.taskyapplication.agenda.items.main.data.DeletedAgendaItems
-import com.example.taskyapplication.agenda.items.main.data.FullAgenda
+import com.example.taskyapplication.agenda.items.main.data.FullAgendaResponse
 import com.example.taskyapplication.agenda.items.main.domain.network.AgendaApiService
 import com.example.taskyapplication.domain.utils.DataError
 import com.example.taskyapplication.domain.utils.Result
@@ -15,7 +15,7 @@ interface AgendaRemoteDataSource {
         date: Long
     ): Response<AgendaItemsResponse>
     suspend fun syncAgenda(deletedAgendaItems: DeletedAgendaItems): Result<Unit, DataError.Network>
-    suspend fun fetchFullAgenda(fullAgenda: FullAgenda): Result<Unit, DataError.Network>
+    suspend fun fetchFullAgenda(fullAgendaResponse: FullAgendaResponse): Result<Unit, DataError.Network>
 }
 
 class AgendaItemsRemoteDataSource @Inject constructor(
@@ -36,10 +36,10 @@ class AgendaItemsRemoteDataSource @Inject constructor(
     }
 
     override suspend fun fetchFullAgenda(
-        fullAgenda: FullAgenda
+        fullAgendaResponse: FullAgendaResponse
     ): Result<Unit, DataError.Network> {
         return safeApiCall {
-            agendaApiService.getFullAgenda(fullAgenda)
+            agendaApiService.getFullAgenda(fullAgendaResponse)
         }
     }
 

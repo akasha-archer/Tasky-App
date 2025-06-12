@@ -1,5 +1,6 @@
 package com.example.taskyapplication.agenda.items.reminder.domain
 
+import android.util.Log
 import com.example.taskyapplication.agenda.items.reminder.data.db.ReminderEntity
 import com.example.taskyapplication.agenda.items.reminder.data.models.ReminderNetworkModel
 import com.example.taskyapplication.agenda.items.reminder.data.models.UpdateReminderNetworkModel
@@ -16,32 +17,41 @@ class ReminderOfflineFirstRepository @Inject constructor(
     private val localDataSource: ReminderLocalDataSource,
     private val remoteDataSource: ReminderRemoteDataSource,
     private val applicationScope: CoroutineScope,
-): ReminderRepository {
+) : ReminderRepository {
 
     override suspend fun createNewReminder(request: ReminderNetworkModel): EmptyResult<DataError> {
-        val remoteResult = remoteDataSource.postReminder(request)
+        val localResult = localDataSource.upsertReminder(request.toReminderEntity())
+        if (localResult !is Result.Success) {
+            Log.e("Error inserting new reminder", "error: $localResult")
+            return localResult.asEmptyDataResult()
+        }
+
+        val remoteResult = remoteDataSource.createReminder(request)
         return when (remoteResult) {
             is Result.Error -> {
-                TODO("insert to pending table")
+                Log.e("Error creating reminder", remoteResult.error.toString())
+                Result.Error(remoteResult.error)
             }
+
             is Result.Success -> {
-                applicationScope.async {
-                    localDataSource.upsertReminder(request.toReminderEntity())
-                }.await()
+                Log.e("Reminder Repository", "Reminder created successfully")
+                Result.Success(Unit)
             }
         }
     }
 
     override suspend fun updateReminder(request: UpdateReminderNetworkModel): EmptyResult<DataError> {
+        val localResult = localDataSource.upsertReminder(request.toReminderEntity())
         val remoteResult = remoteDataSource.updateReminder(request)
         return when (remoteResult) {
             is Result.Error -> {
-                TODO("insert to pending table")
+                Log.e("Error updating reminder", remoteResult.error.toString())
+                Result.Error(remoteResult.error)
             }
+
             is Result.Success -> {
-                applicationScope.async {
-                    localDataSource.upsertReminder(request.toReminderEntity())
-                }.await()
+                Log.e("Reminder Repository", "Reminder updated successfully")
+                Result.Success(Unit)
             }
         }
     }
@@ -50,14 +60,16 @@ class ReminderOfflineFirstRepository @Inject constructor(
         return localDataSource.getReminder(reminderId)
     }
 
+
+
     override suspend fun deleteReminder(reminderId: String): EmptyResult<DataError> {
         localDataSource.deleteReminder(reminderId)
         val remoteResult = applicationScope.async {
             remoteDataSource.deleteReminder(reminderId)
         }.await()
-
         if (remoteResult !is Result.Success) {
-            TODO("insert to pending table")
+            Log.e("Reminder Repository", "error deleting reminder: $remoteResult")
+
         }
         return remoteResult.asEmptyDataResult()
     }

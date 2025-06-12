@@ -2,7 +2,6 @@ package com.example.taskyapplication.agenda.items.reminder.data.models
 
 import com.example.taskyapplication.agenda.data.model.AgendaItem
 import kotlinx.serialization.SerialName
-import kotlinx.serialization.Serializable
 
 data class ReminderNetworkModel(
     @SerialName("id")
@@ -15,8 +14,6 @@ data class ReminderNetworkModel(
     override val reminderTime: Long,
 ): AgendaItem
 
-
-@Serializable
 data class UpdateReminderNetworkModel(
     @SerialName("id")
     override val itemId: String,

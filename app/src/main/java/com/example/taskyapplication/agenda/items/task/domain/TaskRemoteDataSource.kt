@@ -1,6 +1,6 @@
 package com.example.taskyapplication.agenda.items.task.domain
 
-import com.example.taskyapplication.agenda.items.task.data.network.models.GetTaskResponse
+import com.example.taskyapplication.agenda.items.task.data.network.models.TaskResponse
 import com.example.taskyapplication.agenda.items.task.data.network.models.TaskNetworkModel
 import com.example.taskyapplication.agenda.items.task.data.network.models.UpdateTaskBody
 import com.example.taskyapplication.agenda.items.task.domain.network.TaskApiService
@@ -11,8 +11,8 @@ import com.example.taskyapplication.domain.utils.safeApiCall
 import javax.inject.Inject
 
 interface RemoteDataSource {
-    suspend fun getTask(taskId: String): Result<GetTaskResponse, DataError.Network>
-    suspend fun postTask(task: TaskNetworkModel): EmptyResult<DataError>
+    suspend fun getTask(taskId: String): Result<TaskResponse, DataError.Network>
+    suspend fun createTask(task: TaskNetworkModel): EmptyResult<DataError>
     suspend fun updateTask(task: UpdateTaskBody): EmptyResult<DataError>
     suspend fun deleteTask(taskId: String): EmptyResult<DataError>
 }
@@ -21,13 +21,13 @@ class TaskRemoteDataSource @Inject constructor(
     private val taskApi: TaskApiService
 ): RemoteDataSource {
 
-    override suspend fun getTask(taskId: String): Result<GetTaskResponse, DataError.Network> {
+    override suspend fun getTask(taskId: String): Result<TaskResponse, DataError.Network> {
         return safeApiCall {
             taskApi.getTaskById(taskId)
         }
     }
 
-    override suspend fun postTask(task: TaskNetworkModel): EmptyResult<DataError> {
+    override suspend fun createTask(task: TaskNetworkModel): EmptyResult<DataError> {
         return safeApiCall {
             taskApi.createNewTask(task)
         }

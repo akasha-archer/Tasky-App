@@ -10,7 +10,8 @@ data class TaskEntity(
     val id: String,
     val title: String,
     val description: String,
-    val time: Long,
-    @ColumnInfo(name = "remind_at") val remindAt: Long,
-    val isDone: Boolean
+    val time: String,
+    val date: String,
+    @ColumnInfo(name = "remind_at") val remindAt: Long ,
+    val isDone: Boolean = false
 )

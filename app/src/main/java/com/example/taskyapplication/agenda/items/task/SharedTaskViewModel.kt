@@ -1,5 +1,6 @@
 package com.example.taskyapplication.agenda.items.task
 
+import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.taskyapplication.agenda.AgendaItemAction
@@ -26,11 +27,11 @@ import javax.inject.Inject
 @HiltViewModel
 class SharedTaskViewModel @Inject constructor(
     private val repository: TaskRepository,
-    private val itemId: String?
-//    savedStateHandle: SavedStateHandle
+//    private val itemId: String?
+    savedStateHandle: SavedStateHandle
 ) : ViewModel() {
 
-//    private val taskId: String? = savedStateHandle["taskId"]
+    private val taskId: String? = savedStateHandle["itemId"]
 
     private val agendaEventChannel = Channel<AgendaItemEvent>()
     val agendaEvents = agendaEventChannel.receiveAsFlow()
@@ -38,8 +39,8 @@ class SharedTaskViewModel @Inject constructor(
     private val _uiState = MutableStateFlow(TaskUiState())
     val uiState = _uiState
         .onStart{
-            if (itemId != null) {
-                loadExistingTask(itemId)
+            if (taskId != null) {
+                loadExistingTask(taskId)
             }
         }
         .stateIn(

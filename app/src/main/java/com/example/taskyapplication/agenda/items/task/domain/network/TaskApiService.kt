@@ -1,6 +1,6 @@
 package com.example.taskyapplication.agenda.items.task.domain.network
 
-import com.example.taskyapplication.agenda.items.task.data.network.models.GetTaskResponse
+import com.example.taskyapplication.agenda.items.task.data.network.models.TaskResponse
 import com.example.taskyapplication.agenda.items.task.data.network.models.TaskNetworkModel
 import com.example.taskyapplication.agenda.items.task.data.network.models.UpdateTaskBody
 import retrofit2.Response
@@ -25,7 +25,7 @@ interface TaskApiService {
     @GET("/task/{taskId}")
     suspend fun getTaskById(
         @Query("taskId") taskId: String
-    ): Response<GetTaskResponse>
+    ): Response<TaskResponse>
 
     @DELETE("/task")
     suspend fun deleteTaskById(

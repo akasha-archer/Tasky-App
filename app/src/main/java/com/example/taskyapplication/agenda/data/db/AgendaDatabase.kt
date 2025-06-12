@@ -2,10 +2,10 @@ package com.example.taskyapplication.agenda.data.db
 
 import androidx.room.Database
 import androidx.room.RoomDatabase
-import com.example.taskyapplication.agenda.items.event.data.db.EventAttendeeEntity
+import androidx.room.TypeConverters
+import com.example.taskyapplication.agenda.items.event.data.db.DbTypeConverters
 import com.example.taskyapplication.agenda.items.event.data.db.EventDao
 import com.example.taskyapplication.agenda.items.event.data.db.EventEntity
-import com.example.taskyapplication.agenda.items.event.data.db.EventPhotosEntity
 import com.example.taskyapplication.agenda.items.main.data.db.EventSummaryEntity
 import com.example.taskyapplication.agenda.items.main.data.db.LocalAgendaSummaryDao
 import com.example.taskyapplication.agenda.items.main.data.db.ReminderSummaryEntity
@@ -24,13 +24,12 @@ import com.example.taskyapplication.agenda.items.task.data.local.entity.TaskEnti
         PendingTaskEntity::class,
         ReminderEntity::class,
         EventEntity::class,
-        EventAttendeeEntity::class,
-        EventPhotosEntity::class,
         TaskSummaryEntity::class,
         EventSummaryEntity::class,
         ReminderSummaryEntity::class
     ], version = 1
 )
+@TypeConverters(DbTypeConverters::class)
 abstract class AgendaDatabase : RoomDatabase() {
     abstract fun taskDao(): TaskDao
     abstract fun pendingTaskDao(): PendingTaskDao

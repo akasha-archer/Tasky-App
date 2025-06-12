@@ -10,6 +10,7 @@ data class ReminderEntity(
     val id: String,
     val title: String,
     val description: String,
-    val time: Long,
+    val time: String,
+    val date: String,
     @ColumnInfo(name = "remind_at") val remindAt: Long
 )

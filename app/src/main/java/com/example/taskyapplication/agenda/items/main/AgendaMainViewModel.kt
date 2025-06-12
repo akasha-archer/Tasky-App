@@ -8,9 +8,6 @@ import com.example.taskyapplication.agenda.items.main.data.AgendaItemType
 import com.example.taskyapplication.agenda.items.main.data.AgendaReminderSummary
 import com.example.taskyapplication.agenda.items.main.data.AgendaSummary
 import com.example.taskyapplication.agenda.items.main.data.AgendaTaskSummary
-import com.example.taskyapplication.agenda.items.main.data.toAgendaEventSummary
-import com.example.taskyapplication.agenda.items.main.data.toAgendaReminderSummary
-import com.example.taskyapplication.agenda.items.main.data.toAgendaTaskSummary
 import com.example.taskyapplication.agenda.items.main.domain.AgendaOfflineFirstRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -39,22 +36,34 @@ class AgendaMainViewModel @Inject constructor(
 
     private fun buildAgendaListForDate(selectedDate: Long) {
         viewModelScope.launch {
-            val result = repository.getAgendaItemsForDate(selectedDate)
-            _agendaViewState.update {
-                it.copy(
-                    displayDateHeading = selectedDate.toDateAsString().ifEmpty { "Today" },
-                    selectedEvents = result.body()?.events.orEmpty()
-                        .map { it.toAgendaEventSummary() },
-                    selectedTasks = result.body()?.tasks.orEmpty().map { it.toAgendaTaskSummary() },
-                    selectedReminders = result.body()?.reminders.orEmpty()
-                        .map { it.toAgendaReminderSummary() },
-                    combinedSummaryList = _agendaViewState.value.selectedEvents + _agendaViewState.value.selectedTasks + _agendaViewState.value.selectedReminders
-                )
-            }
+            commonDataProvider.buildAgendaForSelectedDate(selectedDate)
+                .collect { (tasks, reminders) ->
+                    _agendaViewState.update {
+                        it.copy(
+                            displayDateHeading = showSelectedDate(selectedDate),
+                            selectedTasks = tasks,
+                            selectedReminders = reminders,
+                            combinedSummaryList = _agendaViewState.value.selectedTasks + _agendaViewState.value.selectedReminders
+                        )
+                    }
+                }
         }
     }
 
-    private fun logoutUser() {}
+    private fun showSelectedDate(selectedDate: Long): String {
+        return when (selectedDate) {
+            LocalDate.now().toEpochDay() -> "Today"
+            LocalDate.now().plusDays(1).toEpochDay() -> "Tomorrow"
+            LocalDate.now().minusDays(1).toEpochDay() -> "Yesterday"
+            else -> selectedDate.toDateAsString()
+        }
+    }
+
+    private fun logoutUser() {
+        viewModelScope.launch {
+            commonDataProvider.logout()
+        }
+    }
 
     private fun deleteAgendaItem(itemId: String, type: AgendaItemType) {
         viewModelScope.launch {
@@ -75,17 +84,21 @@ class AgendaMainViewModel @Inject constructor(
                 _agendaViewState.value = _agendaViewState.value.copy(
                     selectedDate = action.selectedDate
                 )
-                buildAgendaListForDate(action.selectedDate)
+                buildAgendaListForDate(_agendaViewState.value.selectedDate)
             }
+
             is MainScreenAction.ItemToDelete -> {
                 deleteAgendaItem(action.itemId, action.type)
             }
+
             is MainScreenAction.ItemToEdit -> {
                 getAgendaItem(action.itemId, action.type)
             }
+
             is MainScreenAction.ItemToOpen -> {
                 getAgendaItem(action.itemId, action.type)
             }
+
             MainScreenAction.LogoutUser -> {
                 logoutUser()
             }

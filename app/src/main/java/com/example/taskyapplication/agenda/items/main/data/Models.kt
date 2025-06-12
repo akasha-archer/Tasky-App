@@ -1,23 +1,23 @@
 package com.example.taskyapplication.agenda.items.main.data
 
 import com.example.taskyapplication.R
-import com.example.taskyapplication.agenda.items.main.data.db.EventSummaryEntity
-import com.example.taskyapplication.agenda.items.main.data.db.ReminderSummaryEntity
-import com.example.taskyapplication.agenda.items.main.data.db.TaskSummaryEntity
+import com.example.taskyapplication.agenda.items.event.data.db.EventEntity
+import com.example.taskyapplication.agenda.items.reminder.data.db.ReminderEntity
+import com.example.taskyapplication.agenda.items.task.data.local.entity.TaskEntity
 import kotlinx.serialization.Serializable
 import java.time.LocalDate
 
 @Serializable
-data class FullAgenda(
+data class FullAgendaResponse(
     val events: List<Event>,
     val tasks: List<Task>,
     val reminders: List<Reminder>
 )
 
 data class LocalAgendaSummary(
-    val events: List<EventSummaryEntity>,
-    val tasks: List<TaskSummaryEntity>,
-    val reminders: List<ReminderSummaryEntity>
+    val events: List<EventEntity>,
+    val tasks: List<TaskEntity>,
+    val reminders: List<ReminderEntity>
 )
 
 interface AgendaSummary {
@@ -59,22 +59,16 @@ data class AgendaReminderSummary(
     override val type: AgendaItemType = AgendaItemType.REMINDER,
 ): AgendaSummary
 
-data class AgendaScreenUi(
-    val displayDateHeading: String = "Today",
-    val selectedDate: String = LocalDate.now().toString(),
-    val itemsForSelectedDate: List<AgendaSummary> = emptyList()
-)
-
 data class DeletedAgendaItems(
     val deletedEventIds: List<String>,
     val deletedTaskIds: List<String>,
     val deletedReminderIds: List<String>
 )
 
-data class AgendaScreenCalendar(
-    val dayOfWeek: Char,
-    val dayOfMonth: Int,
-)
+//data class AgendaScreenCalendar(
+//    val dayOfWeek: Char,
+//    val dayOfMonth: Int,
+//)
 
 enum class AgendaItemType(val color: Int) {
     EVENT(color = R.color.event_card),
@@ -82,8 +76,8 @@ enum class AgendaItemType(val color: Int) {
     REMINDER(color = R.color.reminder_card)
 }
 
-enum class AgendaSummaryMenuAction {
-    OPEN,
-    EDIT,
-    DELETE
-}
+//enum class AgendaSummaryMenuAction {
+//    OPEN,
+//    EDIT,
+//    DELETE
+//}
