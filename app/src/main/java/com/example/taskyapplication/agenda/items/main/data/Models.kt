@@ -1,7 +1,24 @@
 package com.example.taskyapplication.agenda.items.main.data
 
 import com.example.taskyapplication.R
+import com.example.taskyapplication.agenda.items.event.data.db.EventEntity
+import com.example.taskyapplication.agenda.items.reminder.data.db.ReminderEntity
+import com.example.taskyapplication.agenda.items.task.data.local.entity.TaskEntity
+import kotlinx.serialization.Serializable
 import java.time.LocalDate
+
+@Serializable
+data class FullAgendaResponse(
+    val events: List<Event>,
+    val tasks: List<Task>,
+    val reminders: List<Reminder>
+)
+
+data class LocalAgendaSummary(
+    val events: List<EventEntity>,
+    val tasks: List<TaskEntity>,
+    val reminders: List<ReminderEntity>
+)
 
 interface AgendaSummary {
     val id: String
@@ -42,22 +59,16 @@ data class AgendaReminderSummary(
     override val type: AgendaItemType = AgendaItemType.REMINDER,
 ): AgendaSummary
 
-data class AgendaScreenUi(
-    val displayDateHeading: String = "Today",
-    val selectedDate: String = LocalDate.now().toString(),
-    val itemsForSelectedDate: List<AgendaSummary> = emptyList()
-)
-
-data class deletedAgendaItems(
+data class DeletedAgendaItems(
     val deletedEventIds: List<String>,
     val deletedTaskIds: List<String>,
     val deletedReminderIds: List<String>
 )
 
-data class AgendaScreenCalendar(
-    val dayOfWeek: Char,
-    val dayOfMonth: Int,
-)
+//data class AgendaScreenCalendar(
+//    val dayOfWeek: Char,
+//    val dayOfMonth: Int,
+//)
 
 enum class AgendaItemType(val color: Int) {
     EVENT(color = R.color.event_card),
@@ -65,43 +76,8 @@ enum class AgendaItemType(val color: Int) {
     REMINDER(color = R.color.reminder_card)
 }
 
-enum class AgendaSummaryMenuOption {
-    OPEN,
-    EDIT,
-    DELETE
-}
-
-//sealed class AgendaSummary(
-//    private val type: AgendaItemType,
-//    private val id: String,
-//    private val title: String,
-//    private val description: String,
-//    private val startDate: String,
-//    private val startTime: String) {
-//     class EventSummary(
-//         type: AgendaItemType = AgendaItemType.EVENT,
-//         id: String,
-//         description: String,
-//         title: String,
-//         startDate: String,
-//         startTime: String,
-//        val isAttendee: Boolean = false,
-//    ): AgendaSummary(type, id, title, description, startDate, startTime)
-//    class TaskSummary(
-//        type: AgendaItemType = AgendaItemType.EVENT,
-//        id: String,
-//        description: String,
-//        title: String,
-//        startDate: String,
-//        startTime: String,
-//        val isDone: Boolean = false,
-//    ): AgendaSummary(type, id, title, description, startDate, startTime)
-//    class ReminderSummary(
-//        type: AgendaItemType = AgendaItemType.EVENT,
-//        id: String,
-//        description: String,
-//        title: String,
-//        startDate: String,
-//        startTime: String,
-//    ): AgendaSummary(type, id, title, description, startDate, startTime)
+//enum class AgendaSummaryMenuAction {
+//    OPEN,
+//    EDIT,
+//    DELETE
 //}

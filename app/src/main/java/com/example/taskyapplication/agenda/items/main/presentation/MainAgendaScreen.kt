@@ -27,9 +27,11 @@ import com.example.taskyapplication.agenda.presentation.components.TaskyDatePick
 @Composable
 fun AgendaMainRoot(
     modifier: Modifier = Modifier,
-    launchNewEventScreen: () -> Unit = {},
-    launchNewReminderScreen: () -> Unit = {},
-    launchNewTaskScreen: () -> Unit = {},
+    launchNewEventScreen: (String?) -> Unit = {},
+    launchNewReminderScreen: (String?) -> Unit = {},
+    launchNewTaskScreen: (String?) -> Unit = {},
+    openSelectedItem: (String, AgendaItemType) -> Unit,
+    editSelectedItem: (String, AgendaItemType) -> Unit,
     viewModel: AgendaMainViewModel = hiltViewModel()
 ) {
     val viewState by viewModel.agendaViewState.collectAsStateWithLifecycle()
@@ -38,12 +40,33 @@ fun AgendaMainRoot(
         modifier = modifier,
         createNewItem = { type ->
             when (type) {
-                AgendaItemType.EVENT -> launchNewEventScreen()
-                AgendaItemType.REMINDER -> launchNewReminderScreen()
-                AgendaItemType.TASK -> launchNewTaskScreen()
+                AgendaItemType.EVENT -> launchNewEventScreen(null)
+                AgendaItemType.REMINDER -> launchNewReminderScreen(null)
+                AgendaItemType.TASK -> launchNewTaskScreen(null)
             }
         },
         onAction = { action ->
+            when (action) {
+                is MainScreenAction.ItemToOpen -> {
+//                    when (action.type) {
+//                        AgendaItemType.EVENT -> launchNewEventScreen(action.itemId)
+//                        AgendaItemType.REMINDER -> launchNewReminderScreen(action.itemId)
+//                        AgendaItemType.TASK -> launchNewTaskScreen(action.itemId)
+//
+//                    }
+                    openSelectedItem(action.itemId, action.type)
+                }
+
+                is MainScreenAction.ItemToEdit -> {
+//                    when (action.type) {
+//                        AgendaItemType.EVENT -> launchNewEventScreen(action.itemId)
+//                        AgendaItemType.REMINDER -> launchNewReminderScreen(action.itemId)
+//                        AgendaItemType.TASK -> launchNewTaskScreen(action.itemId)
+//                    }
+                    editSelectedItem(action.itemId, action.type)
+                }
+                else -> { Unit }
+            }
           viewModel.executeAgendaActions(action)
         },
         agendaViewState = viewState
@@ -61,6 +84,7 @@ fun AgendaMainScreen(
     var showMonthDatePicker by rememberSaveable { mutableStateOf(false) }
     var showIconDatePicker by rememberSaveable { mutableStateOf(false) }
     var showLogoutDropDown by rememberSaveable { mutableStateOf(false) }
+    var showSummaryPopup by rememberSaveable { mutableStateOf(false) }
     var datePickerState = rememberDatePickerState()
 
     TaskyBaseScreen(
@@ -90,7 +114,19 @@ fun AgendaMainScreen(
                     AgendaSummary(
                         modifier = Modifier,
                         dailySummary = agendaViewState.combinedSummaryList,
-                        dateHeading = agendaViewState.displayDateHeading
+                        dateHeading = agendaViewState.displayDateHeading,
+                        onOpenClick = { itemId, type ->
+                            onAction(MainScreenAction.ItemToOpen(itemId, type))
+                        },
+                        onEditClick = { itemId, type ->
+                            onAction(MainScreenAction.ItemToEdit(itemId, type))
+                        },
+                        onDeleteClick = { itemId, type ->
+                            onAction(MainScreenAction.ItemToDelete(itemId, type))
+                        },
+                        launchPopupMenu = { showSummaryPopup = true },
+                        onDismissRequest = { showSummaryPopup = false },
+                        isExpanded = showSummaryPopup
                     )
                 }
                 Box(

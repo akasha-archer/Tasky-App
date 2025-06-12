@@ -51,7 +51,13 @@ import com.example.taskyapplication.ui.theme.TaskyTypography
 fun AgendaSummary(
     modifier: Modifier = Modifier,
     dateHeading: String,
-    dailySummary: List<AgendaSummary>
+    dailySummary: List<AgendaSummary>,
+    launchPopupMenu: () -> Unit = {},
+    onOpenClick: (String, AgendaItemType) -> Unit,
+    onEditClick: (String, AgendaItemType) -> Unit,
+    onDeleteClick: (String, AgendaItemType) -> Unit,
+    onDismissRequest: () -> Unit = {},
+    isExpanded: Boolean = false
 ) {
     Column(
         modifier = modifier
@@ -75,13 +81,17 @@ fun AgendaSummary(
                     title = item.title,
                     description = item.description,
                     time = item.startTime,
-                    date = item.startDate
+                    date = item.startDate,
+                    launchPopupMenu = { launchPopupMenu() },
+                    onOpenClick = { onOpenClick(item.id, item.type) },
+                    onEditClick = { onEditClick(item.id, item.type) },
+                    onDeleteClick = { onDeleteClick(item.id, item.type) },
+                    onDismissRequest = { onDismissRequest() },
+                    isExpanded = isExpanded
                 )
             }
         }
-
     }
-
 }
 
 @Composable
@@ -157,7 +167,12 @@ fun AgendaItemCard(
     description: String = "item description",
     time: String = "10:00",
     date: String = "May 7",
-    launchPopupMenu: () -> Unit = {}
+    launchPopupMenu: () -> Unit = {},
+    onOpenClick: () -> Unit = {},
+    onEditClick: () -> Unit = {},
+    onDeleteClick: () -> Unit = {},
+    onDismissRequest: () -> Unit = {},
+    isExpanded: Boolean = false
 ) {
     Card(
         modifier = modifier
@@ -190,11 +205,23 @@ fun AgendaItemCard(
                             color = taskyColors.primary
                         )
                     )
-                    Icon(
-                        imageVector = Icons.Filled.MoreVert,
-                        contentDescription = "menu options",
-                        modifier = Modifier.clickable { launchPopupMenu() }
-                    )
+                    Box(
+                        modifier = Modifier
+                    ) {
+                        Icon(
+                            imageVector = Icons.Filled.MoreVert,
+                            contentDescription = "menu options",
+                            modifier = Modifier.clickable { launchPopupMenu() }
+                        )
+                        CardDropDownMenu(
+                            modifier = Modifier,
+                            onOpenClick = onOpenClick,
+                            onEditClick = onEditClick,
+                            onDeleteClick = onDeleteClick,
+                            onDismissRequest = onDismissRequest,
+                            isExpanded = isExpanded
+                        )
+                    }
                 } // end of title row
                 Text(
                     text = description,

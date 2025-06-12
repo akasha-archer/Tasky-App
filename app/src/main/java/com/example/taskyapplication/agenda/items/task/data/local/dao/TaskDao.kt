@@ -4,12 +4,13 @@ import androidx.room.Dao
 import androidx.room.Query
 import androidx.room.Upsert
 import com.example.taskyapplication.agenda.items.task.data.local.entity.TaskEntity
+import kotlinx.coroutines.flow.Flow
 
 @Dao
 interface TaskDao {
 
-    @Query("SELECT * FROM tasks")
-    suspend fun getAllTasks(): List<TaskEntity>
+    @Query("SELECT * FROM tasks WHERE date = :date ORDER BY time ASC")
+    fun getAllTasksForSelectedDate(date: Long): Flow<List<TaskEntity>>
 
     @Query("SELECT * FROM tasks WHERE id = :taskId")
     suspend fun getTaskById(taskId: String): TaskEntity

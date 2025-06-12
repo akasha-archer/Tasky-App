@@ -18,6 +18,7 @@ import com.example.taskyapplication.agenda.items.event.screens.EventDescriptionR
 import com.example.taskyapplication.agenda.items.event.screens.EventDetailRoot
 import com.example.taskyapplication.agenda.items.event.screens.EventEditDateTimeRoot
 import com.example.taskyapplication.agenda.items.event.screens.EventTitleRoot
+import com.example.taskyapplication.agenda.items.main.data.AgendaItemType
 import com.example.taskyapplication.agenda.items.main.presentation.AgendaMainRoot
 import com.example.taskyapplication.agenda.items.reminder.SharedReminderViewModel
 import com.example.taskyapplication.agenda.items.reminder.presentation.screens.ReminderDetailRoot
@@ -41,7 +42,7 @@ fun NavigationRoot(
         modifier = modifier,
         navController = navController,
         startDestination = NavigationRoutes.AgendaScreen
-            //NavigationRoutes.TaskScreen
+        //NavigationRoutes.TaskScreen
 //            when {
 //            isLoggedIn -> NavigationRoutes.AgendaScreen
 //            isUserRegistered -> NavigationRoutes.LoginScreen
@@ -50,13 +51,15 @@ fun NavigationRoot(
     ) {
         // Task screens subgraph
         navigation<NavigationRoutes.TaskEditGraph>(
-            startDestination = NavigationRoutes.TaskDetailScreen
+            startDestination = NavigationRoutes.TaskDetailScreen(null)
         ) {
             composable<NavigationRoutes.TaskDetailScreen> { entry ->
                 val viewmodel = entry.sharedViewModel<SharedTaskViewModel>(navController)
                 TaskDetailRoot(
                     onClickEdit = {
-                        navController.navigate(NavigationRoutes.TaskEditDateTime)
+                        navController.navigate(
+                            NavigationRoutes.TaskEditDateTime(null)
+                        )
                     },
                     onClickClose = {
                         navController.navigate(NavigationRoutes.AgendaScreen)
@@ -79,7 +82,7 @@ fun NavigationRoot(
                     onSelectEditDescription = {
                         navController.navigate(NavigationRoutes.TaskEditDescription)
                     },
-                    taskViewModel = viewmodel
+                    taskViewModel = viewmodel,
                 )
             }
             composable<NavigationRoutes.TaskEditTitle> { entry ->
@@ -110,13 +113,13 @@ fun NavigationRoot(
 
         // Reminder screens subgraph
         navigation<NavigationRoutes.ReminderEditGraph>(
-            startDestination = NavigationRoutes.ReminderDetail
+            startDestination = NavigationRoutes.ReminderDetail(null)
         ) {
             composable<NavigationRoutes.ReminderDetail> { entry ->
                 val viewmodel = entry.sharedViewModel<SharedReminderViewModel>(navController)
                 ReminderDetailRoot(
                     onClickEdit = {
-                        navController.navigate(NavigationRoutes.ReminderDateTime)
+                        navController.navigate(NavigationRoutes.ReminderDateTime(null))
                     },
                     onClickClose = {
                         navController.navigate(NavigationRoutes.AgendaScreen)
@@ -170,13 +173,13 @@ fun NavigationRoot(
 
         // Event screens subgraph
         navigation<NavigationRoutes.EventEditGraph>(
-            startDestination = NavigationRoutes.EventDetail
+            startDestination = NavigationRoutes.EventDetail(null)
         ) {
             composable<NavigationRoutes.EventDetail> { entry ->
                 val viewmodel = entry.sharedViewModel<SharedEventViewModel>(navController)
                 EventDetailRoot(
                     onClickEdit = {
-                        navController.navigate(NavigationRoutes.EventDateTime)
+                        navController.navigate(NavigationRoutes.EventDateTime(null))
                     },
                     onClickClose = {
                         navController.navigate(NavigationRoutes.AgendaScreen)
@@ -267,9 +270,42 @@ fun NavigationRoot(
 
         composable<NavigationRoutes.AgendaScreen> {
             AgendaMainRoot(
-                launchNewEventScreen = { navController.navigate(NavigationRoutes.EventDateTime) },
-                launchNewReminderScreen = { navController.navigate(NavigationRoutes.ReminderDateTime) },
-                launchNewTaskScreen = { navController.navigate(NavigationRoutes.TaskEditDateTime) }
+                launchNewEventScreen = { itemId ->
+                    navController.navigate(NavigationRoutes.EventDateTime(null))
+                },
+                launchNewReminderScreen = { itemId ->
+                    navController.navigate(NavigationRoutes.ReminderDateTime(null))
+                },
+                launchNewTaskScreen = { itemId ->
+                    navController.navigate(NavigationRoutes.TaskEditDateTime(null))
+
+                },
+                openSelectedItem = { itemId, itemType ->
+                    when (itemType) {
+                        AgendaItemType.EVENT -> navController.navigate(
+                            NavigationRoutes.EventDetail(taskId = itemId)
+                        )
+                        AgendaItemType.TASK -> navController.navigate(
+                            NavigationRoutes.TaskDetailScreen(taskId = itemId)
+                        )
+                        AgendaItemType.REMINDER -> navController.navigate(
+                            NavigationRoutes.ReminderDetail(taskId = itemId)
+                        )
+                    }
+                },
+                editSelectedItem = { itemId, itemType ->
+                    when (itemType) {
+                        AgendaItemType.EVENT -> navController.navigate(
+                            NavigationRoutes.EventDateTime(taskId = itemId)
+                        )
+                        AgendaItemType.TASK -> navController.navigate(
+                            NavigationRoutes.TaskEditDateTime(taskId = itemId)
+                        )
+                        AgendaItemType.REMINDER -> navController.navigate(
+                            NavigationRoutes.ReminderDateTime(taskId = itemId)
+                        )
+                    }
+                },
             )
         }
 
@@ -296,16 +332,16 @@ sealed interface NavigationRoutes {
     data object RegisterScreen : NavigationRoutes
 
     @Serializable // route for nested graph for Auth screens that lead to Agenda
-    data object AuthToAgendaGraph: NavigationRoutes
+    data object AuthToAgendaGraph : NavigationRoutes
 
     @Serializable // route for nested graph for Task screens
-    data object TaskEditGraph: NavigationRoutes
+    data object TaskEditGraph : NavigationRoutes
 
     @Serializable // route for nested graph for Task screens
-    data object ReminderEditGraph: NavigationRoutes
+    data object ReminderEditGraph : NavigationRoutes
 
     @Serializable // route for nested graph for Event screens
-    data object EventEditGraph: NavigationRoutes
+    data object EventEditGraph : NavigationRoutes
 
     @Serializable
     data object AgendaScreen : NavigationRoutes
@@ -314,10 +350,10 @@ sealed interface NavigationRoutes {
     data object EventScreen : NavigationRoutes
 
     @Serializable
-    data object TaskDetailScreen : NavigationRoutes
+    data class TaskDetailScreen(val taskId: String?) : NavigationRoutes
 
     @Serializable
-    data object TaskEditDateTime : NavigationRoutes
+    data class TaskEditDateTime(val taskId: String?) : NavigationRoutes
 
     @Serializable
     data object TaskEditTitle : NavigationRoutes
@@ -326,10 +362,10 @@ sealed interface NavigationRoutes {
     data object TaskEditDescription : NavigationRoutes
 
     @Serializable
-    data object ReminderDetail : NavigationRoutes
+    data class ReminderDetail(val taskId: String?) : NavigationRoutes
 
     @Serializable
-    data object ReminderDateTime : NavigationRoutes
+    data class ReminderDateTime(val taskId: String?) : NavigationRoutes
 
     @Serializable
     data object ReminderEditDescription : NavigationRoutes
@@ -338,10 +374,10 @@ sealed interface NavigationRoutes {
     data object ReminderEditTitle : NavigationRoutes
 
     @Serializable
-    data object EventDetail : NavigationRoutes
+    data class EventDetail(val taskId: String?) : NavigationRoutes
 
     @Serializable
-    data object EventDateTime : NavigationRoutes
+    data class EventDateTime(val taskId: String?) : NavigationRoutes
 
     @Serializable
     data object EventEditDescription : NavigationRoutes

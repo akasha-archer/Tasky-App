@@ -11,7 +11,7 @@ data class CreatedEventResponse(
     val to: Long,
     val remindAt: Long,
     val host: String,
-    val attendees: List<CreatedEventAttendeeResponse>,
+    val attendees: List<AttendeeResponse>,
     val photos: List<EventPhotoResponse>
 )
 
@@ -25,7 +25,7 @@ data class UpdatedEventResponse(
     val remindAt: Long,
     val host: String,
     val isUserEventCreator: Boolean,
-    val attendees: List<UpdatedEventAttendeeResponse>,
+    val attendees: List<AttendeeResponse>,
     val photos: List<EventPhotoResponse>
 )
 
@@ -39,33 +39,33 @@ data class FetchedEventResponse(
     val remindAt: Long,
     val host: String,
     val isUserEventCreator: Boolean,
-    val attendees: List<FetchedEventAttendeeResponse>,
+    val attendees: List<AttendeeResponse>,
     val photos: List<EventPhotoResponse>
 )
 
-@Serializable
-data class FetchedEventAttendeeResponse(
-    val email: String,
-    val fullName: String,
-    val userId: String,
-    val eventId: String,
-    val isGoing: Boolean,
-    val remindAt: Long
-)
+//@Serializable
+//data class FetchedEventAttendeeResponse(
+//    val email: String,
+//    val fullName: String,
+//    val userId: String,
+//    val eventId: String,
+//    val isGoing: Boolean,
+//    val remindAt: Long
+//)
+
+//@Serializable
+//data class UpdatedEventAttendeeResponse(
+//    val email: String,
+//    val fullName: String,
+//    val userId: String,
+//    val eventId: String,
+//    val isGoing: Boolean,
+//    val remindAt: Long
+//)
+
 
 @Serializable
-data class UpdatedEventAttendeeResponse(
-    val email: String,
-    val fullName: String,
-    val userId: String,
-    val eventId: String,
-    val isGoing: Boolean,
-    val remindAt: Long
-)
-
-
-@Serializable
-data class CreatedEventAttendeeResponse(
+data class AttendeeResponse(
     val email: String,
     val fullName: String,
     val userId: String,

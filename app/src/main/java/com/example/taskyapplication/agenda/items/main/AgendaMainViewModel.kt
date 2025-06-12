@@ -3,19 +3,15 @@ package com.example.taskyapplication.agenda.items.main
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.taskyapplication.agenda.domain.toDateAsString
-import com.example.taskyapplication.agenda.domain.toDayMonthAsString
 import com.example.taskyapplication.agenda.items.main.data.AgendaEventSummary
-import com.example.taskyapplication.agenda.items.main.data.AgendaItemsResponse
+import com.example.taskyapplication.agenda.items.main.data.AgendaItemType
 import com.example.taskyapplication.agenda.items.main.data.AgendaReminderSummary
 import com.example.taskyapplication.agenda.items.main.data.AgendaSummary
 import com.example.taskyapplication.agenda.items.main.data.AgendaTaskSummary
-import com.example.taskyapplication.agenda.items.main.data.toAgendaEventSummary
-import com.example.taskyapplication.agenda.items.main.data.toAgendaReminderSummary
-import com.example.taskyapplication.agenda.items.main.data.toAgendaTaskSummary
+import com.example.taskyapplication.agenda.items.main.domain.AgendaOfflineFirstRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
-import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.onStart
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
@@ -25,8 +21,9 @@ import javax.inject.Inject
 
 @HiltViewModel
 class AgendaMainViewModel @Inject constructor(
-
-): ViewModel() {
+    private val repository: AgendaOfflineFirstRepository,
+    private val commonDataProvider: AgendaCommonDataProvider
+) : ViewModel() {
 
     private val _agendaViewState = MutableStateFlow(AgendaMainViewState())
     val agendaViewState = _agendaViewState
@@ -37,37 +34,49 @@ class AgendaMainViewModel @Inject constructor(
             initialValue = AgendaMainViewState(),
         )
 
-    private val _fetchAgendaResponse = MutableStateFlow(
-        AgendaItemsResponse(
-        events = emptyList(),
-        tasks = emptyList(),
-        reminders = emptyList()
-    ))
-    val fetchAgendaResponse = _fetchAgendaResponse.asStateFlow()
-
     private fun buildAgendaListForDate(selectedDate: Long) {
         viewModelScope.launch {
-            val fullAgenda = _fetchAgendaResponse.value
-            _agendaViewState.update {
-                it.copy(
-                    displayDateHeading = selectedDate.toDateAsString().ifEmpty { "Today" },
-                    todayEvents = fullAgenda.events.map { event -> event.toAgendaEventSummary() }.filter { it.startDate == selectedDate.toDayMonthAsString() },
-                    todayTasks = fullAgenda.tasks.map { task -> task.toAgendaTaskSummary() }.filter { it.startDate == selectedDate.toDayMonthAsString() },
-                    todayReminders = fullAgenda.reminders.map { reminder -> reminder.toAgendaReminderSummary() }.filter { it.startDate == selectedDate.toDayMonthAsString() },
-                    combinedSummaryList = _agendaViewState.value.todayEvents + _agendaViewState.value.todayTasks + _agendaViewState.value.todayReminders
-                )
-            }
+            commonDataProvider.buildAgendaForSelectedDate(selectedDate)
+                .collect { (tasks, reminders) ->
+                    _agendaViewState.update {
+                        it.copy(
+                            displayDateHeading = showSelectedDate(selectedDate),
+                            selectedTasks = tasks,
+                            selectedReminders = reminders,
+                            combinedSummaryList = _agendaViewState.value.selectedTasks + _agendaViewState.value.selectedReminders
+                        )
+                    }
+                }
         }
     }
 
-    private fun fetchFullAgenda() {
+    private fun showSelectedDate(selectedDate: Long): String {
+        return when (selectedDate) {
+            LocalDate.now().toEpochDay() -> "Today"
+            LocalDate.now().plusDays(1).toEpochDay() -> "Tomorrow"
+            LocalDate.now().minusDays(1).toEpochDay() -> "Yesterday"
+            else -> selectedDate.toDateAsString()
+        }
+    }
+
+    private fun logoutUser() {
         viewModelScope.launch {
-            // repository fetchAgenda
-            // fetchAgendaResponse.update
+            commonDataProvider.logout()
         }
     }
 
-    private fun logoutUser() {}
+    private fun deleteAgendaItem(itemId: String, type: AgendaItemType) {
+        viewModelScope.launch {
+            commonDataProvider.deleteItemByType(type, itemId)
+        }
+    }
+
+    private fun getAgendaItem(itemId: String, type: AgendaItemType) {
+        viewModelScope.launch {
+            commonDataProvider.getItemByType(type, itemId)
+        }
+
+    }
 
     fun executeAgendaActions(action: MainScreenAction) {
         when (action) {
@@ -75,13 +84,24 @@ class AgendaMainViewModel @Inject constructor(
                 _agendaViewState.value = _agendaViewState.value.copy(
                     selectedDate = action.selectedDate
                 )
-                buildAgendaListForDate(action.selectedDate)
+                buildAgendaListForDate(_agendaViewState.value.selectedDate)
             }
-            is MainScreenAction.LaunchItemMenu -> {
-                // try show/hide state in composable
-            }
-            MainScreenAction.LogoutUser -> { logoutUser() }
 
+            is MainScreenAction.ItemToDelete -> {
+                deleteAgendaItem(action.itemId, action.type)
+            }
+
+            is MainScreenAction.ItemToEdit -> {
+                getAgendaItem(action.itemId, action.type)
+            }
+
+            is MainScreenAction.ItemToOpen -> {
+                getAgendaItem(action.itemId, action.type)
+            }
+
+            MainScreenAction.LogoutUser -> {
+                logoutUser()
+            }
         }
     }
 }
@@ -89,8 +109,8 @@ class AgendaMainViewModel @Inject constructor(
 data class AgendaMainViewState(
     val displayDateHeading: String = "Today",
     val selectedDate: Long = LocalDate.now().toEpochDay(),
-    val todayEvents: List<AgendaEventSummary> = emptyList(),
-    val todayTasks: List<AgendaTaskSummary> = emptyList(),
-    val todayReminders: List<AgendaReminderSummary> = emptyList(),
+    val selectedEvents: List<AgendaEventSummary> = emptyList(),
+    val selectedTasks: List<AgendaTaskSummary> = emptyList(),
+    val selectedReminders: List<AgendaReminderSummary> = emptyList(),
     val combinedSummaryList: List<AgendaSummary> = emptyList()
 )

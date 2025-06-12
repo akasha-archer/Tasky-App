@@ -7,6 +7,12 @@ import com.example.taskyapplication.agenda.items.event.domain.EventRemoteDataSou
 import com.example.taskyapplication.agenda.items.event.domain.EventRemoteDataSourceImpl
 import com.example.taskyapplication.agenda.items.event.domain.EventRepository
 import com.example.taskyapplication.agenda.items.event.network.EventApiService
+import com.example.taskyapplication.agenda.items.main.domain.AgendaItemsRemoteDataSource
+import com.example.taskyapplication.agenda.items.main.domain.AgendaLocalDataSource
+import com.example.taskyapplication.agenda.items.main.domain.AgendaOfflineFirstRepository
+import com.example.taskyapplication.agenda.items.main.domain.AgendaRemoteDataSource
+import com.example.taskyapplication.agenda.items.main.domain.AgendaRepository
+import com.example.taskyapplication.agenda.items.main.domain.network.AgendaApiService
 import com.example.taskyapplication.agenda.items.reminder.domain.ReminderLocalDataSource
 import com.example.taskyapplication.agenda.items.reminder.domain.ReminderOfflineFirstRepository
 import com.example.taskyapplication.agenda.items.reminder.domain.ReminderRemoteDataSource
@@ -56,6 +62,40 @@ object AgendaNetworkModule {
     fun providesCoroutineScope(): CoroutineScope {
         return CoroutineScope(SupervisorJob() + Dispatchers.Default)
     }
+
+    // AGENDA SCREEN
+    @Singleton
+    @Provides
+    fun provideAgendaApi(): AgendaApiService {
+        return Retrofit.Builder()
+            .baseUrl(BuildConfig.BASE_URL)
+            .client(provideAgendaOkHttpClient())
+            .addConverterFactory(
+                json.asConverterFactory(
+                    "application/json".toMediaType()
+                )
+            )
+            .build()
+            .create(AgendaApiService::class.java)
+    }
+
+    @Singleton
+    @Provides
+    fun provideAgendaRemoteDataSource(
+        apiService: AgendaApiService
+    ): AgendaRemoteDataSource = AgendaItemsRemoteDataSource(apiService)
+
+    @Singleton
+    @Provides
+    fun provideAgendaRepository(
+        localDataSource: AgendaLocalDataSource,
+        remoteDataSource: AgendaRemoteDataSource,
+//        scope: CoroutineScope
+    ): AgendaRepository =
+        AgendaOfflineFirstRepository(
+            localDataSource,
+            remoteDataSource
+        )
 
     // EVENTS
     @Singleton

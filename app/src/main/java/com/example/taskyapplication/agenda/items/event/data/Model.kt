@@ -1,6 +1,5 @@
 package com.example.taskyapplication.agenda.items.event.data
 
-import android.net.Uri
 import kotlinx.serialization.Serializable
 
 @Serializable
@@ -35,8 +34,4 @@ data class Attendee(
     val eventId: String,
     val isGoing: Boolean,
     val remindAt: Long
-)
-
-data class NetworkPhotoDto(
-    val photos: List<Uri> = emptyList()
 )

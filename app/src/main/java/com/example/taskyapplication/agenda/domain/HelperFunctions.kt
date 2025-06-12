@@ -19,6 +19,44 @@ fun String.toInitials(): String {
     return this.split(" ").mapNotNull { it.firstOrNull()?.toString() }.reduce { acc, s -> acc + s }
 }
 
+//Combine date and time strings to convert to long
+fun convertDateAndTimeStringsToLong(
+    timeString: String,
+    dateString: String
+): Long {
+    val combined = "$dateString $timeString"
+    return LocalDateTime.parse(
+        combined,
+        DateTimeFormatter.ofPattern("dd MMM yyyy h:mm a")
+    ).atZone(ZoneId.systemDefault())
+        .toInstant().toEpochMilli()
+}
+
+// Convert time Response to LocalDateTime Object
+fun Long.toDateTime(): LocalDateTime = LocalDateTime.ofInstant(
+    Instant.ofEpochMilli(this),
+    ZoneId.systemDefault()
+)
+
+// Extract date from LocalDateTime object and format as String
+fun LocalDateTime.toFormattedDate(): String =
+    this.toLocalDate()
+        .format(
+            DateTimeFormatter.ofPattern(
+                "dd MMM yyyy"
+            )
+        )
+
+// Extract time from LocalDateTime object and format as String
+fun LocalDateTime.toFormattedTime(): String =
+    this.toLocalTime()
+        .format(
+            DateTimeFormatter.ofPattern(
+                "h:mm a"
+            )
+        )
+
+
 fun combineDateAndTime(date: String, time: String): Long {
     val dateTime = LocalDateTime.of(
         LocalDate.parse(
@@ -35,16 +73,21 @@ fun calculateNotificationTime(reminderTime: Long, startTime: Long) = startTime -
 fun Long.toDayMonthAsString(): String =
     LocalDate.ofInstant(Instant.ofEpochMilli(this), ZoneId.systemDefault())
         .format(DateTimeFormatter.ofPattern("dd MMM"))
+//
+//fun Long.toDateAsString(): String {
+//    val dateToConvert = if (this < System.currentTimeMillis()) {
+//        System.currentTimeMillis()
+//    } else {
+//        this
+//    }
+//
+//    return if (dateToConvert == System.currentTimeMillis()) "Today" else
+//     LocalDate.ofInstant(Instant.ofEpochMilli(dateToConvert), ZoneId.systemDefault())
+//        .format(DateTimeFormatter.ofPattern("dd MMM yyyy"))
+//}
 
 fun Long.toDateAsString(): String {
-    val dateToConvert = if (this < System.currentTimeMillis()) {
-        System.currentTimeMillis()
-    } else {
-        this
-    }
-
-    return if (dateToConvert == System.currentTimeMillis()) "Today" else
-     LocalDate.ofInstant(Instant.ofEpochMilli(dateToConvert), ZoneId.systemDefault())
+    return LocalDate.ofInstant(Instant.ofEpochMilli(this), ZoneId.systemDefault())
         .format(DateTimeFormatter.ofPattern("dd MMM yyyy"))
 }
 
@@ -54,7 +97,7 @@ fun Long.toTimeAsString(): String =
         .format(DateTimeFormatter.ofPattern("h:mm a"))
 
 fun String.timeAsLong(): Long {
-    val simpleDate = SimpleDateFormat("HH:mm", Locale.getDefault())
+    val simpleDate = SimpleDateFormat("h:mm a", Locale.getDefault())
     return simpleDate.parse(this)?.time
         ?: throw IllegalArgumentException("Invalid time string or pattern")
 }
@@ -109,10 +152,11 @@ fun buildAgendaScreenCalendar(): List<AgendaScreenCalendarList> {
 //        dateList.add(Pair(date.format(dayFormatter), date.format(dateFormatter)))
         dateListWithDate.add(
             AgendaScreenCalendarList(
-            dayOfWeek = date.format(dayFormatter),
-            dayOfMonth = date.format(dateFormatter),
-            dateValue = date.toEpochDay()
-        ))
+                dayOfWeek = date.format(dayFormatter),
+                dayOfMonth = date.format(dateFormatter),
+                dateValue = date.toEpochDay()
+            )
+        )
     }
     return dateListWithDate
 }

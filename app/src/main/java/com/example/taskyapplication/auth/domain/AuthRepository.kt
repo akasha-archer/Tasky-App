@@ -122,6 +122,7 @@ class AuthRepositoryImpl @Inject constructor(
             authApiService.logoutUser()
         }.onSuccess {
             authTokenManager.clearRefreshToken()
+            // clear database tables
         }
     }
 }

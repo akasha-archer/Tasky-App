@@ -25,12 +25,12 @@ data class TaskUiState(
     val isDeletingItem: Boolean = false
 )
 
-fun TaskDto.toTaskUiState() = TaskUiState(
-    id = id,
-    title = title,
-    description = description,
-    time = time,
-    date = date,
-    remindAt = remindAt,
-    isDone = isDone
-)
+//fun TaskDto.toTaskUiState() = TaskUiState(
+//    id = id,
+//    title = title,
+//    description = description,
+//    time = time,
+//    date = date,
+//    remindAt = remindAt,
+//    isDone = isDone
+//)

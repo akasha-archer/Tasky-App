@@ -12,7 +12,7 @@ import javax.inject.Inject
 
 interface ReminderRemoteDataSource {
     suspend fun getReminder(reminderId: String): Result<ReminderResponse, DataError.Network>
-    suspend fun postReminder(reminder: ReminderNetworkModel): EmptyResult<DataError>
+    suspend fun createReminder(reminder: ReminderNetworkModel): EmptyResult<DataError>
     suspend fun updateReminder(reminder: UpdateReminderNetworkModel): EmptyResult<DataError>
     suspend fun deleteReminder(reminderId: String): EmptyResult<DataError>
 }
@@ -27,7 +27,7 @@ class ReminderRemoteDataSourceImpl @Inject constructor(
         }
     }
 
-    override suspend fun postReminder(reminder: ReminderNetworkModel): EmptyResult<DataError> {
+    override suspend fun createReminder(reminder: ReminderNetworkModel): EmptyResult<DataError> {
         return safeApiCall {
             reminderApiService.createNewReminder(reminder)
         }
