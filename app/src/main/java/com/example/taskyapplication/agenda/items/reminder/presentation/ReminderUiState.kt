@@ -3,8 +3,6 @@ package com.example.taskyapplication.agenda.items.reminder.presentation
 import com.example.taskyapplication.agenda.data.model.ReminderOptions
 import java.time.LocalDate
 import java.time.LocalTime
-import java.time.format.DateTimeFormatter
-import java.time.format.FormatStyle
 
 data class ReminderUiState(
     val id: String = "",

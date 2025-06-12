@@ -40,8 +40,6 @@ import com.example.taskyapplication.agenda.items.event.SharedEventViewModel
 import com.example.taskyapplication.agenda.items.event.components.PhotoRow
 import com.example.taskyapplication.agenda.items.event.components.PhotoRowEmptyState
 import com.example.taskyapplication.agenda.items.event.components.VisitorHeader
-import com.example.taskyapplication.agenda.items.event.data.AttendeeResponse
-import com.example.taskyapplication.agenda.items.event.data.VerifyAttendeeResponse
 import com.example.taskyapplication.agenda.items.event.domain.EventImageItem
 import com.example.taskyapplication.agenda.items.event.presentation.EventUiState
 import com.example.taskyapplication.agenda.presentation.components.AgendaDescriptionText

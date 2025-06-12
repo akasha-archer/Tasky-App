@@ -1,11 +1,8 @@
 package com.example.taskyapplication.agenda.items.task.presentation
 
 import com.example.taskyapplication.agenda.data.model.ReminderOptions
-import com.example.taskyapplication.agenda.items.task.domain.TaskDto
 import java.time.LocalDate
 import java.time.LocalTime
-import java.time.format.DateTimeFormatter
-import java.time.format.FormatStyle
 
 data class TaskUiState(
     val id: String = "",
