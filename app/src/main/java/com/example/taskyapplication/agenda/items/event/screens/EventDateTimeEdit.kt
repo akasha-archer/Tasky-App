@@ -169,7 +169,7 @@ fun EventDateTimeScreen(
     val combinedImageList = urlItems + uriItems
 
     val photoLauncher = rememberLauncherForActivityResult(
-        contract = ActivityResultContracts.PickMultipleVisualMedia(),
+        contract = ActivityResultContracts.PickMultipleVisualMedia(maxItems = 10),
         onResult = { uris ->
             selectedImageUris = uris
         }

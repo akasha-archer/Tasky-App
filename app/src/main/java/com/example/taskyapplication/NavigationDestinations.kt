@@ -279,29 +279,29 @@ fun NavigationRoot(
 
                 },
                 openSelectedItem = { itemId, itemType ->
-                    navController.previousBackStackEntry?.savedStateHandle?.set("itemId", itemId)
+//                    navController.previousBackStackEntry?.savedStateHandle?.set("itemId", itemId)
                     when (itemType) {
                         AgendaItemType.EVENT -> navController.navigate(
-                            NavigationRoutes.EventDetail(taskId = itemId)
+                            NavigationRoutes.EventDetail(eventId = itemId)
                         )
                         AgendaItemType.TASK -> navController.navigate(
                             NavigationRoutes.TaskDetailScreen(taskId = itemId)
                         )
                         AgendaItemType.REMINDER -> navController.navigate(
-                            NavigationRoutes.ReminderDetail(taskId = itemId)
+                            NavigationRoutes.ReminderDetail(reminderId = itemId)
                         )
                     }
                 },
                 editSelectedItem = { itemId, itemType ->
                     when (itemType) {
                         AgendaItemType.EVENT -> navController.navigate(
-                            NavigationRoutes.EventDateTime(taskId = itemId)
+                            NavigationRoutes.EventDateTime(eventId = itemId)
                         )
                         AgendaItemType.TASK -> navController.navigate(
                             NavigationRoutes.TaskEditDateTime(taskId = itemId)
                         )
                         AgendaItemType.REMINDER -> navController.navigate(
-                            NavigationRoutes.ReminderDateTime(taskId = itemId)
+                            NavigationRoutes.ReminderDateTime(reminderId = itemId)
                         )
                     }
                 },
@@ -361,10 +361,10 @@ sealed interface NavigationRoutes {
     data object TaskEditDescription : NavigationRoutes
 
     @Serializable
-    data class ReminderDetail(val taskId: String?) : NavigationRoutes
+    data class ReminderDetail(val reminderId: String?) : NavigationRoutes
 
     @Serializable
-    data class ReminderDateTime(val taskId: String?) : NavigationRoutes
+    data class ReminderDateTime(val reminderId: String?) : NavigationRoutes
 
     @Serializable
     data object ReminderEditDescription : NavigationRoutes
@@ -373,10 +373,10 @@ sealed interface NavigationRoutes {
     data object ReminderEditTitle : NavigationRoutes
 
     @Serializable
-    data class EventDetail(val taskId: String?) : NavigationRoutes
+    data class EventDetail(val eventId: String?) : NavigationRoutes
 
     @Serializable
-    data class EventDateTime(val taskId: String?) : NavigationRoutes
+    data class EventDateTime(val eventId: String?) : NavigationRoutes
 
     @Serializable
     data object EventEditDescription : NavigationRoutes

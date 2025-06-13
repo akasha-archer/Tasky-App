@@ -1,6 +1,5 @@
 package com.example.taskyapplication.agenda.items.event.presentation
 
-import android.net.Uri
 import com.example.taskyapplication.agenda.data.model.ReminderOptions
 import com.example.taskyapplication.agenda.items.event.data.db.AttendeeEntity
 import java.time.LocalDate
@@ -13,7 +12,6 @@ data class EventUiState(
     val title: String = "Edit your title",
     val description: String = "Edit your description",
     val photos: List<String> = emptyList(),
-    val networkPhotos: List<Uri> = emptyList(),
     val attendeeIds: List<String> = emptyList(),
     val attendeeList: List<AttendeeEntity> = emptyList(),
     val deletedPhotoKeys: List<String> = emptyList(),

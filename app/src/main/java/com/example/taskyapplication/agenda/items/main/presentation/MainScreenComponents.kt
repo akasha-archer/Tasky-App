@@ -200,8 +200,8 @@ fun AgendaItemCard(
                 ) {
                     Text(
                         text = title,
-                        style = TaskyTypography.headlineLarge.copy(
-                            color = taskyColors.primary
+                        style = TaskyTypography.headlineMedium.copy(
+                            color = taskyColors.primary,
                         )
                     )
                     Box(

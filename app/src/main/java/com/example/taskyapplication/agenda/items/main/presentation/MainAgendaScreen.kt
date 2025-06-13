@@ -26,6 +26,7 @@ import com.example.taskyapplication.agenda.items.main.AgendaMainViewModel
 import com.example.taskyapplication.agenda.items.main.AgendaMainViewState
 import com.example.taskyapplication.agenda.items.main.MainScreenAction
 import com.example.taskyapplication.agenda.items.main.data.AgendaItemType
+import com.example.taskyapplication.agenda.items.reminder.SharedReminderViewModel
 import com.example.taskyapplication.agenda.items.task.SharedTaskViewModel
 import com.example.taskyapplication.agenda.presentation.components.TaskyDatePicker
 import java.time.LocalDate
@@ -40,6 +41,7 @@ fun AgendaMainRoot(
     editSelectedItem: (String, AgendaItemType) -> Unit,
     viewModel: AgendaMainViewModel = hiltViewModel(),
     taskViewModel: SharedTaskViewModel = hiltViewModel(),
+    reminderViewModel: SharedReminderViewModel = hiltViewModel()
 ) {
     val viewState by viewModel.agendaViewState.collectAsStateWithLifecycle()
 
@@ -54,12 +56,16 @@ fun AgendaMainRoot(
         },
         onItemAction = { itemAction ->
             when(itemAction) {
-                is AgendaItemAction.OpenExistingItem -> {
-                    openSelectedItem(itemAction.id, itemAction.type)
+                is AgendaItemAction.OpenExistingReminder -> {
+                    openSelectedItem(itemAction.id, AgendaItemType.REMINDER)
+                }
+                is AgendaItemAction.OpenExistingTask -> {
+                    openSelectedItem(itemAction.id, AgendaItemType.TASK)
                 }
                 else -> Unit
             }
             taskViewModel.executeActions(itemAction)
+            reminderViewModel.executeActions(itemAction)
         },
         onAction = { action ->
             when (action) {
@@ -139,8 +145,16 @@ fun AgendaMainScreen(
                                 "open item clicked id $itemId type is $type",
                                 Toast.LENGTH_SHORT).show()
 
+                            when(type) {
+                                AgendaItemType.EVENT -> {}
+                                AgendaItemType.REMINDER -> {
+                                    onItemAction(AgendaItemAction.OpenExistingReminder(itemId))
+                                }
+                                AgendaItemType.TASK -> {
+                                    onItemAction(AgendaItemAction.OpenExistingTask(itemId))
+                                }
+                            }
                             // use action from agendatype?
-                            onItemAction(AgendaItemAction.OpenExistingItem(itemId, type))
                             onAction(MainScreenAction.ItemToOpen(itemId, type))
                         },
                         onEditClick = { itemId, type ->

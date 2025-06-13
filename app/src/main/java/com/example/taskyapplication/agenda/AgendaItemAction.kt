@@ -7,7 +7,9 @@ import java.time.LocalTime
 
 sealed interface AgendaItemAction {
 
-    data class OpenExistingItem(val id: String, val type: AgendaItemType): AgendaItemAction
+    data class EditExistingItem(val id: String, val type: AgendaItemType): AgendaItemAction
+    data class OpenExistingTask(val id: String): AgendaItemAction
+    data class OpenExistingReminder(val id: String): AgendaItemAction
     data class SetTitle(val title: String): AgendaItemAction
     data class SetDescription(val description: String): AgendaItemAction
     data class SetTime(val time: LocalTime): AgendaItemAction

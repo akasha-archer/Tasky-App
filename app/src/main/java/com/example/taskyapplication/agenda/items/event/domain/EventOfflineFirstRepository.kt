@@ -48,7 +48,6 @@ class EventOfflineFirstRepository @Inject constructor(
         return localDataSource.getAttendeesForEvent(eventId)
     }
 
-
     override suspend fun createNewEvent(
         createEventNetworkModel: CreateEventNetworkModel,
         photos: List<MultipartBody.Part>
@@ -63,6 +62,8 @@ class EventOfflineFirstRepository @Inject constructor(
             }
 
             is Result.Success -> {
+                // save event entity
+                // save photos as photo entity
                 TODO("insert to local db")
             }
         }

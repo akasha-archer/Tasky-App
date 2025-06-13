@@ -158,7 +158,9 @@ class SharedTaskViewModel @Inject constructor(
     fun executeActions(action: AgendaItemAction) {
         when (action) {
             AgendaItemAction.SaveAgendaItemUpdates -> createOrUpdateTask()
-            is AgendaItemAction.OpenExistingItem -> {
+            is AgendaItemAction.OpenExistingReminder -> { Unit }
+            is AgendaItemAction.OpenExistingTask -> { loadExistingTask(action.id) }
+            is AgendaItemAction.EditExistingItem -> {
                 loadExistingTask(action.id)
             }
             is AgendaItemAction.SetTitle -> {

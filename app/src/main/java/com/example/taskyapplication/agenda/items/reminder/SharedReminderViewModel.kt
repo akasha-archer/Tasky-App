@@ -1,10 +1,12 @@
 package com.example.taskyapplication.agenda.items.reminder
 
+import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.taskyapplication.agenda.AgendaItemAction
 import com.example.taskyapplication.agenda.common.AgendaItemEvent
 import com.example.taskyapplication.agenda.items.reminder.data.models.toReminderNetworkModel
+import com.example.taskyapplication.agenda.items.reminder.data.models.toReminderUiState
 import com.example.taskyapplication.agenda.items.reminder.data.models.toUpdateReminderNetworkModel
 import com.example.taskyapplication.agenda.items.reminder.domain.ReminderRepository
 import com.example.taskyapplication.agenda.items.reminder.presentation.ReminderUiState
@@ -23,8 +25,16 @@ import javax.inject.Inject
 
 @HiltViewModel
 class SharedReminderViewModel @Inject constructor(
-    private val reminderRepository: ReminderRepository
+    private val reminderRepository: ReminderRepository,
+    savedStateHandle: SavedStateHandle
 ) : ViewModel() {
+
+    private val reminderId: String? = savedStateHandle.get<String>("reminderId")
+    init {
+        if (reminderId != null) {
+            loadExistingReminder(reminderId)
+        }
+    }
 
     private val agendaEventChannel = Channel<AgendaItemEvent>()
     val agendaEvents = agendaEventChannel.receiveAsFlow()
@@ -35,7 +45,12 @@ class SharedReminderViewModel @Inject constructor(
         started = SharingStarted.WhileSubscribed(5000L),
         initialValue = ReminderUiState()
     )
-
+    private fun loadExistingReminder(reminderId: String) {
+        viewModelScope.launch {
+            val requestedTask = reminderRepository.getReminderById(reminderId)
+            _reminderUiState.value = requestedTask.toReminderUiState()
+        }
+    }
     private fun isNewReminder(currentId: String) = currentId.isEmpty() || currentId.isBlank()
 
     private fun createOrUpdateReminder() {
@@ -140,6 +155,13 @@ class SharedReminderViewModel @Inject constructor(
     fun executeActions(action: AgendaItemAction) {
         when (action) {
             AgendaItemAction.SaveAgendaItemUpdates -> { createOrUpdateReminder() }
+            is AgendaItemAction.EditExistingItem -> {
+                loadExistingReminder(action.id)
+            }
+            is AgendaItemAction.OpenExistingReminder -> {
+                loadExistingReminder(action.id)
+            }
+            is AgendaItemAction.OpenExistingTask -> { Unit }
             is AgendaItemAction.SetTitle -> {
                 viewModelScope.launch {
                     _reminderUiState.update { it.copy(title = action.title) }
@@ -239,8 +261,6 @@ class SharedReminderViewModel @Inject constructor(
                     it.copy(isEditingItem = false)
                 }
             }
-
-            is AgendaItemAction.OpenExistingItem -> TODO()
         }
     }
 }
