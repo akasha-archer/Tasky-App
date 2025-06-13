@@ -6,6 +6,7 @@ import com.example.taskyapplication.agenda.items.reminder.data.db.ReminderEntity
 import com.example.taskyapplication.agenda.items.task.data.local.entity.TaskEntity
 import kotlinx.serialization.Serializable
 import java.time.LocalDate
+import java.time.LocalTime
 
 @Serializable
 data class FullAgendaResponse(
@@ -24,8 +25,8 @@ interface AgendaSummary {
     val id: String
     val description: String
     val title: String
-    val startDate: String
-    val startTime: String
+    val startDate: LocalDate
+    val startTime: LocalTime
     val type: AgendaItemType
 }
 
@@ -33,8 +34,8 @@ data class AgendaTaskSummary(
     override val id: String = "",
     override val description: String = "",
     override val title: String = "",
-    override val startDate: String = "",
-    override val startTime: String = "",
+    override val startDate: LocalDate = LocalDate.now(),
+    override val startTime: LocalTime = LocalTime.now(),
     override val type: AgendaItemType = AgendaItemType.TASK,
     val isDone: Boolean = false
 ): AgendaSummary
@@ -43,8 +44,8 @@ data class AgendaEventSummary(
     override val id: String = "",
     override val description: String = "",
     override val title: String = "",
-    override val startDate: String = "",
-    override val startTime: String = "",
+    override val startDate: LocalDate = LocalDate.now(),
+    override val startTime: LocalTime = LocalTime.now(),
     override val type: AgendaItemType = AgendaItemType.EVENT,
     val isAttendee: Boolean = false,
 ): AgendaSummary
@@ -54,8 +55,8 @@ data class AgendaReminderSummary(
     override val id: String = "",
     override val description: String = "",
     override val title: String = "",
-    override val startDate: String = "",
-    override val startTime: String = "",
+    override val startDate: LocalDate = LocalDate.now(),
+    override val startTime: LocalTime = LocalTime.now(),
     override val type: AgendaItemType = AgendaItemType.REMINDER,
 ): AgendaSummary
 

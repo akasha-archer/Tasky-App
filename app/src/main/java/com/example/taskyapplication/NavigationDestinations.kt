@@ -41,13 +41,11 @@ fun NavigationRoot(
     NavHost(
         modifier = modifier,
         navController = navController,
-        startDestination = NavigationRoutes.AgendaScreen
-        //NavigationRoutes.TaskScreen
-//            when {
-//            isLoggedIn -> NavigationRoutes.AgendaScreen
-//            isUserRegistered -> NavigationRoutes.LoginScreen
-//            else -> NavigationRoutes.RegisterScreen
-//        }
+        startDestination = when {
+            isLoggedIn -> NavigationRoutes.AgendaScreen
+            isUserRegistered -> NavigationRoutes.LoginScreen
+            else -> NavigationRoutes.RegisterScreen
+        }
     ) {
         // Task screens subgraph
         navigation<NavigationRoutes.TaskEditGraph>(
@@ -281,6 +279,7 @@ fun NavigationRoot(
 
                 },
                 openSelectedItem = { itemId, itemType ->
+                    navController.previousBackStackEntry?.savedStateHandle?.set("itemId", itemId)
                     when (itemType) {
                         AgendaItemType.EVENT -> navController.navigate(
                             NavigationRoutes.EventDetail(taskId = itemId)
@@ -294,6 +293,7 @@ fun NavigationRoot(
                     }
                 },
                 editSelectedItem = { itemId, itemType ->
+                    navController.previousBackStackEntry?.savedStateHandle?.set("itemId", itemId)
                     when (itemType) {
                         AgendaItemType.EVENT -> navController.navigate(
                             NavigationRoutes.EventDateTime(taskId = itemId)

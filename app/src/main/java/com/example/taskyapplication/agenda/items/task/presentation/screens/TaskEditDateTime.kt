@@ -31,8 +31,10 @@ import com.example.taskyapplication.TaskyBaseScreen
 import com.example.taskyapplication.agenda.AgendaItemAction
 import com.example.taskyapplication.agenda.common.AgendaItemEvent
 import com.example.taskyapplication.agenda.data.model.ReminderOptions
+import com.example.taskyapplication.agenda.domain.asLocalDateValue
 import com.example.taskyapplication.agenda.domain.getReminderOption
 import com.example.taskyapplication.agenda.domain.toDateAsString
+import com.example.taskyapplication.agenda.domain.toTimeAsString
 import com.example.taskyapplication.agenda.items.task.SharedTaskViewModel
 import com.example.taskyapplication.agenda.items.task.presentation.TaskUiState
 import com.example.taskyapplication.agenda.presentation.components.AgendaDescriptionText
@@ -51,6 +53,8 @@ import com.example.taskyapplication.domain.utils.ObserveAsEvents
 import com.example.taskyapplication.main.presentation.components.TaskyScaffold
 import com.example.taskyapplication.ui.theme.TaskyDesignSystem.Companion.taskyColors
 import com.example.taskyapplication.ui.theme.TaskyTypography
+import java.time.LocalDate
+import java.time.LocalTime
 
 @Composable
 fun TaskEditDateTimeRoot(
@@ -151,11 +155,6 @@ fun TaskEditDateTimeScreen(
     val timePickerState = rememberTimePickerState(
         is24Hour = false
     )
-    val timeOfDay = if (timePickerState.isAfternoon) "PM" else "AM"
-    // if user changed the date or time, but cancels the edit,
-    // we want to display the values that were previously entered
-    val previousDate = state.date
-    val previousTime = state.time
 
     Column(
         modifier = modifier
@@ -230,8 +229,8 @@ fun TaskEditDateTimeScreen(
                             },
                             agendaItemStartTime = {
                                 AgendaItemDateTimeRow(
-                                    dateText = state.date.ifEmpty { previousDate },
-                                    timeText = state.time.ifEmpty { previousTime },
+                                    dateText = state.date.toDateAsString().ifEmpty { LocalDate.now().toDateAsString() },
+                                    timeText = state.time.toTimeAsString().ifEmpty { LocalTime.now().toTimeAsString() },
                                     onClickTime = {
                                         onAction(AgendaItemAction.ShowTimePicker)
                                     },
@@ -277,8 +276,7 @@ fun TaskEditDateTimeScreen(
                                         onConfirm = {
                                             onAction(
                                                 AgendaItemAction.SetDate(
-                                                    datePickerState.selectedDateMillis?.toDateAsString()
-                                                        ?: state.date
+                                                    datePickerState.selectedDateMillis?.asLocalDateValue() ?: LocalDate.now()
                                                 )
                                             )
                                         },
@@ -295,7 +293,7 @@ fun TaskEditDateTimeScreen(
                                         onConfirm = {
                                             onAction(
                                                 AgendaItemAction.SetTime(
-                                                    timePickerState.hour.toString() + ":" + timePickerState.minute.toString() + " $timeOfDay"
+                                                    LocalTime.of(timePickerState.hour, timePickerState.minute)
                                                 )
                                             )
                                         },

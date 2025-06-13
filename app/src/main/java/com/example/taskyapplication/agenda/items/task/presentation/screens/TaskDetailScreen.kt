@@ -25,6 +25,8 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.example.taskyapplication.TaskyBaseScreen
 import com.example.taskyapplication.agenda.AgendaItemAction
+import com.example.taskyapplication.agenda.domain.toDateAsString
+import com.example.taskyapplication.agenda.domain.toTimeAsString
 import com.example.taskyapplication.agenda.items.task.SharedTaskViewModel
 import com.example.taskyapplication.agenda.items.task.presentation.TaskUiState
 import com.example.taskyapplication.agenda.presentation.components.AgendaDescriptionText
@@ -139,8 +141,8 @@ fun TaskDetailScreen(
                             agendaItemStartTime = {
                                 AgendaItemDateTimeRow(
                                     isEditing = isEditScreen,
-                                    timeText = state.time,
-                                    dateText = state.date,
+                                    timeText = state.time.toTimeAsString(),
+                                    dateText = state.date.toDateAsString(),
                                 )
                             },
                             agendaItemReminderTime = {

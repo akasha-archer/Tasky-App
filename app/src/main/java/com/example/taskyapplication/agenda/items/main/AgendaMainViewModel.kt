@@ -34,7 +34,7 @@ class AgendaMainViewModel @Inject constructor(
             initialValue = AgendaMainViewState(),
         )
 
-    private fun buildAgendaListForDate(selectedDate: Long) {
+    private fun buildAgendaListForDate(selectedDate: LocalDate) {
         viewModelScope.launch {
             commonDataProvider.buildAgendaForSelectedDate(selectedDate)
                 .collect { (tasks, reminders) ->
@@ -50,11 +50,11 @@ class AgendaMainViewModel @Inject constructor(
         }
     }
 
-    private fun showSelectedDate(selectedDate: Long): String {
+    private fun showSelectedDate(selectedDate: LocalDate): String {
         return when (selectedDate) {
-            LocalDate.now().toEpochDay() -> "Today"
-            LocalDate.now().plusDays(1).toEpochDay() -> "Tomorrow"
-            LocalDate.now().minusDays(1).toEpochDay() -> "Yesterday"
+            LocalDate.now() -> "Today"
+            LocalDate.now().plusDays(1) -> "Tomorrow"
+            LocalDate.now().minusDays(1) -> "Yesterday"
             else -> selectedDate.toDateAsString()
         }
     }
@@ -108,7 +108,7 @@ class AgendaMainViewModel @Inject constructor(
 
 data class AgendaMainViewState(
     val displayDateHeading: String = "Today",
-    val selectedDate: Long = LocalDate.now().toEpochDay(),
+    val selectedDate: LocalDate = LocalDate.now(),
     val selectedEvents: List<AgendaEventSummary> = emptyList(),
     val selectedTasks: List<AgendaTaskSummary> = emptyList(),
     val selectedReminders: List<AgendaReminderSummary> = emptyList(),

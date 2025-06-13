@@ -13,6 +13,7 @@ sealed interface EventItemAction {
     data class SetReminderTime(val reminder: ReminderOptions): EventItemAction
     data class SaveSelectedPhotos(val eventPhotos: List<Uri>): EventItemAction
     data class DeleteEvent(val eventId: String): EventItemAction
+    data class AddNewVisitor(val visitorEmail: String): EventItemAction
     data object CloseDetailScreen: EventItemAction
     data object LaunchDateTimeEditScreen: EventItemAction
     data object CancelEdit: EventItemAction

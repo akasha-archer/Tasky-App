@@ -1,10 +1,14 @@
 package com.example.taskyapplication.agenda.items.event.domain
 
+import android.util.Log
 import com.example.taskyapplication.agenda.items.event.data.CreateEventNetworkModel
 import com.example.taskyapplication.agenda.items.event.data.CreatedEventResponse
+import com.example.taskyapplication.agenda.items.event.data.GetAttendeeResponse
 import com.example.taskyapplication.agenda.items.event.data.UpdateEventNetworkModel
 import com.example.taskyapplication.agenda.items.event.data.UpdatedEventResponse
+import com.example.taskyapplication.agenda.items.event.data.db.AttendeeEntity
 import com.example.taskyapplication.agenda.items.event.data.db.EventEntity
+import com.example.taskyapplication.agenda.items.event.data.db.asAttendeeEntity
 import com.example.taskyapplication.domain.utils.DataError
 import com.example.taskyapplication.domain.utils.EmptyResult
 import com.example.taskyapplication.domain.utils.Result
@@ -18,7 +22,32 @@ class EventOfflineFirstRepository @Inject constructor(
     private val localDataSource: EventLocalDataSource,
     private val remoteDataSource: EventRemoteDataSource,
     private val applicationScope: CoroutineScope
-): EventRepository {
+) : EventRepository {
+
+    override suspend fun validateAttendee(
+        email: String
+    ): Result<GetAttendeeResponse, DataError> {
+        val remoteResult = remoteDataSource.verifyAttendee(email)
+        return when (remoteResult) {
+            is Result.Error -> {
+                Log.e("Event Repository", "error validating attendee")
+                Result.Error(remoteResult.error)
+            }
+
+            is Result.Success -> {
+                if (remoteResult.data.doesUserExist) {
+                    val attendee = remoteResult.data.attendee
+                    localDataSource.upsertAttendee(attendee.asAttendeeEntity())
+                }
+                Result.Success(remoteResult.data)
+            }
+        }
+    }
+
+    override suspend fun getAttendeeListForEvent(eventId: String): List<AttendeeEntity> {
+        return localDataSource.getAttendeesForEvent(eventId)
+    }
+
 
     override suspend fun createNewEvent(
         createEventNetworkModel: CreateEventNetworkModel,
@@ -30,13 +59,11 @@ class EventOfflineFirstRepository @Inject constructor(
         )
         return when (remoteResult) {
             is Result.Error -> {
-                TODO("insert to pending table")
+                Result.Error(remoteResult.error)
             }
+
             is Result.Success -> {
                 TODO("insert to local db")
-//                applicationScope.async {
-//                    localDataSource.upsertReminder(request.toReminderEntity())
-//                }.await()
             }
         }
     }
@@ -51,8 +78,10 @@ class EventOfflineFirstRepository @Inject constructor(
         )
         return when (remoteResult) {
             is Result.Error -> {
-                TODO("insert to pending table")
+                Result.Error(remoteResult.error)
+
             }
+
             is Result.Success -> {
                 TODO("insert to local db")
             }
@@ -74,4 +103,5 @@ class EventOfflineFirstRepository @Inject constructor(
         }
         return remoteResult.asEmptyDataResult()
     }
+
 }

@@ -42,6 +42,8 @@ import androidx.compose.ui.unit.sp
 import com.example.taskyapplication.R
 import com.example.taskyapplication.agenda.domain.AgendaScreenCalendarList
 import com.example.taskyapplication.agenda.domain.buildAgendaScreenCalendar
+import com.example.taskyapplication.agenda.domain.toDateAsString
+import com.example.taskyapplication.agenda.domain.toTimeAsString
 import com.example.taskyapplication.agenda.items.main.data.AgendaItemType
 import com.example.taskyapplication.agenda.items.main.data.AgendaSummary
 import com.example.taskyapplication.ui.theme.TaskyDesignSystem.Companion.taskyColors
@@ -52,7 +54,7 @@ fun AgendaSummary(
     modifier: Modifier = Modifier,
     dateHeading: String,
     dailySummary: List<AgendaSummary>,
-    launchPopupMenu: () -> Unit = {},
+    launchPopupMenu: (String) -> Unit = {},
     onOpenClick: (String, AgendaItemType) -> Unit,
     onEditClick: (String, AgendaItemType) -> Unit,
     onDeleteClick: (String, AgendaItemType) -> Unit,
@@ -80,9 +82,9 @@ fun AgendaSummary(
                     agendaItemType = item.type,
                     title = item.title,
                     description = item.description,
-                    time = item.startTime,
-                    date = item.startDate,
-                    launchPopupMenu = { launchPopupMenu() },
+                    time = item.startTime.toTimeAsString(),
+                    date = item.startDate.toDateAsString(),
+                    launchPopupMenu = { launchPopupMenu(item.id) },
                     onOpenClick = { onOpenClick(item.id, item.type) },
                     onEditClick = { onEditClick(item.id, item.type) },
                     onDeleteClick = { onDeleteClick(item.id, item.type) },
@@ -167,16 +169,16 @@ fun AgendaItemCard(
     description: String = "item description",
     time: String = "10:00",
     date: String = "May 7",
-    launchPopupMenu: () -> Unit = {},
-    onOpenClick: () -> Unit = {},
-    onEditClick: () -> Unit = {},
-    onDeleteClick: () -> Unit = {},
+    launchPopupMenu: (String) -> Unit = {},
+    onOpenClick: (String) -> Unit = {},
+    onEditClick: (String) -> Unit = {},
+    onDeleteClick: (String) -> Unit = {},
     onDismissRequest: () -> Unit = {},
     isExpanded: Boolean = false
 ) {
     Card(
         modifier = modifier
-            .padding(horizontal = 16.dp, vertical = 16.dp)
+            .padding(vertical = 16.dp)
             .fillMaxWidth(),
         shape = RoundedCornerShape(8.dp),
         colors = CardDefaults.cardColors(
@@ -211,7 +213,7 @@ fun AgendaItemCard(
                         Icon(
                             imageVector = Icons.Filled.MoreVert,
                             contentDescription = "menu options",
-                            modifier = Modifier.clickable { launchPopupMenu() }
+                            modifier = Modifier.clickable { launchPopupMenu }
                         )
                         CardDropDownMenu(
                             modifier = Modifier,

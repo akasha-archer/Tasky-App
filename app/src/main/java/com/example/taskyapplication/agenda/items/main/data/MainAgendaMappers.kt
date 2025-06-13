@@ -1,30 +1,21 @@
 package com.example.taskyapplication.agenda.items.main.data
 
-import com.example.taskyapplication.agenda.domain.toDateTime
-import com.example.taskyapplication.agenda.domain.toFormattedDate
-import com.example.taskyapplication.agenda.domain.toFormattedTime
+import com.example.taskyapplication.agenda.domain.toDateAsString
+import com.example.taskyapplication.agenda.domain.toTimeAsString
 import com.example.taskyapplication.agenda.items.event.data.db.EventEntity
 import com.example.taskyapplication.agenda.items.reminder.data.db.ReminderEntity
 import com.example.taskyapplication.agenda.items.task.data.local.entity.TaskEntity
+import java.time.LocalDateTime
 
 fun EventEntity.toAgendaEventSummary() = AgendaEventSummary(
     id = id,
     title = title,
     description = description,
-    startDate = startDate.toDateTime().toFormattedDate(),
-    startTime = startTime.toDateTime().toFormattedTime(),
+    startDate = startDate,
+    startTime = startTime,
     type = AgendaItemType.EVENT,
     isAttendee = false
 )
-//fun Event.toEventEntitySummary() = EventSummaryEntity(
-//    id = id,
-//    title = title,
-//    description = description,
-//    startDate = from.toDateTime().toFormattedDate(),
-//    startTime = from.toDateTime().toFormattedTime(),
-//    type = AgendaItemType.EVENT,
-//    isAttendee = false
-//)
 
 fun TaskEntity.toAgendaTaskSummary() = AgendaTaskSummary(
     id = id,
@@ -35,15 +26,6 @@ fun TaskEntity.toAgendaTaskSummary() = AgendaTaskSummary(
     type = AgendaItemType.TASK,
     isDone = isDone
 )
-//fun Task.toTaskEntitySummary() = TaskSummaryEntity(
-//    id = id,
-//    title = title,
-//    description = description,
-//    startDate = time.toDayMonthAsString(),
-//    startTime = time.toDateTime().toFormattedTime(),
-//    type = AgendaItemType.TASK,
-//    isDone = isDone
-//)
 
 fun ReminderEntity.toAgendaReminderSummary() = AgendaReminderSummary(
     id = id,
@@ -53,21 +35,13 @@ fun ReminderEntity.toAgendaReminderSummary() = AgendaReminderSummary(
     startTime = time,
     type = AgendaItemType.REMINDER
 )
-//fun Reminder.toReminderEntitySummary() = ReminderSummaryEntity(
-//    id = id,
-//    title = title,
-//    description = description,
-//    startDate = time.toDayMonthAsString(),
-//    startTime = time.toDateTime().toFormattedTime(),
-//    type = AgendaItemType.REMINDER
-//)
 
 fun Task.asTaskEntity() = TaskEntity(
     id = id,
     title = title,
     description = description,
-    date = time.toDateTime().toFormattedDate(),
-    time = time.toDateTime().toFormattedTime(),
+    date = LocalDateTime.parse(time.toDateAsString()).toLocalDate(),
+    time = LocalDateTime.parse(time.toTimeAsString()).toLocalTime(),
     remindAt = remindAt,
     isDone = isDone
 )

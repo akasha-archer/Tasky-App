@@ -3,6 +3,7 @@ package com.example.taskyapplication.agenda.items.event.domain
 import com.example.taskyapplication.agenda.items.event.data.CreateEventNetworkModel
 import com.example.taskyapplication.agenda.items.event.data.CreatedEventResponse
 import com.example.taskyapplication.agenda.items.event.data.FetchedEventResponse
+import com.example.taskyapplication.agenda.items.event.data.GetAttendeeResponse
 import com.example.taskyapplication.agenda.items.event.data.UpdateEventNetworkModel
 import com.example.taskyapplication.agenda.items.event.data.UpdatedEventResponse
 import com.example.taskyapplication.agenda.items.event.network.EventApiService
@@ -24,6 +25,7 @@ interface EventRemoteDataSource {
         photos: List<MultipartBody.Part>
     ): Result<UpdatedEventResponse, DataError.Network>
     suspend fun deleteEvent(eventId: String): EmptyResult<DataError>
+    suspend fun verifyAttendee(email: String): Result<GetAttendeeResponse, DataError.Network>
 }
 
 class EventRemoteDataSourceImpl @Inject constructor(
@@ -58,5 +60,9 @@ class EventRemoteDataSourceImpl @Inject constructor(
         return safeApiCall {
             eventApi.deleteEvent(eventId)
         }
+    }
+
+    override suspend fun verifyAttendee(email: String): Result<GetAttendeeResponse, DataError.Network> {
+        return safeApiCall { eventApi.verifyAttendee(email) }
     }
 }

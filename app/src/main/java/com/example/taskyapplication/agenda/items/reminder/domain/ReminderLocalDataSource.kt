@@ -8,10 +8,11 @@ import com.example.taskyapplication.agenda.items.reminder.data.models.toReminder
 import com.example.taskyapplication.domain.utils.DataError
 import com.example.taskyapplication.domain.utils.Result
 import kotlinx.coroutines.flow.Flow
+import java.time.LocalDate
 import javax.inject.Inject
 
 interface ReminderLocalDataSource {
-    fun getRemindersForDate(date: Long): Flow<List<ReminderEntity>>
+    fun getRemindersForDate(date: LocalDate): Flow<List<ReminderEntity>>
     suspend fun upsertReminder(reminder: ReminderEntity): Result<Unit, DataError.Local>
     suspend fun upsertAllReminders(reminders: List<ReminderResponse>): Result<Unit, DataError.Local>
     suspend fun getReminder(reminderId: String): ReminderEntity
@@ -23,7 +24,7 @@ class ReminderLocalDataSourceImpl @Inject constructor(
    private val reminderDao: ReminderDao
 ): ReminderLocalDataSource {
 
-    override fun getRemindersForDate(date: Long): Flow<List<ReminderEntity>> {
+    override fun getRemindersForDate(date: LocalDate): Flow<List<ReminderEntity>> {
         return reminderDao.getAllRemindersForSelectedDate(date)
     }
 

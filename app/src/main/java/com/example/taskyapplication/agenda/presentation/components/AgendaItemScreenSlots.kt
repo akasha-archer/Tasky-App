@@ -35,6 +35,7 @@ fun AgendaItem(
     launchDatePicker: (@Composable () -> Unit)? = null,
     launchTimePicker: (@Composable () -> Unit)? = null,
     launchReminderDropDown: (@Composable () -> Unit)? = null,
+    eventVisitorSection: (@Composable () -> Unit)? = null,
 //    agendaItemDeleteButton: @Composable () -> Unit,
 ) {
     Column(
@@ -66,6 +67,9 @@ fun AgendaItem(
         agendaItemReminderTime()
         Spacer(Modifier.height(20.dp))
         AgendaScreenDivider()
+        if (eventVisitorSection != null) {
+            eventVisitorSection()
+        }
 
 //        agendaItemDeleteButton()
     }

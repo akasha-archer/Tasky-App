@@ -15,6 +15,7 @@ import com.example.taskyapplication.auth.domain.AuthRepository
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.map
+import java.time.LocalDate
 import javax.inject.Inject
 
 class AgendaCommonDataProvider @Inject constructor(
@@ -32,7 +33,7 @@ class AgendaCommonDataProvider @Inject constructor(
         clearLocalDataAfterLogout()
     }
 
-    fun buildAgendaForSelectedDate(selectedDate: Long):
+    fun buildAgendaForSelectedDate(selectedDate: LocalDate):
             Flow<Pair<List<AgendaTaskSummary>, List<AgendaReminderSummary>>> {
         val requestedTasks = taskLocalDataSource.getTasksByDate(selectedDate)
             .map { taskEntities ->

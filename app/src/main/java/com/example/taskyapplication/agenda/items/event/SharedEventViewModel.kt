@@ -16,6 +16,7 @@ import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
+import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.receiveAsFlow
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
@@ -39,6 +40,9 @@ class SharedEventViewModel @Inject constructor(
         started = SharingStarted.WhileSubscribed(5000L),
         initialValue = EventUiState()
     )
+
+    private val _tempAttendeeList = MutableStateFlow<List<String>>(emptyList())
+    val tempAttendeeList = _tempAttendeeList.asStateFlow()
 
     private fun isNewEvent(currentId: String) = currentId.isEmpty() || currentId.isBlank()
 
@@ -106,6 +110,27 @@ class SharedEventViewModel @Inject constructor(
 
                 is Result.Success -> {
                     agendaEventChannel.send(AgendaItemEvent.NewItemCreatedSuccess)
+                }
+            }
+        }
+    }
+
+    private fun verifyEventAttendee(email: String) {
+        viewModelScope.launch {
+            _eventUiState.update { it.copy(isValidatingAttendee = true) }
+            val result = eventRepository.validateAttendee(email)
+            _eventUiState.update { it.copy(isValidatingAttendee = false) }
+
+            when (result) {
+                is Result.Error -> {}
+                is Result.Success -> {
+                    if (result.data.doesUserExist) {
+                        _eventUiState.update { it.copy(
+                            isValidUser = true
+                        )
+                        }
+                        _tempAttendeeList.update { it + result.data.attendee.fullName }
+                    }
                 }
             }
         }
@@ -193,6 +218,9 @@ class SharedEventViewModel @Inject constructor(
                 ) }
             }
             is EventItemAction.DeleteEvent -> { deleteEventById(action.eventId)}
+            is EventItemAction.AddNewVisitor -> {
+                verifyEventAttendee(action.visitorEmail)
+            }
 
             EventItemAction.ShowDatePicker -> {
                 _eventUiState.update { it.copy(isEditingDate = true) }
@@ -268,7 +296,6 @@ class SharedEventViewModel @Inject constructor(
                     it.copy(isEditingItem = true)
                 }
             }
-
             // go back to Agenda screen
             EventItemAction.CloseDetailScreen -> { Unit }
 
