@@ -12,6 +12,7 @@ import java.time.LocalDate
 import java.time.LocalDateTime
 import java.time.LocalTime
 import java.time.ZoneId
+import java.time.ZoneOffset
 import java.time.format.DateTimeFormatter
 import java.util.Locale
 
@@ -20,13 +21,16 @@ fun String.toInitials(): String {
 }
 
 fun LocalDate.toDateAsString(): String =
-    this.format(DateTimeFormatter.ofPattern("dd MMM yyyy"))
+    this.atStartOfDay().format(DateTimeFormatter.ofPattern("dd MMM yyyy"))
 
 fun LocalTime.toTimeAsString(): String =
     this.format(DateTimeFormatter.ofPattern("h:mm a"))
 
 fun Long.asLocalDateValue(): LocalDate =
-    LocalDateTime.ofInstant(Instant.ofEpochMilli(this), ZoneId.systemDefault()).toLocalDate()
+    Instant.ofEpochMilli(this)
+        .atZone(ZoneOffset.UTC)
+        .toLocalDate()
+
 
 fun Long.asLocalTimeValue(): LocalTime =
     LocalDateTime.ofInstant(Instant.ofEpochMilli(this), ZoneId.systemDefault()).toLocalTime()
@@ -100,12 +104,12 @@ fun Long.toDayMonthAsString(): String =
 //}
 
 fun Long.toDateAsString(): String {
-    return LocalDate.ofInstant(Instant.ofEpochMilli(this), ZoneId.systemDefault())
+    return LocalDate.ofInstant(Instant.ofEpochMilli(this), ZoneId.ofOffset("UTC", ZoneOffset.UTC))
         .format(DateTimeFormatter.ofPattern("dd MMM yyyy"))
 }
 
 fun Long.toTimeAsString(): String =
-    LocalTime.ofInstant(Instant.ofEpochMilli(this), ZoneId.systemDefault())
+    LocalTime.ofInstant(Instant.ofEpochMilli(this), ZoneId.ofOffset("UTC", ZoneOffset.UTC))
         .format(DateTimeFormatter.ofPattern("h:mm a"))
 
 fun String.timeAsLong(): Long {
