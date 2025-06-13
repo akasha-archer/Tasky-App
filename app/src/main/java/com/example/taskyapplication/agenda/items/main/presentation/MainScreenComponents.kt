@@ -54,7 +54,7 @@ fun AgendaSummary(
     modifier: Modifier = Modifier,
     dateHeading: String,
     dailySummary: List<AgendaSummary>,
-    launchPopupMenu: () -> Unit = {},
+    launchPopupMenu: (String) -> Unit = {},
     onOpenClick: (String, AgendaItemType) -> Unit,
     onEditClick: (String, AgendaItemType) -> Unit,
     onDeleteClick: (String, AgendaItemType) -> Unit,
@@ -84,7 +84,7 @@ fun AgendaSummary(
                     description = item.description,
                     time = item.startTime.toTimeAsString(),
                     date = item.startDate.toDateAsString(),
-                    launchPopupMenu = { launchPopupMenu() },
+                    launchPopupMenu = { launchPopupMenu(item.id) },
                     onOpenClick = { onOpenClick(item.id, item.type) },
                     onEditClick = { onEditClick(item.id, item.type) },
                     onDeleteClick = { onDeleteClick(item.id, item.type) },
@@ -169,10 +169,10 @@ fun AgendaItemCard(
     description: String = "item description",
     time: String = "10:00",
     date: String = "May 7",
-    launchPopupMenu: () -> Unit = {},
-    onOpenClick: () -> Unit = {},
-    onEditClick: () -> Unit = {},
-    onDeleteClick: () -> Unit = {},
+    launchPopupMenu: (String) -> Unit = {},
+    onOpenClick: (String) -> Unit = {},
+    onEditClick: (String) -> Unit = {},
+    onDeleteClick: (String) -> Unit = {},
     onDismissRequest: () -> Unit = {},
     isExpanded: Boolean = false
 ) {
@@ -213,7 +213,7 @@ fun AgendaItemCard(
                         Icon(
                             imageVector = Icons.Filled.MoreVert,
                             contentDescription = "menu options",
-                            modifier = Modifier.clickable { launchPopupMenu() }
+                            modifier = Modifier.clickable { launchPopupMenu }
                         )
                         CardDropDownMenu(
                             modifier = Modifier,
