@@ -2,6 +2,7 @@ package com.example.taskyapplication.agenda.items.event.presentation
 
 import com.example.taskyapplication.agenda.data.model.ReminderOptions
 import com.example.taskyapplication.agenda.items.event.data.db.AttendeeEntity
+import com.example.taskyapplication.agenda.items.event.domain.EventImageItem
 import java.time.LocalDate
 import java.time.LocalTime
 import java.time.format.DateTimeFormatter

@@ -171,7 +171,13 @@ fun EventDateTimeScreen(
     val photoLauncher = rememberLauncherForActivityResult(
         contract = ActivityResultContracts.PickMultipleVisualMedia(maxItems = 10),
         onResult = { uris ->
-            selectedImageUris = uris
+            selectedImageUris = selectedImageUris + uris // Append new URIs
+            // Ensure you don't exceed 10 total photos
+            val totalPhotos = persistedImageUrls.size + selectedImageUris.size
+            if (totalPhotos > 10) {
+                selectedImageUris = selectedImageUris.take(10 - persistedImageUrls.size)
+            }
+             onAction(EventItemAction.SaveSelectedPhotos(selectedImageUris))
         }
     )
     val datePickerState = rememberDatePickerState()
@@ -261,7 +267,7 @@ fun EventDateTimeScreen(
                                 )
                             },
                             eventMedia = {
-                                if (state.photos.isEmpty()) {
+                                if (combinedImageList.isEmpty()) { // Show empty state if no photos at all
                                     PhotoRowEmptyState(
                                         launchPhotoPicker = {
                                             photoLauncher.launch(
@@ -272,7 +278,14 @@ fun EventDateTimeScreen(
                                 } else {
                                     PhotoRow(
                                         modifier = Modifier,
-                                        photosToShow = combinedImageList
+                                        photosToShow = combinedImageList,
+                                        onAddPhotoClick = {
+                                            if (combinedImageList.size < 10) { // Check before launching
+                                                photoLauncher.launch(
+                                                    PickVisualMediaRequest(ActivityResultContracts.PickVisualMedia.ImageOnly)
+                                                )
+                                            }
+                                        }
                                     )
                                 }
                             },

@@ -27,6 +27,7 @@ import com.example.taskyapplication.agenda.items.event.EventItemAction
 import com.example.taskyapplication.agenda.items.event.SharedEventViewModel
 import com.example.taskyapplication.agenda.items.event.components.PhotoRow
 import com.example.taskyapplication.agenda.items.event.components.VisitorHeader
+import com.example.taskyapplication.agenda.items.event.domain.EventImageItem
 import com.example.taskyapplication.agenda.items.event.presentation.EventUiState
 import com.example.taskyapplication.agenda.presentation.components.AgendaDescriptionText
 import com.example.taskyapplication.agenda.presentation.components.AgendaIconTextRow
@@ -140,7 +141,9 @@ fun EventDetailScreen(
                             },
                             eventMedia = {
                                 if (state.photos.isNotEmpty()) {
-                                    PhotoRow(detailPhotos = state.photos)
+                                    val imageItems =
+                                        state.photos.map { url -> EventImageItem.PersistedImage(url) }
+                                    PhotoRow(photosToShow = imageItems)
                                 }
                             },
                             agendaItemStartTime = {  // event starting time

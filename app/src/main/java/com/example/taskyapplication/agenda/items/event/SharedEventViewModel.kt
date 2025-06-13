@@ -45,7 +45,6 @@ class SharedEventViewModel @Inject constructor(
     private val _uploadedPhotos = MutableStateFlow<List<Uri>>(emptyList())
     val uploadedPhotos = _uploadedPhotos.asStateFlow()
 
-
     private val _tempAttendeeList = MutableStateFlow<List<String>>(emptyList())
     val tempAttendeeList = _tempAttendeeList.asStateFlow()
 
