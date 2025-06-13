@@ -16,7 +16,6 @@ import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
-import kotlinx.coroutines.flow.onStart
 import kotlinx.coroutines.flow.receiveAsFlow
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
@@ -31,18 +30,18 @@ class SharedTaskViewModel @Inject constructor(
     savedStateHandle: SavedStateHandle
 ) : ViewModel() {
 
-    private val taskId: String? = savedStateHandle["itemId"]
+    private val taskId: String? = savedStateHandle.get<String>("taskId")
+    init {
+        if (taskId != null) {
+            loadExistingTask(taskId)
+        }
+    }
 
     private val agendaEventChannel = Channel<AgendaItemEvent>()
     val agendaEvents = agendaEventChannel.receiveAsFlow()
 
     private val _uiState = MutableStateFlow(TaskUiState())
     val uiState = _uiState
-        .onStart{
-            if (taskId != null) {
-                loadExistingTask(taskId)
-            }
-        }
         .stateIn(
         scope = viewModelScope,
         started = SharingStarted.WhileSubscribed(5000L),
@@ -159,6 +158,9 @@ class SharedTaskViewModel @Inject constructor(
     fun executeActions(action: AgendaItemAction) {
         when (action) {
             AgendaItemAction.SaveAgendaItemUpdates -> createOrUpdateTask()
+            is AgendaItemAction.OpenExistingItem -> {
+                loadExistingTask(action.id)
+            }
             is AgendaItemAction.SetTitle -> {
                 viewModelScope.launch {
                     _uiState.update { it.copy(title = action.title) }

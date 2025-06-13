@@ -1,10 +1,13 @@
 package com.example.taskyapplication.agenda
 
 import com.example.taskyapplication.agenda.data.model.ReminderOptions
+import com.example.taskyapplication.agenda.items.main.data.AgendaItemType
 import java.time.LocalDate
 import java.time.LocalTime
 
 sealed interface AgendaItemAction {
+
+    data class OpenExistingItem(val id: String, val type: AgendaItemType): AgendaItemAction
     data class SetTitle(val title: String): AgendaItemAction
     data class SetDescription(val description: String): AgendaItemAction
     data class SetTime(val time: LocalTime): AgendaItemAction

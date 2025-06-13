@@ -239,6 +239,8 @@ class SharedReminderViewModel @Inject constructor(
                     it.copy(isEditingItem = false)
                 }
             }
+
+            is AgendaItemAction.OpenExistingItem -> TODO()
         }
     }
 }

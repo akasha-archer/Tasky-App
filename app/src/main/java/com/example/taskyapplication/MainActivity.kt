@@ -11,10 +11,12 @@ import androidx.activity.viewModels
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.runtime.getValue
+import androidx.compose.ui.Modifier
 import androidx.core.animation.doOnEnd
 import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.compose.rememberNavController
+import com.example.taskyapplication.main.presentation.components.TaskyScaffold
 import com.example.taskyapplication.ui.theme.TaskyApplicationTheme
 import dagger.hilt.android.AndroidEntryPoint
 
@@ -58,16 +60,20 @@ class MainActivity : ComponentActivity() {
         }
         enableEdgeToEdge()
         setContent {
-            TaskyApplicationTheme {
-                Surface(color = MaterialTheme.colorScheme.background) {
-                    val mainState by mainViewModel.mainState.collectAsStateWithLifecycle()
-                    val navController = rememberNavController()
-                    // Composable that has NavHost as the root composable to handle navigation logic
-                    NavigationRoot(
-                        navController = navController,
-                        isLoggedIn = mainState.isLoggedIn,
-                        isUserRegistered = mainState.isRegistered
-                    )
+            TaskyScaffold(
+                modifier = Modifier
+            ) {
+                TaskyApplicationTheme {
+                    Surface(color = MaterialTheme.colorScheme.background) {
+                        val mainState by mainViewModel.mainState.collectAsStateWithLifecycle()
+                        val navController = rememberNavController()
+                        // Composable that has NavHost as the root composable to handle navigation logic
+                        NavigationRoot(
+                            navController = navController,
+                            isLoggedIn = mainState.isLoggedIn,
+                            isUserRegistered = mainState.isRegistered
+                        )
+                    }
                 }
             }
         }
