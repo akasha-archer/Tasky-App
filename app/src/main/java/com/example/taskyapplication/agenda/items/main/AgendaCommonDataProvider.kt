@@ -64,7 +64,7 @@ class AgendaCommonDataProvider @Inject constructor(
         }
     }
 
-    suspend fun getItemByType(type: AgendaItemType, itemId: String): Any {
+    suspend fun getItemByType(type: AgendaItemType, itemId: String): Any? {
         return when (type) {
             AgendaItemType.TASK -> taskRepository.getTaskById(itemId)
             AgendaItemType.EVENT -> eventRepository.getEventById(itemId)

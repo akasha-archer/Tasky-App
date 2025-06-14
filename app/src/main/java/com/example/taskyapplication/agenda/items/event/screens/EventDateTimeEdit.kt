@@ -34,7 +34,10 @@ import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.example.taskyapplication.TaskyBaseScreen
 import com.example.taskyapplication.agenda.common.AgendaItemEvent
+import com.example.taskyapplication.agenda.domain.asLocalDateValue
 import com.example.taskyapplication.agenda.domain.toDateAsString
+import com.example.taskyapplication.agenda.domain.toLocalDateAndTime
+import com.example.taskyapplication.agenda.domain.toTimeAsString
 import com.example.taskyapplication.agenda.items.event.EventItemAction
 import com.example.taskyapplication.agenda.items.event.SharedEventViewModel
 import com.example.taskyapplication.agenda.items.event.components.PhotoRow
@@ -57,6 +60,8 @@ import com.example.taskyapplication.domain.utils.ObserveAsEvents
 import com.example.taskyapplication.main.presentation.components.TaskyScaffold
 import com.example.taskyapplication.ui.theme.TaskyDesignSystem.Companion.taskyColors
 import com.example.taskyapplication.ui.theme.TaskyTypography
+import java.time.LocalDate
+import java.time.LocalTime
 
 @Composable
 fun EventEditDateTimeRoot(
@@ -293,8 +298,8 @@ fun EventDateTimeScreen(
                                 AgendaItemDateTimeRow(
                                     isEditing = isEditScreen,
                                     timeRowLabel = "From",
-                                    timeText = state.startTime,
-                                    dateText = state.startDate,
+                                    timeText = state.startTime.toTimeAsString(),
+                                    dateText = state.startDate.toDateAsString(),
                                     onClickTime = {
                                         onAction(EventItemAction.ShowTimePicker)
                                         showStartTimePicker = true
@@ -309,8 +314,8 @@ fun EventDateTimeScreen(
                                 AgendaItemDateTimeRow(
                                     isEditing = isEditScreen,
                                     timeRowLabel = "To",
-                                    timeText = state.endTime,
-                                    dateText = state.endDate,
+                                    timeText = state.endTime.toTimeAsString(),
+                                    dateText = state.endDate.toDateAsString(),
                                     onClickTime = {
                                         onAction(EventItemAction.ShowTimePicker)
                                         showEndTimePicker = true
@@ -361,8 +366,7 @@ fun EventDateTimeScreen(
                                         onConfirm = {
                                             onAction(
                                                 EventItemAction.SetStartDate(
-                                                    datePickerState.selectedDateMillis?.toDateAsString()
-                                                        ?: state.startDate
+                                                    datePickerState.selectedDateMillis?.toLocalDateAndTime()?.first ?: LocalDate.now()
                                                 )
                                             )
                                             showStartDatePicker = false
@@ -380,8 +384,7 @@ fun EventDateTimeScreen(
                                         onConfirm = {
                                             onAction(
                                                 EventItemAction.SetEndDate(
-                                                    datePickerState.selectedDateMillis?.toDateAsString()
-                                                        ?: state.startDate
+                                                    datePickerState.selectedDateMillis?.toLocalDateAndTime()?.first ?: LocalDate.now()
                                                 )
                                             )
                                             showEndDatePicker = false
@@ -401,7 +404,7 @@ fun EventDateTimeScreen(
                                         onConfirm = {
                                             onAction(
                                                 EventItemAction.SetStartTime(
-                                                    timePickerState.hour.toString() + ":" + timePickerState.minute.toString() + " $timeOfDay"
+                                                    LocalTime.of(timePickerState.hour, timePickerState.minute)
                                                 )
                                             )
                                             showStartTimePicker = false
@@ -419,7 +422,7 @@ fun EventDateTimeScreen(
                                         onConfirm = {
                                             onAction(
                                                 EventItemAction.SetEndTime(
-                                                    timePickerState.hour.toString() + ":" + timePickerState.minute.toString() + " $timeOfDay"
+                                                    LocalTime.of(timePickerState.hour, timePickerState.minute)
                                                 )
                                             )
                                             showEndTimePicker = false

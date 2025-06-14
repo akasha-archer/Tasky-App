@@ -13,24 +13,24 @@ import retrofit2.http.POST
 
 interface AuthApiService {
 
-    @POST("/register")
+    @POST("register")
     suspend fun registerUser(
         @Body registerData: RegisterData
     ): Response<Unit>
 
-    @POST("/login")
+    @POST("login")
     suspend fun loginUser(
         @Body loginData: LoginData
     ): Response<LoggedInUserResponse>
 
-    @POST("/accessToken")
+    @POST("accessToken")
     suspend fun getNewAccessToken(
         @Body accessTokenRequest: AccessTokenRequest,
     ): Response<AccessTokenResponse>
 
-    @GET("/authenticate")
+    @GET("authenticate")
     suspend fun authenticateUser(): Response<AuthenticationResponse>
 
-    @GET("/logout")
+    @GET("logout")
     suspend fun logoutUser(): Response<Unit>
 }

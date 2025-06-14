@@ -7,6 +7,7 @@ import com.example.taskyapplication.agenda.items.event.data.db.AttendeeEntity
 import com.example.taskyapplication.agenda.items.event.data.db.DbTypeConverters
 import com.example.taskyapplication.agenda.items.event.data.db.EventDao
 import com.example.taskyapplication.agenda.items.event.data.db.EventEntity
+import com.example.taskyapplication.agenda.items.event.data.db.EventPhotoEntity
 import com.example.taskyapplication.agenda.items.main.data.db.EventSummaryEntity
 import com.example.taskyapplication.agenda.items.main.data.db.LocalAgendaSummaryDao
 import com.example.taskyapplication.agenda.items.main.data.db.ReminderSummaryEntity
@@ -25,6 +26,7 @@ import com.example.taskyapplication.agenda.items.task.data.local.entity.TaskEnti
         PendingTaskEntity::class,
         ReminderEntity::class,
         EventEntity::class,
+        EventPhotoEntity::class,
         TaskSummaryEntity::class,
         EventSummaryEntity::class,
         ReminderSummaryEntity::class,

@@ -2,10 +2,53 @@ package com.example.taskyapplication.agenda.items.event.data.db
 
 import androidx.room.Dao
 import androidx.room.Query
+import androidx.room.Transaction
 import androidx.room.Upsert
+import kotlinx.coroutines.flow.Flow
+import java.time.LocalDate
 
 @Dao
 interface EventDao {
+
+    @Upsert
+    suspend fun upsertEventPhotos(photos: List<EventPhotoEntity>)
+
+    @Query("SELECT * FROM event_photos WHERE eventId = :eventId")
+    suspend fun getPhotosForEvent(eventId: String): List<EventPhotoEntity>
+
+    @Query("DELETE FROM event_photos WHERE eventId = :eventId")
+    suspend fun deletePhotosForEvent(eventId: String)
+
+    // Example of how to save an event with its photos in a transaction
+    @Transaction
+    suspend fun insertEventWithPhotos(event: EventEntity, photos: List<EventPhotoEntity>) {
+        upsertEvent(event) // Assuming you have an insertEvent(event: EventEntity) method
+        if (photos.isNotEmpty()) {
+            upsertEventPhotos(photos)
+        }
+    }
+
+    // Example of how to update an event with its photos (delete old, insert new)
+    @Transaction
+    suspend fun updateEventWithPhotos(event: EventEntity, photos: List<EventPhotoEntity>) {
+        upsertEvent(event) // Assuming you have an upsertEvent(event: EventEntity) method
+        deletePhotosForEvent(event.id) // Delete existing photos for this event
+        if (photos.isNotEmpty()) {
+            upsertEventPhotos(photos) // Insert the new list of photos
+        }
+    }
+
+    @Transaction // Important for @Relation queries
+    @Query("SELECT * FROM events WHERE id = :eventId")
+    suspend fun getEventWithPhotos(eventId: String): EventWithPhotos?
+
+    @Transaction // Important for @Relation queries
+    @Query("SELECT * FROM events")
+    suspend fun getAllEventsWithPhotos(): List<EventWithPhotos>
+
+    @Transaction // Important for @Relation queries
+    @Query("SELECT * FROM events WHERE startDate = :date ORDER BY startTime ASC")
+     fun getAllEventsForSelectedDate(date: LocalDate): Flow<List<EventEntity>>
 
     @Query("SELECT * FROM events WHERE id = :eventId")
     suspend fun getEventById(eventId: String): EventEntity

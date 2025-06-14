@@ -6,7 +6,7 @@ import com.example.taskyapplication.agenda.items.event.data.GetAttendeeResponse
 import com.example.taskyapplication.agenda.items.event.data.UpdateEventNetworkModel
 import com.example.taskyapplication.agenda.items.event.data.UpdatedEventResponse
 import com.example.taskyapplication.agenda.items.event.data.db.AttendeeEntity
-import com.example.taskyapplication.agenda.items.event.data.db.EventEntity
+import com.example.taskyapplication.agenda.items.event.data.db.EventWithPhotos
 import com.example.taskyapplication.domain.utils.DataError
 import com.example.taskyapplication.domain.utils.EmptyResult
 import com.example.taskyapplication.domain.utils.Result
@@ -28,7 +28,7 @@ interface EventRepository {
 
     suspend fun getEventById(
         eventId: String
-    ): EventEntity
+    ): EventWithPhotos?
 
     suspend fun deleteEvent(
         eventId: String
