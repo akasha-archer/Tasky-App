@@ -1,7 +1,6 @@
 package com.example.taskyapplication.agenda
 
 import com.example.taskyapplication.agenda.data.model.ReminderOptions
-import com.example.taskyapplication.agenda.items.main.data.AgendaItemType
 import java.time.LocalDate
 import java.time.LocalTime
 

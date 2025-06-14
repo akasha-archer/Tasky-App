@@ -188,7 +188,6 @@ fun EventDateTimeScreen(
     val timePickerState = rememberTimePickerState(
         is24Hour = false
     )
-    val timeOfDay = if (timePickerState.isAfternoon) "PM" else "AM"
 
     var showStartTimePicker by rememberSaveable { mutableStateOf(false) }
     var showStartDatePicker by rememberSaveable { mutableStateOf(false) }

@@ -12,7 +12,6 @@ import com.example.taskyapplication.agenda.items.event.data.toUpdateEventNetwork
 import com.example.taskyapplication.agenda.items.event.domain.EventRepository
 import com.example.taskyapplication.agenda.items.event.domain.ImageMultiPartProvider
 import com.example.taskyapplication.agenda.items.event.presentation.EventUiState
-import com.example.taskyapplication.agenda.items.reminder.data.models.toReminderUiState
 import com.example.taskyapplication.domain.utils.DataError
 import com.example.taskyapplication.domain.utils.Result
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -61,7 +60,7 @@ class SharedEventViewModel @Inject constructor(
 
     private fun loadExistingEvent(eventId: String) {
         viewModelScope.launch {
-            val requestedTask = eventRepository.getEventById(eventId)
+            val requestedTask = eventRepository.getEventWithoutImages(eventId)
             _eventUiState.value = requestedTask.toEventUiState()
         }
     }
