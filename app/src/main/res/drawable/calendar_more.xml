@@ -1,0 +1,55 @@
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="74.67dp"
+    android:height="73.12dp"
+    android:viewportWidth="74.67"
+    android:viewportHeight="73.12">
+  <path
+      android:pathData="M73.42,13.74V66.49A5.38,5.38 0,0 1,68 71.87H6.63a5.38,5.38 0,0 1,-5.38 -5.38V13.74A5.38,5.38 0,0 1,6.63 8.36h12v2.91a4.2,4.2 0,0 0,4.62 4.18A4.32,4.32 0,0 0,27 11.08V8.36H47.65v2.73a4.31,4.31 0,0 0,3.79 4.36,4.2 4.2,0 0,0 4.62,-4.18V8.36H68A5.38,5.38 0,0 1,73.42 13.74Z"
+      android:strokeLineJoin="round"
+      android:strokeWidth="2.5"
+      android:fillColor="#00000000"
+      android:strokeColor="@color/task_card"
+      android:strokeLineCap="round"/>
+  <path
+      android:pathData="M27,5.46v5.81a4.2,4.2 0,1 1,-8.4 0V5.46a4.2,4.2 0,1 1,8.4 0Z"
+      android:strokeLineJoin="round"
+      android:strokeWidth="2.5"
+      android:fillColor="#00000000"
+      android:strokeColor="@color/task_card"
+      android:strokeLineCap="round"/>
+  <path
+      android:pathData="M56.06,5.46v5.81a4.21,4.21 0,0 1,-8.42 0V5.46a4.21,4.21 0,1 1,8.42 0Z"
+      android:strokeLineJoin="round"
+      android:strokeWidth="2.5"
+      android:fillColor="#00000000"
+      android:strokeColor="@color/task_card"
+      android:strokeLineCap="round"/>
+  <path
+      android:pathData="M1.25,23.28L73.42,23.28"
+      android:strokeLineJoin="round"
+      android:strokeWidth="2.5"
+      android:fillColor="#00000000"
+      android:strokeColor="@color/task_card"
+      android:strokeLineCap="round"/>
+  <path
+      android:pathData="M73.42,56.6v9.89A5.38,5.38 0,0 1,68 71.87h-9.9V62a5.38,5.38 0,0 1,5.38 -5.38Z"
+      android:strokeLineJoin="round"
+      android:strokeWidth="2.5"
+      android:fillColor="#00000000"
+      android:strokeColor="@color/task_card"
+      android:strokeLineCap="round"/>
+  <path
+      android:pathData="M73.42,56.6L58.14,71.87"
+      android:strokeLineJoin="round"
+      android:strokeWidth="2.5"
+      android:fillColor="#00000000"
+      android:strokeColor="@color/task_card"
+      android:strokeLineCap="round"/>
+  <path
+      android:pathData="M55.17,44.53 L42.25,33.74v5.88h-21a1.77,1.77 0,0 0,-1.77 1.77v6.29a1.77,1.77 0,0 0,1.77 1.77h21v5.88Z"
+      android:strokeLineJoin="round"
+      android:strokeWidth="1.5"
+      android:fillColor="@color/task_card"
+      android:strokeColor="#000"
+      android:strokeLineCap="round"/>
+</vector>

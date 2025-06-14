@@ -1,5 +1,6 @@
 package com.example.taskyapplication.agenda.items.main.presentation
 
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -7,6 +8,8 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.aspectRatio
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
@@ -36,6 +39,7 @@ import androidx.compose.ui.geometry.CornerRadius
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -48,6 +52,48 @@ import com.example.taskyapplication.agenda.items.main.data.AgendaItemType
 import com.example.taskyapplication.agenda.items.main.data.AgendaSummary
 import com.example.taskyapplication.ui.theme.TaskyDesignSystem.Companion.taskyColors
 import com.example.taskyapplication.ui.theme.TaskyTypography
+
+@Preview(showBackground = true)
+@Composable
+fun MainScreenPreview() {
+    MainScreenEmptyState(
+        modifier = Modifier
+    )
+}
+
+
+@Composable
+fun MainScreenEmptyState(
+    modifier: Modifier
+){
+    Column(
+        modifier = modifier
+            .fillMaxSize()
+            .padding(horizontal = 24.dp, vertical = 64.dp),
+        verticalArrangement = Arrangement.Top
+    ) {
+        Image(
+            modifier = Modifier
+                .fillMaxWidth()
+                .scale(2f)
+                .aspectRatio(4f),
+            painter = painterResource(id = R.drawable.calendar_more),
+            contentDescription = "empty state image"
+        )
+        Text(
+            modifier = Modifier.padding(top = 72.dp),
+            text = "No items scheduled for today. Tap the button below to get started",
+            style = TaskyTypography.bodyMedium.copy(
+                color = taskyColors.primary,
+                textAlign = TextAlign.Center
+            )
+        )
+
+
+    }
+
+
+}
 
 @Composable
 fun AgendaSummary(
@@ -74,21 +120,27 @@ fun AgendaSummary(
                 fontSize = 24.sp
             )
         )
-        LazyColumn {
-            items(dailySummary) { item ->
-                AgendaItemCard(
-                    modifier = Modifier,
-                    agendaItemType = item.type,
-                    title = item.title,
-                    description = item.description,
-                    time = item.startTime.toTimeAsString(),
-                    date = item.startDate.toDateAsString(),
-                    onOpenClick = { onOpenClick(item.id, item.type) },
-                    onEditClick = { onEditClick(item.id, item.type) },
-                    onDeleteClick = { onDeleteClick(item.id, item.type) },
-                    onToggleMenu = { onToggleItemMenu(item.id) },
-                    isMenuExpanded = (currentlyExpandedItemId == item.id)
-                )
+        if (dailySummary.isEmpty()) {
+            MainScreenEmptyState(
+                modifier = Modifier
+            )
+        } else {
+            LazyColumn {
+                items(dailySummary) { item ->
+                    AgendaItemCard(
+                        modifier = Modifier,
+                        agendaItemType = item.type,
+                        title = item.title,
+                        description = item.description,
+                        time = item.startTime.toTimeAsString(),
+                        date = item.startDate.toDateAsString(),
+                        onOpenClick = { onOpenClick(item.id, item.type) },
+                        onEditClick = { onEditClick(item.id, item.type) },
+                        onDeleteClick = { onDeleteClick(item.id, item.type) },
+                        onToggleMenu = { onToggleItemMenu(item.id) },
+                        isMenuExpanded = (currentlyExpandedItemId == item.id)
+                    )
+                }
             }
         }
     }
