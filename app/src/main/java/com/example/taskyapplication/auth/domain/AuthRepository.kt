@@ -8,6 +8,7 @@ import com.example.taskyapplication.domain.utils.onError
 import com.example.taskyapplication.domain.utils.onSuccess
 import com.example.taskyapplication.domain.utils.safeApiCall
 import com.example.taskyapplication.network.AuthApiService
+import com.example.taskyapplication.network.TokenRefreshApi
 import javax.inject.Inject
 import javax.inject.Singleton
 
@@ -28,6 +29,7 @@ interface AuthRepository {
 @Singleton
 class AuthRepositoryImpl @Inject constructor(
     private val authApiService: AuthApiService,
+    private val tokenRefreshApi: TokenRefreshApi,
     private val authTokenManager: AuthTokenManager
 ) : AuthRepository {
 
@@ -81,33 +83,22 @@ class AuthRepositoryImpl @Inject constructor(
     override suspend fun requestAccessToken(
         tokenRequest: AccessTokenRequest
     ): EmptyResult<DataError> {
-        val result = safeApiCall {
-            authApiService.getNewAccessToken(
+        return safeApiCall {
+            tokenRefreshApi.getNewAccessToken(
                 accessTokenRequest = tokenRequest
             )
-        }.onSuccess {
+        }.onSuccess { newTokensResponse ->
             authTokenManager.updateAccessToken(
-                it.newAccessToken,
-                it.expirationTimestamp
+                newTokensResponse.newAccessToken,
+                newTokensResponse.expirationTimestamp
             )
-        }.onSuccess {
-            authenticateToken()
-        }
-        return result.asEmptyDataResult()
+        }.asEmptyDataResult()
     }
 
     override suspend fun authenticateToken(): EmptyResult<DataError> {
-        val result = safeApiCall {
+        return safeApiCall {
             authApiService.authenticateUser()
-        }.onError {
-            requestAccessToken(
-                AccessTokenRequest(
-                    userId = authTokenManager.readUserId(),
-                    refreshToken = authTokenManager.readRefreshToken()
-                )
-            )
-        }
-        return result.asEmptyDataResult()
+        }.asEmptyDataResult()
     }
 
 //    override suspend fun authenticateToken(): EmptyResult<DataError> {
