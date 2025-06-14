@@ -15,7 +15,7 @@ interface TaskApiService {
     @POST("task")
     suspend fun createNewTask(
         @Body request: TaskNetworkModel
-    ): Response<Unit>
+    ): Response<TaskResponse>
 
     @PUT("task")
     suspend fun updateTask(

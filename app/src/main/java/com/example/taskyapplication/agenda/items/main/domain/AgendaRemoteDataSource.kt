@@ -17,31 +17,12 @@ interface AgendaRemoteDataSource {
         date: Long
     ): Response<AgendaItemsResponse>
     suspend fun syncDeletedAgendaItems(deletedAgendaItems: DeletedAgendaItems): Result<Unit, DataError.Network>
-    suspend fun fetchFullAgenda(fullAgendaResponse: FullAgendaResponse): Result<Unit, DataError.Network>
+    suspend fun fetchFullAgenda(): Response<FullAgendaResponse>
 }
 
 class AgendaItemsRemoteDataSource @Inject constructor(
     private val agendaApiService: AgendaApiService
 ): AgendaRemoteDataSource {
-
-//    override suspend fun syncLocalItemsWithRemoteStorage(): Result<Unit, DataError.Network> {
-//        // fetch all local items (events, tasks, reminders)
-//        // map each entity to a
-    //        task, - toTasNetworkModel()
-    //        reminder, - asReminderNetworkModel()
-    //        event - toCreateEventNetworkModel()
-//        // push to API
-//
-//        // pull full agenda
-//        // map each response to an entity and push to table
-//        // TaskResponse.asTaskEntity()
-//        // ReminderResponse.toReminderEntity()
-//        // CreatedEventResponse.toEventEntity()
-//
-//        // call this in init function of AgendaViewModel -- sync if online
-//
-//    }
-
     override suspend fun getAgendaItemsForDate(date: Long): Response<AgendaItemsResponse> {
         return agendaApiService.getAgendaForDate(date)
     }
@@ -55,12 +36,8 @@ class AgendaItemsRemoteDataSource @Inject constructor(
         }
     }
 
-    override suspend fun fetchFullAgenda(
-        fullAgendaResponse: FullAgendaResponse
-    ): Result<Unit, DataError.Network> {
-        return safeApiCall {
-            agendaApiService.getFullAgenda(fullAgendaResponse)
-        }
+    override suspend fun fetchFullAgenda(): Response<FullAgendaResponse> {
+        return agendaApiService.getFullAgenda()
     }
 
 }

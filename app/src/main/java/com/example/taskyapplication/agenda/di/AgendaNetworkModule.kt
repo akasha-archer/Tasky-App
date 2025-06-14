@@ -205,11 +205,13 @@ object AgendaNetworkModule {
     fun provideTaskRepository(
         localDataSource: LocalDataSource,
         remoteDataSource: RemoteDataSource,
+        api: TaskApiService,
         scope: CoroutineScope
     ): TaskRepository =
         OfflineFirstTaskRepository(
             localDataSource,
             remoteDataSource,
-            scope
+            scope,
+            api
         )
 }

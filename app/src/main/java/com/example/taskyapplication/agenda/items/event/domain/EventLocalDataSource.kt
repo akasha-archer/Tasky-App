@@ -36,12 +36,17 @@ interface EventLocalDataSource {
     suspend fun upsertPhotos(photos: List<EventPhotoEntity>)
     suspend fun getPhotosForEvent(eventId: String): List<EventPhotoEntity>
     suspend fun deletePhotosByEventId(eventId: String)
+    suspend fun getEventById(eventId: String): EventEntity?
+
 }
 
 class EventLocalDataSourceImpl @Inject constructor(
     private val eventDao: EventDao
 ) : EventLocalDataSource {
 
+    override suspend fun getEventById(eventId: String): EventEntity? {
+        return eventDao.getEventById(eventId)
+    }
     override suspend fun getEvents(): List<EventWithPhotos> {
         return eventDao.getAllEventsWithPhotos()
     }

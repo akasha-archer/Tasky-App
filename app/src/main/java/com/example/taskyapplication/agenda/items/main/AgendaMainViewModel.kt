@@ -2,6 +2,7 @@ package com.example.taskyapplication.agenda.items.main
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.example.taskyapplication.agenda.common.NetworkStatusObserver
 import com.example.taskyapplication.agenda.domain.toDateAsString
 import com.example.taskyapplication.agenda.items.main.data.AgendaEventSummary
 import com.example.taskyapplication.agenda.items.main.data.AgendaItemType
@@ -22,8 +23,19 @@ import javax.inject.Inject
 @HiltViewModel
 class AgendaMainViewModel @Inject constructor(
     private val repository: AgendaOfflineFirstRepository,
-    private val commonDataProvider: AgendaCommonDataProvider
+    private val commonDataProvider: AgendaCommonDataProvider,
+    private val networkStatusObserver: NetworkStatusObserver,
 ) : ViewModel() {
+
+    suspend fun isDeviceConnectedToInternet() = networkStatusObserver.isOnline()
+
+    init {
+        viewModelScope.launch {
+            if (isDeviceConnectedToInternet()) {
+                commonDataProvider.syncLocalItemsWithRemoteStorage()
+            }
+        }
+    }
 
     private val _agendaViewState = MutableStateFlow(AgendaMainViewState())
     val agendaViewState = _agendaViewState

@@ -9,15 +9,31 @@ import com.example.taskyapplication.domain.utils.EmptyResult
 interface TaskRepository {
     suspend fun createNewTask(
         request: TaskNetworkModel
-    ): EmptyResult<DataError>
+    ): Result<Unit>
 
+//    suspend fun updateTask(
+//        request: UpdateTaskBody
+//    ): Result<Unit>
+//
+//    suspend fun getTaskById(
+//        taskId: String
+//    ): TaskEntity
+//
+//    suspend fun deleteTask(
+//        taskId: String
+//    ): Result<Unit>
+
+//    suspend fun createNewTask(
+//        request: TaskNetworkModel
+//    ): EmptyResult<DataError>
+//
     suspend fun updateTask(
         request: UpdateTaskBody
     ): EmptyResult<DataError>
 
     suspend fun getTaskById(
         taskId: String
-    ): TaskEntity
+    ): TaskEntity?
 
     suspend fun deleteTask(
         taskId: String

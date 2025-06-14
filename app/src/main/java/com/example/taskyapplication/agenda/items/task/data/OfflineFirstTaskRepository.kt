@@ -8,6 +8,7 @@ import com.example.taskyapplication.agenda.items.task.data.network.models.Update
 import com.example.taskyapplication.agenda.items.task.domain.LocalDataSource
 import com.example.taskyapplication.agenda.items.task.domain.RemoteDataSource
 import com.example.taskyapplication.agenda.items.task.domain.TaskRepository
+import com.example.taskyapplication.agenda.items.task.domain.network.TaskApiService
 import com.example.taskyapplication.domain.utils.DataError
 import com.example.taskyapplication.domain.utils.EmptyResult
 import com.example.taskyapplication.domain.utils.Result
@@ -20,28 +21,29 @@ class OfflineFirstTaskRepository @Inject constructor(
     private val localDataSource: LocalDataSource,
     private val remoteDataSource: RemoteDataSource,
     private val applicationScope: CoroutineScope,
+    private val taskApiService: TaskApiService
 ) : TaskRepository {
 
-    override suspend fun createNewTask(request: TaskNetworkModel): EmptyResult<DataError> {
+    override suspend fun createNewTask(request: TaskNetworkModel): kotlin.Result<Unit> {
         val localResult = localDataSource.upsertTask(request.asTaskEntity())
-        val all = localDataSource.getAllTasks()
-        Log.i("Task Repository: See What is in there", all.toString())
         if (localResult !is Result.Success) {
             Log.e("Task Repository: Error inserting new task", "error: $localResult")
-            return localResult.asEmptyDataResult()
         }
 
-        val remoteResult = remoteDataSource.createTask(request)
-        Log.e("Task Repository", "passed remote result")
-        return when (remoteResult) {
-            is Result.Error -> {
-                Log.e("Task Repository: Error creating ${request.title} task", remoteResult.error.toString())
-                Result.Error(remoteResult.error)
-            }
-            is Result.Success -> {
+        return try {
+            val remoteResult = taskApiService.createNewTask(request)
+            if (remoteResult.isSuccessful) {
                 Log.i("Task Repository:", "Task created successfully")
-                Result.Success(Unit)
+            } else {
+                Log.e(
+                    "Task Repository: Error creating ${request.title} task",
+                    remoteResult.message()
+                )
             }
+            kotlin.Result.success(Unit)
+        } catch (e: Exception) {
+            Log.e("Task Repo:", e.message.toString())
+            kotlin.Result.failure(e)
         }
     }
 
@@ -58,6 +60,7 @@ class OfflineFirstTaskRepository @Inject constructor(
                 Log.e("Task Repository: Error updating task", remoteResult.error.toString())
                 Result.Error(remoteResult.error)
             }
+
             is Result.Success -> {
                 Log.e("Task Repository:", "Task updated successfully")
                 Result.Success(Unit)
@@ -76,7 +79,7 @@ class OfflineFirstTaskRepository @Inject constructor(
         return remoteResult.asEmptyDataResult()
     }
 
-    override suspend fun getTaskById(taskId: String): TaskEntity {
-       return localDataSource.getTask(taskId)
+    override suspend fun getTaskById(taskId: String): TaskEntity? {
+        return localDataSource.getTask(taskId)
     }
 }

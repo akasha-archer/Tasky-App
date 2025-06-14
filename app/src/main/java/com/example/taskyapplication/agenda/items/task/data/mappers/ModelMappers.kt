@@ -15,7 +15,7 @@ fun TaskResponse.asTaskEntity(): TaskEntity {
     return TaskEntity(
         id = id,
         title = title,
-        description = description,
+        description = description ?: "task description",
         date = time.toLocalDateAndTime().first,
         time = time.toLocalDateAndTime().second,
         remindAt = remindAt,
@@ -23,7 +23,7 @@ fun TaskResponse.asTaskEntity(): TaskEntity {
     )
 }
 
-fun TaskEntity.toTasNetworkModel() : TaskNetworkModel {
+fun TaskEntity.toTaskNetworkModel() : TaskNetworkModel {
     val networkModelTime = LocalDateTime.of(date, time).convertToLong()
     return TaskNetworkModel(
         itemId = id,
@@ -62,7 +62,7 @@ fun TaskResponse.asTaskUi(): TaskUiState {
     return TaskUiState(
         id = id,
         title = title,
-        description = description,
+        description = description ?: "task description",
         time = time.toLocalDateAndTime().second,
         date = time.toLocalDateAndTime().first,
         remindAt = ReminderOptions.THIRTY_MINUTES_BEFORE,

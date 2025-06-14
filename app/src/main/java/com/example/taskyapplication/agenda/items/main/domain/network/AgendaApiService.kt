@@ -21,7 +21,5 @@ interface AgendaApiService {
     ): Response<Unit>
 
     @GET("fullAgenda")
-    suspend fun getFullAgenda(
-        @Body fullAgendaResponse: FullAgendaResponse
-    ): Response<Unit>
+    suspend fun getFullAgenda(): Response<FullAgendaResponse>
 }
