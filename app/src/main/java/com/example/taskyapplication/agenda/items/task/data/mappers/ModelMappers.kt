@@ -1,6 +1,7 @@
 package com.example.taskyapplication.agenda.items.task.data.mappers
 
 import com.example.taskyapplication.agenda.data.model.ReminderOptions
+import com.example.taskyapplication.agenda.domain.convertToLong
 import com.example.taskyapplication.agenda.domain.toLocalDateAndTime
 import com.example.taskyapplication.agenda.items.task.data.local.entity.TaskEntity
 import com.example.taskyapplication.agenda.items.task.data.network.models.TaskResponse
@@ -22,6 +23,17 @@ fun TaskResponse.asTaskEntity(): TaskEntity {
     )
 }
 
+fun TaskEntity.toTasNetworkModel() : TaskNetworkModel {
+    val networkModelTime = LocalDateTime.of(date, time).convertToLong()
+    return TaskNetworkModel(
+        itemId = id,
+        title = title,
+        description = description,
+        startTime = networkModelTime,
+        reminderTime = 0L,
+        isDone = isDone
+    )
+}
 fun TaskNetworkModel.asTaskEntity(): TaskEntity {
     return TaskEntity(
         id = itemId,

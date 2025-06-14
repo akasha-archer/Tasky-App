@@ -17,6 +17,8 @@ class AgendaOfflineFirstRepository @Inject constructor(
         TODO("Not yet implemented")
     }
 
+
+
     // fetch from Remote and populate database
     override suspend fun fetchFullAgenda(fullAgendaResponse: FullAgendaResponse): EmptyResult<DataError> {
         TODO("Not yet implemented")

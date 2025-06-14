@@ -1,5 +1,7 @@
 package com.example.taskyapplication.agenda.items.main
 
+import com.example.taskyapplication.agenda.common.NetworkStatusObserver
+import com.example.taskyapplication.agenda.items.event.data.db.EventEntity
 import com.example.taskyapplication.agenda.items.event.domain.EventLocalDataSource
 import com.example.taskyapplication.agenda.items.event.domain.EventRepository
 import com.example.taskyapplication.agenda.items.main.data.AgendaItemType
@@ -7,8 +9,10 @@ import com.example.taskyapplication.agenda.items.main.data.AgendaReminderSummary
 import com.example.taskyapplication.agenda.items.main.data.AgendaTaskSummary
 import com.example.taskyapplication.agenda.items.main.data.toAgendaReminderSummary
 import com.example.taskyapplication.agenda.items.main.data.toAgendaTaskSummary
+import com.example.taskyapplication.agenda.items.reminder.data.db.ReminderEntity
 import com.example.taskyapplication.agenda.items.reminder.domain.ReminderLocalDataSource
 import com.example.taskyapplication.agenda.items.reminder.domain.ReminderRepository
+import com.example.taskyapplication.agenda.items.task.data.local.entity.TaskEntity
 import com.example.taskyapplication.agenda.items.task.domain.TaskLocalDataSource
 import com.example.taskyapplication.agenda.items.task.domain.TaskRepository
 import com.example.taskyapplication.auth.domain.AuthRepository
@@ -26,11 +30,20 @@ class AgendaCommonDataProvider @Inject constructor(
     private val taskLocalDataSource: TaskLocalDataSource,
     private val eventLocalDataSource: EventLocalDataSource,
     private val reminderLocalDataSource: ReminderLocalDataSource,
-
+    private val networkStatusObserver: NetworkStatusObserver
 ) {
+
+    suspend fun isDeviceConnectedToInternet() = networkStatusObserver.isOnline()
     suspend fun logout() {
         authRepository.logoutUser()
         clearLocalDataAfterLogout()
+    }
+
+   suspend fun fetchAllLocalItems(): Triple<List<TaskEntity>, List<ReminderEntity>, List<EventEntity>> {
+        val allTasks = taskLocalDataSource.getAllTasks()
+        val allEvents = eventLocalDataSource.getEventsWithoutPhotos()
+        val allReminders = reminderLocalDataSource.getAllReminders()
+       return Triple(allTasks, allReminders, allEvents)
     }
 
     fun buildAgendaForSelectedDate(selectedDate: LocalDate):

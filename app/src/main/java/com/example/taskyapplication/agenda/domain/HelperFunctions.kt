@@ -95,20 +95,14 @@ fun buildAgendaScreenCalendar(): List<AgendaScreenCalendarList> {
     val daysBefore = 15L
     val daysAfter = 15L
 
-    // today's date
     val today = LocalDate.now()
-
-//    val dateList = mutableListOf<Pair<String, String>>()
     val dateListWithDate = mutableListOf<AgendaScreenCalendarList>()
-
-    // Define the desired date format (e.g., "Mon 26")
     val dateFormatter = DateTimeFormatter.ofPattern("d", Locale.getDefault())
     val dayFormatter = DateTimeFormatter.ofPattern("E", Locale.getDefault())
 
     // Loop from 15 days before to 15 days after today
     for (i in -daysBefore..daysAfter) {
         val date = today.plusDays(i)
-//        dateList.add(Pair(date.format(dayFormatter), date.format(dateFormatter)))
         dateListWithDate.add(
             AgendaScreenCalendarList(
                 dayOfWeek = date.format(dayFormatter),

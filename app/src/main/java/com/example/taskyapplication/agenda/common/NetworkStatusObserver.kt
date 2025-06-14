@@ -5,7 +5,6 @@ import android.net.ConnectivityManager
 import android.net.Network
 import android.net.NetworkCapabilities
 import android.net.NetworkRequest
-import android.os.Build
 import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -17,14 +16,11 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.callbackFlow
 import kotlinx.coroutines.flow.distinctUntilChanged
-import kotlinx.coroutines.flow.launchIn
-import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.launch
 import java.io.IOException
 import java.net.InetSocketAddress
 import javax.inject.Inject
 import javax.inject.Singleton
-import kotlin.coroutines.CoroutineContext
 import java.net.Socket
 
 sealed class NetworkStatus {
@@ -38,7 +34,7 @@ interface INetworkObserver {
 }
 
 @Singleton
-class NetworkObserver @Inject constructor(
+class NetworkStatusObserver @Inject constructor(
     @ApplicationContext private val context: Context,
     // Consider injecting a CoroutineScope if you want to control its lifecycle more explicitly
     // For a Singleton, ApplicationScope is often appropriate.

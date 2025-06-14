@@ -12,6 +12,8 @@ import java.time.LocalDate
 import javax.inject.Inject
 
 interface ReminderLocalDataSource {
+
+    suspend fun getAllReminders(): List<ReminderEntity>
     fun getRemindersForDate(date: LocalDate): Flow<List<ReminderEntity>>
     suspend fun upsertReminder(reminder: ReminderEntity): Result<Unit, DataError.Local>
     suspend fun upsertAllReminders(reminders: List<ReminderResponse>): Result<Unit, DataError.Local>
@@ -23,6 +25,10 @@ interface ReminderLocalDataSource {
 class ReminderLocalDataSourceImpl @Inject constructor(
    private val reminderDao: ReminderDao
 ): ReminderLocalDataSource {
+
+    override suspend fun getAllReminders(): List<ReminderEntity> {
+        return reminderDao.getAllReminders()
+    }
 
     override fun getRemindersForDate(date: LocalDate): Flow<List<ReminderEntity>> {
         return reminderDao.getAllRemindersForSelectedDate(date)

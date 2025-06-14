@@ -11,10 +11,12 @@ import retrofit2.Response
 import javax.inject.Inject
 
 interface AgendaRemoteDataSource {
+
+//    suspend fun syncLocalItemsWithRemoteStorage(): Result<Unit, DataError.Network>
     suspend fun getAgendaItemsForDate(
         date: Long
     ): Response<AgendaItemsResponse>
-    suspend fun syncAgenda(deletedAgendaItems: DeletedAgendaItems): Result<Unit, DataError.Network>
+    suspend fun syncDeletedAgendaItems(deletedAgendaItems: DeletedAgendaItems): Result<Unit, DataError.Network>
     suspend fun fetchFullAgenda(fullAgendaResponse: FullAgendaResponse): Result<Unit, DataError.Network>
 }
 
@@ -22,12 +24,30 @@ class AgendaItemsRemoteDataSource @Inject constructor(
     private val agendaApiService: AgendaApiService
 ): AgendaRemoteDataSource {
 
+//    override suspend fun syncLocalItemsWithRemoteStorage(): Result<Unit, DataError.Network> {
+//        // fetch all local items (events, tasks, reminders)
+//        // map each entity to a
+    //        task, - toTasNetworkModel()
+    //        reminder, - asReminderNetworkModel()
+    //        event - toCreateEventNetworkModel()
+//        // push to API
+//
+//        // pull full agenda
+//        // map each response to an entity and push to table
+//        // TaskResponse.asTaskEntity()
+//        // ReminderResponse.toReminderEntity()
+//        // CreatedEventResponse.toEventEntity()
+//
+//        // call this in init function of AgendaViewModel -- sync if online
+//
+//    }
+
     override suspend fun getAgendaItemsForDate(date: Long): Response<AgendaItemsResponse> {
         return agendaApiService.getAgendaForDate(date)
     }
 
     // sync pending deleted items with server
-    override suspend fun syncAgenda(
+    override suspend fun syncDeletedAgendaItems(
         deletedAgendaItems: DeletedAgendaItems
     ): Result<Unit, DataError.Network> {
         return safeApiCall {

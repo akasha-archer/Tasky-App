@@ -3,7 +3,7 @@ package com.example.taskyapplication.agenda.di
 import android.content.Context
 import com.example.taskyapplication.BuildConfig
 import com.example.taskyapplication.agenda.common.INetworkObserver
-import com.example.taskyapplication.agenda.common.NetworkObserver
+import com.example.taskyapplication.agenda.common.NetworkStatusObserver
 import com.example.taskyapplication.agenda.items.event.domain.EventLocalDataSource
 import com.example.taskyapplication.agenda.items.event.domain.EventOfflineFirstRepository
 import com.example.taskyapplication.agenda.items.event.domain.EventRemoteDataSource
@@ -59,7 +59,7 @@ object AgendaNetworkModule {
     fun provideNetworkObserver(
         @ApplicationContext context: Context
     ): INetworkObserver =
-        NetworkObserver(context)
+        NetworkStatusObserver(context)
 
     @Provides
     @Singleton
