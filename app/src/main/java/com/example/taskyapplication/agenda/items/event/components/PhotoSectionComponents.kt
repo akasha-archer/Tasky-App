@@ -1,6 +1,5 @@
 package com.example.taskyapplication.agenda.items.event.components
 
-import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
@@ -8,6 +7,7 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.requiredWidth
@@ -24,7 +24,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.scale
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.ImageBitmap
+import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalWindowInfo
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
@@ -72,7 +72,7 @@ fun PhotoRowEmptyState(
 @Composable
 fun PhotoRow(
     modifier: Modifier = Modifier,
-    detailPhotos: List<String> = emptyList(),
+    onAddPhotoClick: () -> Unit = {},
     photosToShow: List<EventImageItem> = emptyList(),
 ) {
     Column(
@@ -98,21 +98,17 @@ fun PhotoRow(
             horizontalArrangement = Arrangement.spacedBy(8.dp),
         ) {
             items(photosToShow) { photo ->
-                AsyncImage(
-                    model = photo,
-                    contentDescription = "event photo",
+                PhotoItem(
+                    photo = photo,
+                    onPhotoClick = {},
                     modifier = Modifier
-                        .padding(vertical = 12.dp)
-                        .border(
-                            width = 2.dp,
-                            color = taskyColors.outline,
-                            shape = RoundedCornerShape(4.dp)
-                        )
                 )
             }
             if (photosToShow.size < 10)
                 item {
-                    AddPhotoButton()
+                    AddPhotoButton(
+                        onAddPhotoClick = onAddPhotoClick
+                    )
                 }
         }
     }
@@ -121,21 +117,29 @@ fun PhotoRow(
 @Composable
 fun AddPhotoButton(
     modifier: Modifier = Modifier,
-    onAddPhotoClick: () -> Unit = {}
+    onAddPhotoClick: () -> Unit = {},
+    isEnabled: Boolean = false // disabled if user is offline
 ) {
-    Icon(
-        imageVector = Icons.Default.Add,
-        tint = taskyColors.outline,
-        contentDescription = "Add Photo",
-        modifier = modifier
-            .background(color = Color.Transparent)
-            .border(
-                width = 2.dp,
-                color = taskyColors.outline,
-                shape = RoundedCornerShape(4.dp)
+    TextButton(
+        modifier = modifier,
+        onClick = {},
+        enabled = isEnabled,
+        content = {
+            Icon(
+                imageVector = Icons.Default.Add,
+                tint = taskyColors.outline,
+                contentDescription = "Add Photo",
+                modifier = modifier
+                    .background(color = Color.Transparent)
+                    .border(
+                        width = 2.dp,
+                        color = taskyColors.outline,
+                        shape = RoundedCornerShape(4.dp)
+                    )
+                    .padding(vertical = 12.dp, horizontal = 12.dp)
+                    .clickable { onAddPhotoClick() },
             )
-            .padding(vertical = 24.dp, horizontal = 24.dp)
-            .clickable { onAddPhotoClick() },
+        }
     )
 }
 
@@ -143,15 +147,20 @@ fun AddPhotoButton(
 fun PhotoItem(
     modifier: Modifier = Modifier,
     onPhotoClick: () -> Unit = {},
-    photoUrl: ImageBitmap
+    photo: EventImageItem
 ) {
-    Image(
-        bitmap = photoUrl,
+    val model = when (photo) {
+        is EventImageItem.PersistedImage -> photo.imageUrl
+        is EventImageItem.NewImage -> photo.imagePath
+    }
+    AsyncImage(
+        model = model,
         contentDescription = "event photo",
+        contentScale = ContentScale.Crop,
         modifier = modifier
             .clickable { onPhotoClick() }
             .background(color = Color.Transparent)
-            .padding(vertical = 24.dp, horizontal = 24.dp)
+            .aspectRatio(1f)
             .border(
                 width = 2.dp,
                 color = taskyColors.outline,
@@ -169,7 +178,12 @@ fun AddPhotoButtonPreview() {
 @Preview(showBackground = true)
 @Composable
 fun ImageItemPreview() {
-    PhotoItem(photoUrl = ImageBitmap(1, 1))
+    PhotoItem(
+        photo = EventImageItem.PersistedImage(
+            "https://example.com/image.jpg"
+        )
+    )
+
 }
 
 @Preview(showBackground = true)

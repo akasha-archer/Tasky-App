@@ -127,9 +127,9 @@ fun FabPopupMenu(
 @Composable
 fun CardDropDownMenu(
     modifier: Modifier = Modifier,
-    onOpenClick: (String) -> Unit,
-    onEditClick: (String) -> Unit,
-    onDeleteClick: (String) -> Unit,
+    onOpenClick: () -> Unit,
+    onEditClick: () -> Unit,
+    onDeleteClick: () -> Unit,
     onDismissRequest: () -> Unit = {},
     isExpanded: Boolean = false
 ) {
@@ -143,19 +143,19 @@ fun CardDropDownMenu(
         onDismissRequest = onDismissRequest,
         content = {
             DropdownMenuItem(
-                onClick = { onOpenClick },
+                onClick = { onOpenClick() },
                 text = {
                     MenuText(text = "Open")
                 }
             )
             DropdownMenuItem(
-                onClick = { onEditClick },
+                onClick = { onEditClick() },
                 text = {
                     MenuText(text = "Edit")
                 }
             )
             DropdownMenuItem(
-                onClick = { onDeleteClick },
+                onClick = { onDeleteClick() },
                 text = {
                     MenuText(text = "Delete")
                 }

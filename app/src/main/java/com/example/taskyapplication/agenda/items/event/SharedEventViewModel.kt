@@ -1,10 +1,13 @@
 package com.example.taskyapplication.agenda.items.event
 
 import android.content.Context
+import android.net.Uri
+import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.taskyapplication.agenda.common.AgendaItemEvent
 import com.example.taskyapplication.agenda.items.event.data.toCreateEventNetworkModel
+import com.example.taskyapplication.agenda.items.event.data.toEventUiState
 import com.example.taskyapplication.agenda.items.event.data.toUpdateEventNetworkModel
 import com.example.taskyapplication.agenda.items.event.domain.EventRepository
 import com.example.taskyapplication.agenda.items.event.domain.ImageMultiPartProvider
@@ -28,8 +31,16 @@ import javax.inject.Inject
 class SharedEventViewModel @Inject constructor(
     private val imageMultiPartProvider: ImageMultiPartProvider,
     private val eventRepository: EventRepository,
-    @ApplicationContext private val applicationContext: Context
+    @ApplicationContext private val applicationContext: Context,
+    savedStateHandle: SavedStateHandle
 ): ViewModel() {
+    private val eventId: String? = savedStateHandle.get<String>("eventId")
+
+    init {
+        if (eventId != null) {
+            loadExistingEvent(eventId)
+        }
+    }
 
     private val agendaEventChannel = Channel<AgendaItemEvent>()
     val agendaEvents = agendaEventChannel.receiveAsFlow()
@@ -41,9 +52,18 @@ class SharedEventViewModel @Inject constructor(
         initialValue = EventUiState()
     )
 
+    private val _uploadedPhotos = MutableStateFlow<List<Uri>>(emptyList())
+    val uploadedPhotos = _uploadedPhotos.asStateFlow()
+
     private val _tempAttendeeList = MutableStateFlow<List<String>>(emptyList())
     val tempAttendeeList = _tempAttendeeList.asStateFlow()
 
+    private fun loadExistingEvent(eventId: String) {
+        viewModelScope.launch {
+            val requestedTask = eventRepository.getEventWithoutImages(eventId)
+            _eventUiState.value = requestedTask.toEventUiState()
+        }
+    }
     private fun isNewEvent(currentId: String) = currentId.isEmpty() || currentId.isBlank()
 
     private fun createOrUpdateEvent() {
@@ -51,7 +71,6 @@ class SharedEventViewModel @Inject constructor(
             _eventUiState.update { it.copy(isEditingItem = true) }
             val newTitle = _eventUiState.value.title
             val newDescription = _eventUiState.value.description
-            val networkPhotos = _eventUiState.value.networkPhotos
             val eventAttendees = _eventUiState.value.attendeeIds
             val eventStartTime = _eventUiState.value.startTime
             val eventEndTime = _eventUiState.value.endTime
@@ -66,11 +85,12 @@ class SharedEventViewModel @Inject constructor(
                 eventId = _eventUiState.value.id
             }
 
+            val photosToUpload = _uploadedPhotos.value
+
             val eventToCreateOrUpdate = EventUiState(
                 id = if (isNewEvent(currentId)) eventId else currentId,
                 title = newTitle,
                 description = newDescription,
-                networkPhotos = networkPhotos,
                 attendeeIds = eventAttendees,
                 startTime = eventStartTime,
                 endTime = eventEndTime,
@@ -81,12 +101,12 @@ class SharedEventViewModel @Inject constructor(
             val result = if (isNewEvent(currentId)) {
                 eventRepository.createNewEvent(
                     eventToCreateOrUpdate.toCreateEventNetworkModel(),
-                    imageMultiPartProvider.createMultipartParts(applicationContext, networkPhotos)
+                    imageMultiPartProvider.createMultipartParts(applicationContext, photosToUpload)
                 )
             } else {
                 eventRepository.updateEvent(
                     eventToCreateOrUpdate.toUpdateEventNetworkModel(),
-                    imageMultiPartProvider.createMultipartParts(applicationContext, networkPhotos)
+                    imageMultiPartProvider.createMultipartParts(applicationContext, photosToUpload)
                 )
             }
             _eventUiState.update { it.copy(isEditingItem = false) }
@@ -170,6 +190,12 @@ class SharedEventViewModel @Inject constructor(
         when (action) {
             EventItemAction.SaveAgendaItemUpdates -> { createOrUpdateEvent() }
 
+            is EventItemAction.EditExistingEvent -> {
+                loadExistingEvent(action.eventId)
+            }
+            is EventItemAction.OpenExistingEvent -> {
+                loadExistingEvent(action.eventId)
+            }
             is EventItemAction.SetTitle -> {
                 viewModelScope.launch {
                     _eventUiState.update { it.copy(title = action.title) }
@@ -177,88 +203,125 @@ class SharedEventViewModel @Inject constructor(
             }
 
             is EventItemAction.SetDescription -> {
-                _eventUiState.update { it.copy(description = action.description) }
+                viewModelScope.launch {
+                    _eventUiState.update { it.copy(description = action.description) }
+                }
             }
 
             is EventItemAction.SetReminderTime -> {
-                _eventUiState.update { it.copy(remindAt = action.reminder) }
+                viewModelScope.launch {
+                    _eventUiState.update { it.copy(remindAt = action.reminder) }
+                }
             }
 
             is EventItemAction.SaveSelectedPhotos -> {
-                _eventUiState.update { it.copy(
-                    networkPhotos = action.eventPhotos,
-                ) }
-//                _eventUiState.update { it.copy(
-//                    photos = action.eventPhotos,
-//                ) }
+                viewModelScope.launch {
+                    _uploadedPhotos.update { action.eventPhotos }
+                }
             }
 
             is EventItemAction.SetEndDate -> {
-                _eventUiState.update { it.copy(
-                    endDate = action.endDate,
-                    isEditingTime = false
-                ) }
+                viewModelScope.launch {
+                    _eventUiState.update {
+                        it.copy(
+                            endDate = action.endDate,
+                            isEditingTime = false
+                        )
+                    }
+                }
             }
             is EventItemAction.SetEndTime -> {
-                _eventUiState.update { it.copy(
-                    endTime = action.endTime,
-                    isEditingTime = false
-                ) }
+                viewModelScope.launch {
+                    _eventUiState.update {
+                        it.copy(
+                            endTime = action.endTime,
+                            isEditingTime = false
+                        )
+                    }
+                }
             }
             is EventItemAction.SetStartDate -> {
-                _eventUiState.update { it.copy(
-                    startDate = action.startDate,
-                    isEditingTime = false
-                ) }
+                viewModelScope.launch {
+                    _eventUiState.update {
+                        it.copy(
+                            startDate = action.startDate,
+                            isEditingTime = false
+                        )
+                    }
+                }
             }
             is EventItemAction.SetStartTime -> {
-                _eventUiState.update { it.copy(
-                    startTime = action.startTime,
-                    isEditingTime = false
-                ) }
+                viewModelScope.launch {
+                    _eventUiState.update {
+                        it.copy(
+                            startTime = action.startTime,
+                            isEditingTime = false
+                        )
+                    }
+                }
             }
-            is EventItemAction.DeleteEvent -> { deleteEventById(action.eventId)}
+            is EventItemAction.DeleteEvent -> {
+                viewModelScope.launch {
+                    deleteEventById(action.eventId)
+                }
+            }
             is EventItemAction.AddNewVisitor -> {
-                verifyEventAttendee(action.visitorEmail)
+                viewModelScope.launch {
+                    verifyEventAttendee(action.visitorEmail)
+                }
             }
 
             EventItemAction.ShowDatePicker -> {
-                _eventUiState.update { it.copy(isEditingDate = true) }
+                viewModelScope.launch {
+                    _eventUiState.update { it.copy(isEditingDate = true) }
+                }
             }
 
             EventItemAction.HideDatePicker -> {
-                _eventUiState.update {
-                    it.copy(isEditingDate = false)
+                viewModelScope.launch {
+                    _eventUiState.update {
+                        it.copy(isEditingDate = false)
+                    }
                 }
             }
 
             EventItemAction.ShowReminderDropDown -> {
-                _eventUiState.update {
-                    it.copy(isEditingReminder = true)
+                viewModelScope.launch {
+                    _eventUiState.update {
+                        it.copy(isEditingReminder = true)
+                    }
                 }
             }
 
             EventItemAction.HideReminderDropDown -> {
-                _eventUiState.update {
-                    it.copy(isEditingReminder = false)
+                viewModelScope.launch {
+                    _eventUiState.update {
+                        it.copy(isEditingReminder = false)
+                    }
                 }
             }
 
             EventItemAction.ShowTimePicker -> {
-                _eventUiState.update {
-                    it.copy(isEditingTime = true)
+                viewModelScope.launch {
+                    _eventUiState.update {
+                        it.copy(isEditingTime = true)
+                    }
                 }
             }
 
             EventItemAction.HideTimePicker -> {
-                _eventUiState.update {
-                    it.copy(isEditingTime = false)
+                viewModelScope.launch {
+                    _eventUiState.update {
+                        it.copy(isEditingTime = false)
+                    }
                 }
             }
 
             EventItemAction.CloseEditDescriptionScreen -> {
-                _eventUiState.update {
-                    it.copy(isEditingItem = false)
+                viewModelScope.launch {
+                    _eventUiState.update {
+                        it.copy(isEditingItem = false)
+                    }
                 }
             }
 

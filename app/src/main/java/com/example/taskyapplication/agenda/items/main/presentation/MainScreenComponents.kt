@@ -54,12 +54,11 @@ fun AgendaSummary(
     modifier: Modifier = Modifier,
     dateHeading: String,
     dailySummary: List<AgendaSummary>,
-    launchPopupMenu: (String) -> Unit = {},
     onOpenClick: (String, AgendaItemType) -> Unit,
     onEditClick: (String, AgendaItemType) -> Unit,
     onDeleteClick: (String, AgendaItemType) -> Unit,
-    onDismissRequest: () -> Unit = {},
-    isExpanded: Boolean = false
+    onToggleItemMenu: (itemId: String) -> Unit,
+    currentlyExpandedItemId: String?
 ) {
     Column(
         modifier = modifier
@@ -84,12 +83,11 @@ fun AgendaSummary(
                     description = item.description,
                     time = item.startTime.toTimeAsString(),
                     date = item.startDate.toDateAsString(),
-                    launchPopupMenu = { launchPopupMenu(item.id) },
                     onOpenClick = { onOpenClick(item.id, item.type) },
                     onEditClick = { onEditClick(item.id, item.type) },
                     onDeleteClick = { onDeleteClick(item.id, item.type) },
-                    onDismissRequest = { onDismissRequest() },
-                    isExpanded = isExpanded
+                    onToggleMenu = { onToggleItemMenu(item.id) },
+                    isMenuExpanded = (currentlyExpandedItemId == item.id)
                 )
             }
         }
@@ -169,12 +167,11 @@ fun AgendaItemCard(
     description: String = "item description",
     time: String = "10:00",
     date: String = "May 7",
-    launchPopupMenu: (String) -> Unit = {},
-    onOpenClick: (String) -> Unit = {},
-    onEditClick: (String) -> Unit = {},
-    onDeleteClick: (String) -> Unit = {},
-    onDismissRequest: () -> Unit = {},
-    isExpanded: Boolean = false
+    onOpenClick: () -> Unit = {},
+    onEditClick: () -> Unit = {},
+    onDeleteClick: () -> Unit = {},
+    onToggleMenu: () -> Unit = {},
+    isMenuExpanded: Boolean = false
 ) {
     Card(
         modifier = modifier
@@ -203,8 +200,8 @@ fun AgendaItemCard(
                 ) {
                     Text(
                         text = title,
-                        style = TaskyTypography.headlineLarge.copy(
-                            color = taskyColors.primary
+                        style = TaskyTypography.headlineMedium.copy(
+                            color = taskyColors.primary,
                         )
                     )
                     Box(
@@ -213,15 +210,15 @@ fun AgendaItemCard(
                         Icon(
                             imageVector = Icons.Filled.MoreVert,
                             contentDescription = "menu options",
-                            modifier = Modifier.clickable { launchPopupMenu }
+                            modifier = Modifier.clickable { onToggleMenu() }
                         )
                         CardDropDownMenu(
                             modifier = Modifier,
                             onOpenClick = onOpenClick,
                             onEditClick = onEditClick,
                             onDeleteClick = onDeleteClick,
-                            onDismissRequest = onDismissRequest,
-                            isExpanded = isExpanded
+                            onDismissRequest = { onToggleMenu() },
+                            isExpanded = isMenuExpanded
                         )
                     }
                 } // end of title row
@@ -272,7 +269,7 @@ fun MainScreenHeader(
         modifier = modifier
             .fillMaxWidth()
             .background(color = Color.Black)
-            .padding(top = 16.dp, bottom = 16.dp)
+            .padding(top = 32.dp, bottom = 16.dp)
             .padding(horizontal = 24.dp),
         horizontalArrangement = Arrangement.SpaceBetween,
         verticalAlignment = Alignment.CenterVertically

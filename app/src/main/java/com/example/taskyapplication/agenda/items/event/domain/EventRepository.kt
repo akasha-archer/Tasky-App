@@ -26,7 +26,7 @@ interface EventRepository {
         photos: List<MultipartBody.Part>
     ): Result<UpdatedEventResponse, DataError>
 
-    suspend fun getEventById(
+    suspend fun getEventWithoutImages(
         eventId: String
     ): EventEntity
 

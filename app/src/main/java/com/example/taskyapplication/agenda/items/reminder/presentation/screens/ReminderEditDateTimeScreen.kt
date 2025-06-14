@@ -31,9 +31,9 @@ import com.example.taskyapplication.TaskyBaseScreen
 import com.example.taskyapplication.agenda.AgendaItemAction
 import com.example.taskyapplication.agenda.common.AgendaItemEvent
 import com.example.taskyapplication.agenda.data.model.ReminderOptions
-import com.example.taskyapplication.agenda.domain.asLocalDateValue
 import com.example.taskyapplication.agenda.domain.getReminderOption
 import com.example.taskyapplication.agenda.domain.toDateAsString
+import com.example.taskyapplication.agenda.domain.toLocalDateAndTime
 import com.example.taskyapplication.agenda.domain.toTimeAsString
 import com.example.taskyapplication.agenda.items.reminder.SharedReminderViewModel
 import com.example.taskyapplication.agenda.items.reminder.presentation.ReminderUiState
@@ -279,7 +279,7 @@ fun ReminderEditDateTimeScreen(
                                         onConfirm = {
                                             onAction(
                                                 AgendaItemAction.SetDate(
-                                                    datePickerState.selectedDateMillis?.asLocalDateValue() ?: state.date
+                                                    datePickerState.selectedDateMillis?.toLocalDateAndTime()?.first ?: state.date
                                                 )
                                             )
                                         },

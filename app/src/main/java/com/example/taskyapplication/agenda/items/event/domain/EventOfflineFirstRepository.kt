@@ -9,6 +9,8 @@ import com.example.taskyapplication.agenda.items.event.data.UpdatedEventResponse
 import com.example.taskyapplication.agenda.items.event.data.db.AttendeeEntity
 import com.example.taskyapplication.agenda.items.event.data.db.EventEntity
 import com.example.taskyapplication.agenda.items.event.data.db.asAttendeeEntity
+import com.example.taskyapplication.agenda.items.event.data.toEventEntity
+import com.example.taskyapplication.agenda.items.event.data.toPhotoEntities
 import com.example.taskyapplication.domain.utils.DataError
 import com.example.taskyapplication.domain.utils.EmptyResult
 import com.example.taskyapplication.domain.utils.Result
@@ -48,22 +50,33 @@ class EventOfflineFirstRepository @Inject constructor(
         return localDataSource.getAttendeesForEvent(eventId)
     }
 
-
     override suspend fun createNewEvent(
         createEventNetworkModel: CreateEventNetworkModel,
         photos: List<MultipartBody.Part>
     ): Result<CreatedEventResponse, DataError> {
+        val localResult = localDataSource.insertEventWithoutPhotos(
+            createEventNetworkModel.toEventEntity(),
+        )
+        if (localResult !is Result.Success) {
+            Log.e("Error inserting new event", "error: $localResult")
+        }
         val remoteResult = remoteDataSource.createEvent(
             createEventNetworkModel,
             photos
         )
+
         return when (remoteResult) {
             is Result.Error -> {
                 Result.Error(remoteResult.error)
             }
-
             is Result.Success -> {
-                TODO("insert to local db")
+                localDataSource.insertEventWithoutPhotos(
+                    remoteResult.data.toEventEntity()
+                )
+                localDataSource.upsertPhotos(
+                    remoteResult.data.toPhotoEntities()
+                )
+                Result.Success(remoteResult.data)
             }
         }
     }
@@ -72,24 +85,32 @@ class EventOfflineFirstRepository @Inject constructor(
         updateEventNetworkModel: UpdateEventNetworkModel,
         photos: List<MultipartBody.Part>
     ): Result<UpdatedEventResponse, DataError> {
+        val localResult = localDataSource.insertEventWithoutPhotos(
+            updateEventNetworkModel.toEventEntity(),
+        )
+        if (localResult !is Result.Success) {
+            Log.e("Error inserting new event", "error: $localResult")
+        }
         val remoteResult = remoteDataSource.updateEvent(
             updateEventNetworkModel,
             photos
         )
+
         return when (remoteResult) {
             is Result.Error -> {
                 Result.Error(remoteResult.error)
-
             }
-
             is Result.Success -> {
-                TODO("insert to local db")
+                localDataSource.upsertPhotos(
+                    remoteResult.data.toPhotoEntities()
+                )
+                Result.Success(remoteResult.data)
             }
         }
     }
 
-    override suspend fun getEventById(eventId: String): EventEntity {
-        return localDataSource.getEvent(eventId)
+    override suspend fun getEventWithoutImages(eventId: String): EventEntity {
+        return localDataSource.getEventWithoutPhotos(eventId)
     }
 
     override suspend fun deleteEvent(eventId: String): EmptyResult<DataError> {
@@ -99,7 +120,9 @@ class EventOfflineFirstRepository @Inject constructor(
         }.await()
 
         if (remoteResult !is Result.Success) {
-            TODO("insert to pending table")
+           Log.e("Event Repository", "error deleting event: $remoteResult")
+        } else {
+            Log.e("Event Repository", "Successfully deleted event: $remoteResult")
         }
         return remoteResult.asEmptyDataResult()
     }

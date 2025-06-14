@@ -16,8 +16,28 @@ import java.time.ZoneOffset
 import java.time.format.DateTimeFormatter
 import java.util.Locale
 
+
+fun combineLocalDateAndTime(date: LocalDate, time: LocalTime): LocalDateTime {
+    return LocalDateTime.of(date, time)
+}
+
+fun LocalDateTime.convertToLong(): Long {
+    return this.atZone(ZoneId.ofOffset("UTC", ZoneOffset.UTC)).toInstant().toEpochMilli()
+}
+
 fun String.toInitials(): String {
     return this.split(" ").mapNotNull { it.firstOrNull()?.toString() }.reduce { acc, s -> acc + s }
+}
+
+fun Long.toLocalDateAndTime(): Pair<LocalDate, LocalTime> {
+    val instant = Instant.ofEpochMilli(this)
+    val zoneId = ZoneId.ofOffset("UTC", ZoneOffset.UTC)
+    val zonedDateTime = instant.atZone(zoneId)
+
+    val localDate = zonedDateTime.toLocalDate()
+    val localTime = zonedDateTime.toLocalTime()
+
+    return Pair(localDate, localTime)
 }
 
 fun LocalDate.toDateAsString(): String =
@@ -25,83 +45,6 @@ fun LocalDate.toDateAsString(): String =
 
 fun LocalTime.toTimeAsString(): String =
     this.format(DateTimeFormatter.ofPattern("h:mm a"))
-
-fun Long.asLocalDateValue(): LocalDate =
-    Instant.ofEpochMilli(this)
-        .atZone(ZoneOffset.UTC)
-        .toLocalDate()
-
-
-fun Long.asLocalTimeValue(): LocalTime =
-    LocalDateTime.ofInstant(Instant.ofEpochMilli(this), ZoneId.systemDefault()).toLocalTime()
-
-
-//Combine date and time strings to convert to long
-fun convertDateAndTimeStringsToLong(
-    timeString: String,
-    dateString: String
-): Long {
-    val combined = "$dateString $timeString"
-    return LocalDateTime.parse(
-        combined,
-        DateTimeFormatter.ofPattern("dd MMM yyyy h:mm a")
-    ).atZone(ZoneId.systemDefault())
-        .toInstant().toEpochMilli()
-}
-
-// Convert time Response to LocalDateTime Object
-fun Long.toDateTime(): LocalDateTime = LocalDateTime.ofInstant(
-    Instant.ofEpochMilli(this),
-    ZoneId.systemDefault()
-)
-
-// Extract date from LocalDateTime object and format as String
-fun LocalDateTime.toFormattedDate(): String =
-    this.toLocalDate()
-        .format(
-            DateTimeFormatter.ofPattern(
-                "dd MMM yyyy"
-            )
-        )
-
-// Extract time from LocalDateTime object and format as String
-fun LocalDateTime.toFormattedTime(): String =
-    this.toLocalTime()
-        .format(
-            DateTimeFormatter.ofPattern(
-                "h:mm a"
-            )
-        )
-
-
-fun combineDateAndTime(date: String, time: String): Long {
-    val dateTime = LocalDateTime.of(
-        LocalDate.parse(
-            date,
-            DateTimeFormatter.ofLocalizedDate(java.time.format.FormatStyle.MEDIUM)
-        ),
-        LocalTime.parse(time, DateTimeFormatter.ofLocalizedTime(java.time.format.FormatStyle.SHORT))
-    )
-    return dateTime.atZone(ZoneId.systemDefault()).toInstant().toEpochMilli()
-}
-
-fun calculateNotificationTime(reminderTime: Long, startTime: Long) = startTime - reminderTime
-
-fun Long.toDayMonthAsString(): String =
-    LocalDate.ofInstant(Instant.ofEpochMilli(this), ZoneId.systemDefault())
-        .format(DateTimeFormatter.ofPattern("dd MMM"))
-//
-//fun Long.toDateAsString(): String {
-//    val dateToConvert = if (this < System.currentTimeMillis()) {
-//        System.currentTimeMillis()
-//    } else {
-//        this
-//    }
-//
-//    return if (dateToConvert == System.currentTimeMillis()) "Today" else
-//     LocalDate.ofInstant(Instant.ofEpochMilli(dateToConvert), ZoneId.systemDefault())
-//        .format(DateTimeFormatter.ofPattern("dd MMM yyyy"))
-//}
 
 fun Long.toDateAsString(): String {
     return LocalDate.ofInstant(Instant.ofEpochMilli(this), ZoneId.ofOffset("UTC", ZoneOffset.UTC))

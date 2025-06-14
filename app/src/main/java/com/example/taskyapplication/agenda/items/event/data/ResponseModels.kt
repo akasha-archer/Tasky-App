@@ -6,11 +6,12 @@ import kotlinx.serialization.Serializable
 data class CreatedEventResponse(
     val id: String,
     val title: String,
-    val description: String?,
+    val description: String,
     val from: Long,
     val to: Long,
     val remindAt: Long,
     val host: String,
+    val isUserEventCreator: Boolean,
     val attendees: List<AttendeeResponse>,
     val photos: List<EventPhotoResponse>
 )
@@ -19,7 +20,7 @@ data class CreatedEventResponse(
 data class UpdatedEventResponse(
     val id: String,
     val title: String,
-    val description: String?,
+    val description: String,
     val from: Long,
     val to: Long,
     val remindAt: Long,

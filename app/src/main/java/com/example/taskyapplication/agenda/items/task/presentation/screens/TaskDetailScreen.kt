@@ -1,5 +1,6 @@
 package com.example.taskyapplication.agenda.items.task.presentation.screens
 
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
@@ -21,7 +22,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.example.taskyapplication.TaskyBaseScreen
 import com.example.taskyapplication.agenda.AgendaItemAction
@@ -94,7 +94,8 @@ fun TaskDetailScreen(
             mainContent = {
                 var showDeleteBottomSheet by remember { mutableStateOf(false) }
                 Box(
-                    modifier = Modifier.fillMaxSize()) {
+                    modifier = Modifier.fillMaxSize()
+                ) {
                     Box(
                         modifier = Modifier
                             .align(Alignment.TopCenter)
@@ -150,6 +151,15 @@ fun TaskDetailScreen(
                                     reminderTime = state.remindAt.timeString,
                                     isEditing = isEditScreen,
                                 )
+                                Text(
+                                    modifier = Modifier
+                                        .height(40.dp)
+                                        .background(color = Color.Yellow),
+                                    text = "Debug - Loaded Task ID in UI: ${state.id}",
+                                    style = TaskyTypography.labelSmall.copy(color = Color.Black))
+                                Text(text = "Debug - Loaded Task Title in UI: ${state.title}",
+                                    style = TaskyTypography.labelSmall.copy(color = Color.Black))
+
                             }
                         )
                         AgendaItemDeleteTextButton(
@@ -187,7 +197,7 @@ fun TaskDetailScreen(
 @Preview(showBackground = true)
 @Composable
 fun BaseDetailScreenPreview() {
-    TaskDetailRoot(
-        taskViewModel = hiltViewModel(),
+    TaskDetailScreen(
+        state = TaskUiState()
     )
 }

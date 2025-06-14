@@ -1,8 +1,7 @@
 package com.example.taskyapplication.agenda.items.task.data.mappers
 
 import com.example.taskyapplication.agenda.data.model.ReminderOptions
-import com.example.taskyapplication.agenda.domain.asLocalDateValue
-import com.example.taskyapplication.agenda.domain.asLocalTimeValue
+import com.example.taskyapplication.agenda.domain.toLocalDateAndTime
 import com.example.taskyapplication.agenda.items.task.data.local.entity.TaskEntity
 import com.example.taskyapplication.agenda.items.task.data.network.models.TaskResponse
 import com.example.taskyapplication.agenda.items.task.data.network.models.TaskNetworkModel
@@ -16,8 +15,8 @@ fun TaskResponse.asTaskEntity(): TaskEntity {
         id = id,
         title = title,
         description = description,
-        date = time.asLocalDateValue(),
-        time = time.asLocalTimeValue(),
+        date = time.toLocalDateAndTime().first,
+        time = time.toLocalDateAndTime().second,
         remindAt = remindAt,
         isDone = isDone
     )
@@ -28,8 +27,8 @@ fun TaskNetworkModel.asTaskEntity(): TaskEntity {
         id = itemId,
         title = title,
         description = description,
-        date = startTime.asLocalDateValue(),
-        time = startTime.asLocalTimeValue(),
+        date = startTime.toLocalDateAndTime().first,
+        time = startTime.toLocalDateAndTime().second,
         remindAt = reminderTime,
         isDone = isDone
     )
@@ -40,8 +39,8 @@ fun UpdateTaskBody.asTaskEntity(): TaskEntity {
         id = itemId,
         title = title,
         description = description,
-        date = startTime.asLocalDateValue(),
-        time = startTime.asLocalTimeValue(),
+        date = startTime.toLocalDateAndTime().first,
+        time = startTime.toLocalDateAndTime().second,
         remindAt = reminderTime,
         isDone = isDone
     )
@@ -52,8 +51,8 @@ fun TaskResponse.asTaskUi(): TaskUiState {
         id = id,
         title = title,
         description = description,
-        time = time.asLocalTimeValue(),
-        date = time.asLocalDateValue(),
+        time = time.toLocalDateAndTime().second,
+        date = time.toLocalDateAndTime().first,
         remindAt = ReminderOptions.THIRTY_MINUTES_BEFORE,
         isDone = isDone
     )
