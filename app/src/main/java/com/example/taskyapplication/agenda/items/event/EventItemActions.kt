@@ -6,6 +6,8 @@ import java.time.LocalDate
 import java.time.LocalTime
 
 sealed interface EventItemAction {
+    data class OpenExistingEvent(val eventId: String): EventItemAction
+    data class EditExistingEvent(val eventId: String): EventItemAction
     data class SetTitle(val title: String): EventItemAction
     data class SetDescription(val description: String): EventItemAction
     data class SetStartTime(val startTime: LocalTime): EventItemAction

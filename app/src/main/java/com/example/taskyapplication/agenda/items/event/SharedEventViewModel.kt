@@ -2,14 +2,17 @@ package com.example.taskyapplication.agenda.items.event
 
 import android.content.Context
 import android.net.Uri
+import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.taskyapplication.agenda.common.AgendaItemEvent
 import com.example.taskyapplication.agenda.items.event.data.toCreateEventNetworkModel
+import com.example.taskyapplication.agenda.items.event.data.toEventUiState
 import com.example.taskyapplication.agenda.items.event.data.toUpdateEventNetworkModel
 import com.example.taskyapplication.agenda.items.event.domain.EventRepository
 import com.example.taskyapplication.agenda.items.event.domain.ImageMultiPartProvider
 import com.example.taskyapplication.agenda.items.event.presentation.EventUiState
+import com.example.taskyapplication.agenda.items.reminder.data.models.toReminderUiState
 import com.example.taskyapplication.domain.utils.DataError
 import com.example.taskyapplication.domain.utils.Result
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -29,8 +32,16 @@ import javax.inject.Inject
 class SharedEventViewModel @Inject constructor(
     private val imageMultiPartProvider: ImageMultiPartProvider,
     private val eventRepository: EventRepository,
-    @ApplicationContext private val applicationContext: Context
+    @ApplicationContext private val applicationContext: Context,
+    savedStateHandle: SavedStateHandle
 ): ViewModel() {
+    private val eventId: String? = savedStateHandle.get<String>("eventId")
+
+    init {
+        if (eventId != null) {
+            loadExistingEvent(eventId)
+        }
+    }
 
     private val agendaEventChannel = Channel<AgendaItemEvent>()
     val agendaEvents = agendaEventChannel.receiveAsFlow()
@@ -48,6 +59,12 @@ class SharedEventViewModel @Inject constructor(
     private val _tempAttendeeList = MutableStateFlow<List<String>>(emptyList())
     val tempAttendeeList = _tempAttendeeList.asStateFlow()
 
+    private fun loadExistingEvent(eventId: String) {
+        viewModelScope.launch {
+            val requestedTask = eventRepository.getEventById(eventId)
+            _eventUiState.value = requestedTask.toEventUiState()
+        }
+    }
     private fun isNewEvent(currentId: String) = currentId.isEmpty() || currentId.isBlank()
 
     private fun createOrUpdateEvent() {
@@ -174,6 +191,12 @@ class SharedEventViewModel @Inject constructor(
         when (action) {
             EventItemAction.SaveAgendaItemUpdates -> { createOrUpdateEvent() }
 
+            is EventItemAction.EditExistingEvent -> {
+                loadExistingEvent(action.eventId)
+            }
+            is EventItemAction.OpenExistingEvent -> {
+                loadExistingEvent(action.eventId)
+            }
             is EventItemAction.SetTitle -> {
                 viewModelScope.launch {
                     _eventUiState.update { it.copy(title = action.title) }

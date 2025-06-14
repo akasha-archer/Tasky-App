@@ -7,6 +7,7 @@ import com.example.taskyapplication.agenda.items.event.data.GetAttendeeResponse
 import com.example.taskyapplication.agenda.items.event.data.UpdateEventNetworkModel
 import com.example.taskyapplication.agenda.items.event.data.UpdatedEventResponse
 import com.example.taskyapplication.agenda.items.event.data.db.AttendeeEntity
+import com.example.taskyapplication.agenda.items.event.data.db.EventEntity
 import com.example.taskyapplication.agenda.items.event.data.db.EventWithPhotos
 import com.example.taskyapplication.agenda.items.event.data.db.asAttendeeEntity
 import com.example.taskyapplication.agenda.items.event.data.toEventEntity
@@ -109,7 +110,7 @@ class EventOfflineFirstRepository @Inject constructor(
         }
     }
 
-    override suspend fun getEventById(eventId: String): EventWithPhotos? {
+    override suspend fun getEventById(eventId: String): EventEntity {
         return localDataSource.getEvent(eventId)
     }
 

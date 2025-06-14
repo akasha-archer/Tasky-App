@@ -155,13 +155,14 @@ class SharedReminderViewModel @Inject constructor(
     fun executeActions(action: AgendaItemAction) {
         when (action) {
             AgendaItemAction.SaveAgendaItemUpdates -> { createOrUpdateReminder() }
-            is AgendaItemAction.EditExistingItem -> {
+            is AgendaItemAction.EditExistingReminder -> {
                 loadExistingReminder(action.id)
             }
             is AgendaItemAction.OpenExistingReminder -> {
                 loadExistingReminder(action.id)
             }
             is AgendaItemAction.OpenExistingTask -> { Unit }
+            is AgendaItemAction.EditExistingTask -> { Unit }
             is AgendaItemAction.SetTitle -> {
                 viewModelScope.launch {
                     _reminderUiState.update { it.copy(title = action.title) }

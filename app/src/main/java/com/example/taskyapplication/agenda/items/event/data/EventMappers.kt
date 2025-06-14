@@ -1,18 +1,27 @@
 package com.example.taskyapplication.agenda.items.event.data
 
-import android.R.attr.host
-import com.example.taskyapplication.agenda.domain.asLocalDateValue
-import com.example.taskyapplication.agenda.domain.asLocalTimeValue
-import com.example.taskyapplication.agenda.domain.combineDateAndTime
+import com.example.taskyapplication.agenda.data.model.ReminderOptions
 import com.example.taskyapplication.agenda.domain.combineLocalDateAndTime
 import com.example.taskyapplication.agenda.domain.convertToLong
 import com.example.taskyapplication.agenda.domain.toLocalDateAndTime
 import com.example.taskyapplication.agenda.items.event.data.db.EventEntity
 import com.example.taskyapplication.agenda.items.event.data.db.EventPhotoEntity
 import com.example.taskyapplication.agenda.items.event.presentation.EventUiState
-import java.time.ZoneId
-import java.time.ZoneOffset
 
+fun EventEntity.toEventUiState(): EventUiState {
+    return EventUiState(
+        id = id,
+        title = title,
+        description = description,
+        photos = photos,
+        attendeeIds = attendeeIds,
+        startTime = startTime,
+        startDate = startDate,
+        endTime = endTime,
+        endDate = endDate,
+        remindAt = ReminderOptions.THIRTY_MINUTES_BEFORE,
+    )
+}
 fun EventUiState.toCreateEventNetworkModel(): CreateEventNetworkModel {
     val startDateTime = combineLocalDateAndTime(startDate, startTime).convertToLong()
     val endDateTime = combineLocalDateAndTime(endDate, endTime).convertToLong()

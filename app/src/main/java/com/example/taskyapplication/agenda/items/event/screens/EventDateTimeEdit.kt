@@ -34,7 +34,6 @@ import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.example.taskyapplication.TaskyBaseScreen
 import com.example.taskyapplication.agenda.common.AgendaItemEvent
-import com.example.taskyapplication.agenda.domain.asLocalDateValue
 import com.example.taskyapplication.agenda.domain.toDateAsString
 import com.example.taskyapplication.agenda.domain.toLocalDateAndTime
 import com.example.taskyapplication.agenda.domain.toTimeAsString
