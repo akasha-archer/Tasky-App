@@ -39,6 +39,7 @@ import androidx.compose.ui.geometry.CornerRadius
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
@@ -81,8 +82,10 @@ fun MainScreenEmptyState(
             contentDescription = "empty state image"
         )
         Text(
-            modifier = Modifier.padding(top = 72.dp),
-            text = "No items scheduled for today. Tap the button below to get started",
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(top = 72.dp),
+            text = stringResource(R.string.empty_schedule_message),
             style = TaskyTypography.bodyMedium.copy(
                 color = taskyColors.primary,
                 textAlign = TextAlign.Center

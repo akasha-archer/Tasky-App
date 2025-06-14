@@ -12,22 +12,22 @@ import retrofit2.http.PUT
 import retrofit2.http.Query
 
 interface TaskApiService {
-    @POST("/task")
+    @POST("task")
     suspend fun createNewTask(
         @Body request: TaskNetworkModel
     ): Response<Unit>
 
-    @PUT("/task")
+    @PUT("task")
     suspend fun updateTask(
         @Body request: UpdateTaskBody
     ): Response<Unit>
 
-    @GET("/task/{taskId}")
+    @GET("task/{taskId}")
     suspend fun getTaskById(
         @Query("taskId") taskId: String
     ): Response<TaskResponse>
 
-    @DELETE("/task")
+    @DELETE("task")
     suspend fun deleteTaskById(
         @Query("taskId") taskId: String
     ): Response<Unit>

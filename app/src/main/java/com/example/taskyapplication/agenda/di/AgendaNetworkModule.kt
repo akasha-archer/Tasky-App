@@ -1,6 +1,9 @@
 package com.example.taskyapplication.agenda.di
 
+import android.content.Context
 import com.example.taskyapplication.BuildConfig
+import com.example.taskyapplication.agenda.common.INetworkObserver
+import com.example.taskyapplication.agenda.common.NetworkObserver
 import com.example.taskyapplication.agenda.items.event.domain.EventLocalDataSource
 import com.example.taskyapplication.agenda.items.event.domain.EventOfflineFirstRepository
 import com.example.taskyapplication.agenda.items.event.domain.EventRemoteDataSource
@@ -30,6 +33,7 @@ import com.jakewharton.retrofit2.converter.kotlinx.serialization.asConverterFact
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
+import dagger.hilt.android.qualifiers.ApplicationContext
 import dagger.hilt.components.SingletonComponent
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -49,6 +53,13 @@ object AgendaNetworkModule {
         ignoreUnknownKeys = true
         coerceInputValues = true
     }
+
+    @Provides
+    @Singleton
+    fun provideNetworkObserver(
+        @ApplicationContext context: Context
+    ): INetworkObserver =
+        NetworkObserver(context)
 
     @Provides
     @Singleton

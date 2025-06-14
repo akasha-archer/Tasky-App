@@ -1,5 +1,8 @@
 package com.example.taskyapplication.agenda.items.task.data
 
+import android.content.Context
+import android.net.ConnectivityManager
+import android.net.NetworkCapabilities
 import android.util.Log
 import com.example.taskyapplication.agenda.items.task.data.local.dao.PendingTaskDao
 import com.example.taskyapplication.agenda.items.task.data.local.entity.TaskEntity
@@ -9,6 +12,7 @@ import com.example.taskyapplication.agenda.items.task.data.network.models.Update
 import com.example.taskyapplication.agenda.items.task.domain.LocalDataSource
 import com.example.taskyapplication.agenda.items.task.domain.RemoteDataSource
 import com.example.taskyapplication.agenda.items.task.domain.TaskRepository
+import com.example.taskyapplication.auth.domain.AuthTokenManager
 import com.example.taskyapplication.domain.utils.DataError
 import com.example.taskyapplication.domain.utils.EmptyResult
 import com.example.taskyapplication.domain.utils.Result
@@ -26,8 +30,8 @@ class OfflineFirstTaskRepository @Inject constructor(
 
     override suspend fun createNewTask(request: TaskNetworkModel): EmptyResult<DataError> {
         val localResult = localDataSource.upsertTask(request.asTaskEntity())
-        val see = localDataSource.getAllTasks()
-        Log.i("See What is in there", see.toString())
+        val all = localDataSource.getAllTasks()
+        Log.i("See What is in there", all.toString())
         if (localResult !is Result.Success) {
             Log.e("Error inserting new task", "error: $localResult")
             return localResult.asEmptyDataResult()
