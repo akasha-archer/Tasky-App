@@ -11,6 +11,7 @@ import com.example.taskyapplication.network.CommonInterceptor
 import com.example.taskyapplication.network.RefreshAuthenticationInterceptor
 import com.example.taskyapplication.network.TokenRefreshApi
 import com.jakewharton.retrofit2.converter.kotlinx.serialization.asConverterFactory
+import com.skydoves.retrofit.adapters.result.ResultCallAdapterFactory
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -20,6 +21,7 @@ import retrofit2.Retrofit
 import kotlinx.serialization.json.Json
 import okhttp3.MediaType.Companion.toMediaType
 import okhttp3.logging.HttpLoggingInterceptor
+import retrofit2.converter.gson.GsonConverterFactory
 import javax.inject.Named
 import javax.inject.Provider
 import javax.inject.Singleton
@@ -81,6 +83,7 @@ object NetworkModule {
         return Retrofit.Builder()
             .baseUrl(BuildConfig.BASE_URL)
             .client(authenticatedOkHttpClient)
+            .addCallAdapterFactory(ResultCallAdapterFactory.create())
             .addConverterFactory(
                 json.asConverterFactory(
                     "application/json".toMediaType()

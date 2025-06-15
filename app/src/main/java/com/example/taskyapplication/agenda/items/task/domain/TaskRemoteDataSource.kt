@@ -13,7 +13,7 @@ import javax.inject.Inject
 
 interface RemoteDataSource {
     suspend fun getTask(taskId: String): Result<TaskResponse, DataError.Network>
-    suspend fun createTask(task: TaskNetworkModel): Response<TaskResponse>
+    suspend fun createTask(task: TaskNetworkModel): kotlin.Result<Unit>
     suspend fun updateTask(task: UpdateTaskBody): EmptyResult<DataError>
     suspend fun deleteTask(taskId: String): EmptyResult<DataError>
 }
@@ -28,7 +28,7 @@ class TaskRemoteDataSource @Inject constructor(
         }
     }
 
-    override suspend fun createTask(task: TaskNetworkModel): Response<TaskResponse> {
+    override suspend fun createTask(task: TaskNetworkModel): kotlin.Result<Unit> {
          return taskApi.createNewTask(task)
 
 

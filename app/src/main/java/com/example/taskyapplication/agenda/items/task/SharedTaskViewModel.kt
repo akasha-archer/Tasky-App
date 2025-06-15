@@ -51,7 +51,9 @@ class SharedTaskViewModel @Inject constructor(
      private fun loadExistingTask(taskId: String) {
         viewModelScope.launch {
            val requestedTask = repository.getTaskById(taskId)
-            _uiState.value = requestedTask.asTaskUi()
+            if (requestedTask != null) {
+                _uiState.value = requestedTask.asTaskUi()
+            }
         }
     }
 
