@@ -157,57 +157,63 @@ fun AgendaMainScreen(
                     modifier = Modifier
                 ) {
                     AgendaScreenScrollableDates()
-                    AgendaSummary(
-                        modifier = Modifier,
-                        dailySummary = agendaViewState.combinedSummaryList,
-                        dateHeading = agendaViewState.displayDateHeading,
-                        onOpenClick = { itemId, type ->
-                            Toast.makeText(
-                                ctxt,
-                                "open item clicked id $itemId type is $type",
-                                Toast.LENGTH_SHORT).show()
+                        AgendaSummary(
+                            modifier = Modifier,
+                            dailySummary = agendaViewState.combinedSummaryList,
+                            dateHeading = agendaViewState.displayDateHeading,
+                            onOpenClick = { itemId, type ->
+                                Toast.makeText(
+                                    ctxt,
+                                    "open item clicked id $itemId type is $type",
+                                    Toast.LENGTH_SHORT
+                                ).show()
 
-                            when(type) {
-                                AgendaItemType.EVENT -> {
-                                    onEventAction(EventItemAction.OpenExistingEvent(itemId))
-                                }
-                                AgendaItemType.REMINDER -> {
-                                    onItemAction(AgendaItemAction.OpenExistingReminder(itemId))
-                                }
-                                AgendaItemType.TASK -> {
-                                    onItemAction(AgendaItemAction.OpenExistingTask(itemId))
-                                }
-                            }
-                            onAction(MainScreenAction.ItemToOpen(itemId, type))
-                        },
-                        onEditClick = { itemId, type ->
-                            when(type) {
-                                AgendaItemType.EVENT -> {
-                                    onEventAction(EventItemAction.EditExistingEvent(itemId))
-                                }
-                                AgendaItemType.REMINDER -> {
-                                    onItemAction(AgendaItemAction.EditExistingReminder(itemId))
-                                }
-                                AgendaItemType.TASK -> {
-                                    onItemAction(AgendaItemAction.OpenExistingTask(itemId))
-                                }
-                            }
-                            onAction(MainScreenAction.ItemToEdit(itemId, type))
-                        },
-                        onDeleteClick = { itemId, type ->
-                            onAction(MainScreenAction.ItemToDelete(itemId, type))
-                        },
-                        onToggleItemMenu = { itemId ->
-                            expandedItemId = if (expandedItemId == itemId) {
-                                null
-                            } else {
-                                itemId
-                            }
-                            Toast.makeText(ctxt, "menu clicked id $itemId", Toast.LENGTH_SHORT).show()
-                        },
-                        currentlyExpandedItemId = expandedItemId
+                                when (type) {
+                                    AgendaItemType.EVENT -> {
+                                        onEventAction(EventItemAction.OpenExistingEvent(itemId))
+                                    }
 
-                    )
+                                    AgendaItemType.REMINDER -> {
+                                        onItemAction(AgendaItemAction.OpenExistingReminder(itemId))
+                                    }
+
+                                    AgendaItemType.TASK -> {
+                                        onItemAction(AgendaItemAction.OpenExistingTask(itemId))
+                                    }
+                                }
+                                onAction(MainScreenAction.ItemToOpen(itemId, type))
+                            },
+                            onEditClick = { itemId, type ->
+                                when (type) {
+                                    AgendaItemType.EVENT -> {
+                                        onEventAction(EventItemAction.EditExistingEvent(itemId))
+                                    }
+
+                                    AgendaItemType.REMINDER -> {
+                                        onItemAction(AgendaItemAction.EditExistingReminder(itemId))
+                                    }
+
+                                    AgendaItemType.TASK -> {
+                                        onItemAction(AgendaItemAction.OpenExistingTask(itemId))
+                                    }
+                                }
+                                onAction(MainScreenAction.ItemToEdit(itemId, type))
+                            },
+                            onDeleteClick = { itemId, type ->
+                                onAction(MainScreenAction.ItemToDelete(itemId, type))
+                            },
+                            onToggleItemMenu = { itemId ->
+                                expandedItemId = if (expandedItemId == itemId) {
+                                    null
+                                } else {
+                                    itemId
+                                }
+                                Toast.makeText(ctxt, "menu clicked id $itemId", Toast.LENGTH_SHORT)
+                                    .show()
+                            },
+                            currentlyExpandedItemId = expandedItemId
+
+                        )
                 }
                 Box(
                     modifier = Modifier

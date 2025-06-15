@@ -7,6 +7,7 @@ import com.example.taskyapplication.agenda.domain.toLocalDateAndTime
 import com.example.taskyapplication.agenda.items.event.data.db.EventEntity
 import com.example.taskyapplication.agenda.items.event.data.db.EventPhotoEntity
 import com.example.taskyapplication.agenda.items.event.presentation.EventUiState
+import java.time.LocalDateTime
 
 fun EventEntity.toEventUiState(): EventUiState {
     return EventUiState(
@@ -20,6 +21,21 @@ fun EventEntity.toEventUiState(): EventUiState {
         endTime = endTime,
         endDate = endDate,
         remindAt = ReminderOptions.THIRTY_MINUTES_BEFORE,
+    )
+}
+
+fun EventEntity.toCreateEventNetworkModel(): CreateEventNetworkModel {
+    val eventStart = LocalDateTime.of(startDate, startTime).convertToLong()
+    val eventEnd = LocalDateTime.of(endDate, endTime).convertToLong()
+
+    return CreateEventNetworkModel(
+        id = id,
+        title = title,
+        description = description,
+        from = eventStart,
+        to = eventEnd,
+        remindAt = ReminderOptions.THIRTY_MINUTES_BEFORE.asLong,
+        attendeeIds = emptyList(),
     )
 }
 fun EventUiState.toCreateEventNetworkModel(): CreateEventNetworkModel {

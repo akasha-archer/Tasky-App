@@ -10,18 +10,16 @@ import retrofit2.http.POST
 import retrofit2.http.Query
 
 interface AgendaApiService {
-    @GET("/agenda/{selected_date}")
+    @GET("agenda/{selected_date}")
     suspend fun getAgendaForDate(
         @Query("selected_date") date: Long
     ): Response<AgendaItemsResponse>
 
-    @POST("/syncAgenda")
+    @POST("syncAgenda")
     suspend fun syncAgenda(
         @Body deletedAgendaItems: DeletedAgendaItems
     ): Response<Unit>
 
-    @GET("/fullAgenda")
-    suspend fun getFullAgenda(
-        @Body fullAgendaResponse: FullAgendaResponse
-    ): Response<Unit>
+    @GET("fullAgenda")
+    suspend fun getFullAgenda(): Response<FullAgendaResponse>
 }

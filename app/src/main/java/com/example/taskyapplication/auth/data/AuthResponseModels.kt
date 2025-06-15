@@ -18,8 +18,3 @@ data class AccessTokenResponse(
     val newAccessToken: String,
     val expirationTimestamp: Long
 )
-
-@Serializable
-data class AuthenticationResponse(
-    val responseCode: Int,
-)

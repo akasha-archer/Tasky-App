@@ -11,23 +11,24 @@ import retrofit2.Response
 import javax.inject.Inject
 
 interface AgendaRemoteDataSource {
+
+//    suspend fun syncLocalItemsWithRemoteStorage(): Result<Unit, DataError.Network>
     suspend fun getAgendaItemsForDate(
         date: Long
     ): Response<AgendaItemsResponse>
-    suspend fun syncAgenda(deletedAgendaItems: DeletedAgendaItems): Result<Unit, DataError.Network>
-    suspend fun fetchFullAgenda(fullAgendaResponse: FullAgendaResponse): Result<Unit, DataError.Network>
+    suspend fun syncDeletedAgendaItems(deletedAgendaItems: DeletedAgendaItems): Result<Unit, DataError.Network>
+    suspend fun fetchFullAgenda(): Response<FullAgendaResponse>
 }
 
 class AgendaItemsRemoteDataSource @Inject constructor(
     private val agendaApiService: AgendaApiService
 ): AgendaRemoteDataSource {
-
     override suspend fun getAgendaItemsForDate(date: Long): Response<AgendaItemsResponse> {
         return agendaApiService.getAgendaForDate(date)
     }
 
     // sync pending deleted items with server
-    override suspend fun syncAgenda(
+    override suspend fun syncDeletedAgendaItems(
         deletedAgendaItems: DeletedAgendaItems
     ): Result<Unit, DataError.Network> {
         return safeApiCall {
@@ -35,12 +36,8 @@ class AgendaItemsRemoteDataSource @Inject constructor(
         }
     }
 
-    override suspend fun fetchFullAgenda(
-        fullAgendaResponse: FullAgendaResponse
-    ): Result<Unit, DataError.Network> {
-        return safeApiCall {
-            agendaApiService.getFullAgenda(fullAgendaResponse)
-        }
+    override suspend fun fetchFullAgenda(): Response<FullAgendaResponse> {
+        return agendaApiService.getFullAgenda()
     }
 
 }

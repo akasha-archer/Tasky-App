@@ -15,7 +15,7 @@ interface LocalDataSource {
     fun getTasksByDate(date: LocalDate): Flow<List<TaskEntity>>
     suspend fun upsertTask(task: TaskEntity): Result<Unit, DataError.Local>
     suspend fun upsertAllTasks(tasks: List<Task>): Result<Unit, DataError.Local>
-    suspend fun getTask(taskId: String): TaskEntity
+    suspend fun getTask(taskId: String): TaskEntity?
     suspend fun deleteTask(taskId: String)
     suspend fun deleteAllTasks()
     suspend fun getAllTasks(): List<TaskEntity>
@@ -36,7 +36,7 @@ class TaskLocalDataSource @Inject constructor(
         }
     }
 
-    override suspend fun getTask(taskId: String): TaskEntity {
+    override suspend fun getTask(taskId: String): TaskEntity? {
         return dao.getTaskById(taskId)
     }
 

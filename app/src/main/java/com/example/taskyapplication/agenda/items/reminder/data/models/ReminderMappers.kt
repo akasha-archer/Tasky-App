@@ -1,9 +1,11 @@
 package com.example.taskyapplication.agenda.items.reminder.data.models
 
+import com.example.taskyapplication.agenda.domain.convertToLong
 import com.example.taskyapplication.agenda.domain.getReminderOptionFromMillis
 import com.example.taskyapplication.agenda.domain.toLocalDateAndTime
 import com.example.taskyapplication.agenda.items.reminder.data.db.ReminderEntity
 import com.example.taskyapplication.agenda.items.reminder.presentation.ReminderUiState
+import com.example.taskyapplication.agenda.items.task.data.network.models.TaskNetworkModel
 import java.time.LocalDateTime
 import java.time.ZoneId
 
@@ -15,6 +17,17 @@ fun ReminderNetworkModel.toReminderEntity(): ReminderEntity {
         date = startTime.toLocalDateAndTime().first,
         time = startTime.toLocalDateAndTime().second,
         remindAt = reminderTime
+    )
+}
+
+fun ReminderEntity.asReminderNetworkModel(): ReminderNetworkModel {
+    val networkModelTime = LocalDateTime.of(date, time).convertToLong()
+    return ReminderNetworkModel(
+        itemId = id,
+        title = title,
+        description = description,
+        startTime = networkModelTime,
+        reminderTime = 0L
     )
 }
 

@@ -1,8 +1,10 @@
 package com.example.taskyapplication.agenda.items.main.data
 
 import com.example.taskyapplication.R
+import com.example.taskyapplication.agenda.items.event.data.CreatedEventResponse
 import com.example.taskyapplication.agenda.items.event.data.db.EventEntity
 import com.example.taskyapplication.agenda.items.reminder.data.db.ReminderEntity
+import com.example.taskyapplication.agenda.items.reminder.data.models.ReminderResponse
 import com.example.taskyapplication.agenda.items.task.data.local.entity.TaskEntity
 import kotlinx.serialization.Serializable
 import java.time.LocalDate
@@ -10,9 +12,9 @@ import java.time.LocalTime
 
 @Serializable
 data class FullAgendaResponse(
-    val events: List<Event>,
+    val events: List<CreatedEventResponse>,
     val tasks: List<Task>,
-    val reminders: List<Reminder>
+    val reminders: List<ReminderResponse>
 )
 
 data class LocalAgendaSummary(

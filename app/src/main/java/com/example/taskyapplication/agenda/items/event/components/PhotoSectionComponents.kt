@@ -1,5 +1,6 @@
 package com.example.taskyapplication.agenda.items.event.components
 
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
@@ -21,11 +22,13 @@ import androidx.compose.material.icons.filled.Add
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.scale
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalWindowInfo
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
@@ -73,6 +76,8 @@ fun PhotoRowEmptyState(
 fun PhotoRow(
     modifier: Modifier = Modifier,
     onAddPhotoClick: () -> Unit = {},
+    isDeviceOffline: Boolean = false,
+    showFeatureDisabledMessage: () -> Unit = {},
     photosToShow: List<EventImageItem> = emptyList(),
 ) {
     Column(
@@ -80,15 +85,30 @@ fun PhotoRow(
             .fillMaxWidth()
             .background(color = taskyColors.surface)
     ) {
-        Text(
+        Row(
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(horizontal = 16.dp)
                 .padding(top = 24.dp),
-            text = stringResource(id = R.string.event_photos_section),
-            color = taskyColors.primary,
-            style = TaskyTypography.bodyMedium
-        )
+            verticalAlignment = Alignment.CenterVertically,
+            horizontalArrangement = Arrangement.spacedBy(8.dp)
+        ) {
+            Text(
+                modifier = Modifier
+                    .padding(start = 16.dp),
+                text = stringResource(id = R.string.event_photos_section),
+                color = taskyColors.primary,
+                style = TaskyTypography.bodyMedium
+            )
+            if (isDeviceOffline) {
+                Image(
+                    modifier = Modifier
+                        .clickable { showFeatureDisabledMessage() },
+                    painter = painterResource(R.drawable.cloud_offline),
+                    contentDescription = "offline symbol",
+                )
+            }
+        }
+
         LazyVerticalGrid(
             modifier = Modifier
                 .padding(end = 16.dp)
@@ -107,7 +127,8 @@ fun PhotoRow(
             if (photosToShow.size < 10)
                 item {
                     AddPhotoButton(
-                        onAddPhotoClick = onAddPhotoClick
+                        onAddPhotoClick = onAddPhotoClick,
+                        showFeatureDisabledMessage = showFeatureDisabledMessage
                     )
                 }
         }
@@ -118,6 +139,8 @@ fun PhotoRow(
 fun AddPhotoButton(
     modifier: Modifier = Modifier,
     onAddPhotoClick: () -> Unit = {},
+    isDeviceOffline: Boolean = false,
+    showFeatureDisabledMessage: () -> Unit = {},
     isEnabled: Boolean = false // disabled if user is offline
 ) {
     TextButton(
@@ -137,7 +160,13 @@ fun AddPhotoButton(
                         shape = RoundedCornerShape(4.dp)
                     )
                     .padding(vertical = 12.dp, horizontal = 12.dp)
-                    .clickable { onAddPhotoClick() },
+                    .clickable {
+                        if (isDeviceOffline) {
+                            showFeatureDisabledMessage()
+                        } else {
+                            onAddPhotoClick()
+                        }
+                    },
             )
         }
     )
@@ -195,5 +224,7 @@ fun EmptyStatePreview() {
 @Preview(showBackground = true)
 @Composable
 fun PhotoRowPreview() {
-    PhotoRow()
+    PhotoRow(
+        isDeviceOffline = true,
+    )
 }

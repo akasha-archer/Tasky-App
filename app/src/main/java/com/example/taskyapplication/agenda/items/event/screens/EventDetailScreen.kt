@@ -23,6 +23,8 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.example.taskyapplication.TaskyBaseScreen
+import com.example.taskyapplication.agenda.domain.toDateAsString
+import com.example.taskyapplication.agenda.domain.toTimeAsString
 import com.example.taskyapplication.agenda.items.event.EventItemAction
 import com.example.taskyapplication.agenda.items.event.SharedEventViewModel
 import com.example.taskyapplication.agenda.items.event.components.PhotoRow
@@ -149,15 +151,15 @@ fun EventDetailScreen(
                             agendaItemStartTime = {  // event starting time
                                 AgendaItemDateTimeRow(
                                     isEditing = isEditScreen,
-                                    timeText = state.startTime,
-                                    dateText = state.startDate,
+                                    timeText = state.startTime.toTimeAsString(),
+                                    dateText = state.startDate.toDateAsString(),
                                 )
                             },
                             agendaItemEndTime = {  // event end time
                                 AgendaItemDateTimeRow(
                                     isEditing = isEditScreen,
-                                    timeText = state.endTime,
-                                    dateText = state.endDate,
+                                    timeText = state.endTime.toTimeAsString(),
+                                    dateText = state.endDate.toDateAsString(),
                                 )
                             },
                             agendaItemReminderTime = {

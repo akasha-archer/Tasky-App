@@ -1,5 +1,6 @@
 package com.example.taskyapplication.agenda.items.event.components
 
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
@@ -21,6 +22,7 @@ import androidx.compose.material3.FilterChip
 import androidx.compose.material3.FilterChipDefaults
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -32,6 +34,7 @@ import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.draw.drawBehind
 import androidx.compose.ui.geometry.CornerRadius
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
@@ -248,45 +251,73 @@ fun VisitorHeader(
     showAddVisitorBottomSheet: () -> Unit = {},
     onAddNewVisitor: (String) -> Unit = {},
     onCancelAddingVisitor: () -> Unit = {},
+    showFeatureDisabledMessage: () -> Unit = {},
     userEmail: String = "",
     visitorList: List<String> = emptyList(),
     isBottomSheetEnabled: Boolean = false,
     isLoading: Boolean = false,
     isEditingScreen: Boolean = false,
-    isValidEmail: Boolean = false
+    isValidEmail: Boolean = false,
+    isDeviceOffline: Boolean = false
 ) {
     Column() {
         Row(
             modifier = modifier
                 .fillMaxWidth()
-                .padding(vertical = 24.dp),
+                .padding(top = 16.dp),
             horizontalArrangement = Arrangement.SpaceBetween,
             verticalAlignment = Alignment.CenterVertically
         ) {
-            Text(
-                text = "Visitors",
-                style = TaskyTypography.headlineMedium.copy(
-                    color = taskyColors.primary
+            Row(
+                modifier = Modifier,
+                horizontalArrangement = Arrangement.spacedBy(12.dp)
+            ) {
+                Text(
+                    text = "Visitors",
+                    style = TaskyTypography.headlineMedium.copy(
+                        color = taskyColors.primary
+                    )
                 )
-            )
+                if (isDeviceOffline) {
+                    Image(
+                        painter = painterResource(R.drawable.cloud_offline),
+                        contentDescription = "offline symbol",
+                    )
+                }
+            }
             if (isEditingScreen) {
                 Box(
                     modifier = Modifier
                 ) {
-                    Icon(
-                        imageVector = Icons.Default.Add,
-                        tint = taskyColors.onSurface,
-                        contentDescription = "Add Visitor",
+                    TextButton(
                         modifier = Modifier
-                            .clickable { showAddVisitorBottomSheet() }
-                            .drawBehind {
-                                drawRoundRect(
-                                    color = Color(0xFFF2F3F7),
-                                    cornerRadius = CornerRadius(3.dp.toPx())
-                                )
+                            .padding(horizontal = 12.dp) ,
+                        onClick = {
+                            if (!isDeviceOffline) {
+                                showAddVisitorBottomSheet()
+                            } else {
+                                showFeatureDisabledMessage()
                             }
-                            .padding(vertical = 12.dp, horizontal = 12.dp)
+                        },
+                        shape = RoundedCornerShape(4.dp),
+                        content = {
+                            Icon(
+                                imageVector = Icons.Default.Add,
+                                tint = taskyColors.onSurface,
+                                contentDescription = "Add Visitor",
+                                modifier = Modifier
+                                    .clickable { showAddVisitorBottomSheet() }
+                                    .drawBehind {
+                                        drawRoundRect(
+                                            color = Color(0xFFF2F3F7),
+                                            cornerRadius = CornerRadius(3.dp.toPx())
+                                        )
+                                    }
+                                    .padding(vertical = 8.dp, horizontal = 12.dp)
+                            )
+                        }
                     )
+
                     if (isBottomSheetEnabled) {
                         AddAttendeeBottomSheet(
                             modifier = Modifier,
@@ -340,6 +371,8 @@ val responseList = listOf(
 fun VisitorHeaderPreview() {
     VisitorHeader(
         visitorList = responseList,
+        isDeviceOffline = true,
+        isEditingScreen = true,
         userEmail = "charlesgdawe@examplepetstore.com"
     )
 }

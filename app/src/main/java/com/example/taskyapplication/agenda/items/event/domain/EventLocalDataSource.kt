@@ -14,6 +14,7 @@ import javax.inject.Inject
 
 interface EventLocalDataSource {
     suspend fun getEvents(): List<EventWithPhotos>
+    suspend fun getEventsWithoutPhotos(): List<EventEntity>
     fun getEventsForSelectedDate(date: LocalDate): Flow<List<EventEntity>>
     suspend fun createEvent(
         event: EventEntity,
@@ -35,14 +36,23 @@ interface EventLocalDataSource {
     suspend fun upsertPhotos(photos: List<EventPhotoEntity>)
     suspend fun getPhotosForEvent(eventId: String): List<EventPhotoEntity>
     suspend fun deletePhotosByEventId(eventId: String)
+    suspend fun getEventById(eventId: String): EventEntity?
+
 }
 
 class EventLocalDataSourceImpl @Inject constructor(
     private val eventDao: EventDao
 ) : EventLocalDataSource {
 
+    override suspend fun getEventById(eventId: String): EventEntity? {
+        return eventDao.getEventById(eventId)
+    }
     override suspend fun getEvents(): List<EventWithPhotos> {
         return eventDao.getAllEventsWithPhotos()
+    }
+
+    override suspend fun getEventsWithoutPhotos(): List<EventEntity> {
+        return eventDao.getAllEventsWithoutPhotos()
     }
 
     override fun getEventsForSelectedDate(date: LocalDate): Flow<List<EventEntity>> {

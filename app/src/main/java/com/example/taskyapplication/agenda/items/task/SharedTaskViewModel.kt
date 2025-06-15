@@ -87,40 +87,42 @@ class SharedTaskViewModel @Inject constructor(
                 remindAt = reminderTime
             )
 
-            val result = if (isNewTask(currentTaskId)) {
-                repository.createNewTask(
-                    taskToCreateOrUpdate.asTaskNetworkModel()
-                )
-            } else {
-                repository.updateTask(
-                    taskToCreateOrUpdate.asUpdateTaskNetworkModel()
-                )
-            }
+            val result = repository.createNewTask(taskToCreateOrUpdate.asTaskNetworkModel())
+//            val result = if (isNewTask(currentTaskId)) {
+//                repository.createNewTask(
+//                    taskToCreateOrUpdate.asTaskNetworkModel()
+//                )
+//            }
+//            else {
+//                repository.updateTask(
+//                    taskToCreateOrUpdate.asUpdateTaskNetworkModel()
+//                )
+//            }
 
             _uiState.update {
                 it.copy(isEditingItem = false)
             }
 
             when (result) {
-                is Result.Error -> {
-                    if (result.error == DataError.Network.NO_INTERNET) {
-                        agendaEventChannel.send(
-                            AgendaItemEvent.NewItemCreatedError(
-                                errorMessage = "Item not updated. Please check your internet connection."
-                            )
-                        )
-                    } else {
-                        agendaEventChannel.send(
-                            AgendaItemEvent.NewItemCreatedError(
-                                "Something went wrong. Please try again later."
-                            )
-                        )
-                    }
-                }
-
-                is Result.Success -> {
-                    agendaEventChannel.send(AgendaItemEvent.NewItemCreatedSuccess)
-                }
+//                is kotlin.Result.Companion.failure -> {
+//                    if (result.error == DataError.Network.NO_INTERNET) {
+//                        agendaEventChannel.send(
+//                            AgendaItemEvent.NewItemCreatedError(
+//                                errorMessage = "Item not updated. Please check your internet connection."
+//                            )
+//                        )
+//                    } else {
+//                        agendaEventChannel.send(
+//                            AgendaItemEvent.NewItemCreatedError(
+//                                "Something went wrong. Please try again later."
+//                            )
+//                        )
+//                    }
+//                }
+//
+//                is Result.Success -> {
+//                    agendaEventChannel.send(AgendaItemEvent.NewItemCreatedSuccess)
+//                }
             }
         }
     }

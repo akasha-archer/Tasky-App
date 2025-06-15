@@ -8,11 +8,12 @@ import com.example.taskyapplication.domain.utils.DataError
 import com.example.taskyapplication.domain.utils.EmptyResult
 import com.example.taskyapplication.domain.utils.Result
 import com.example.taskyapplication.domain.utils.safeApiCall
+import retrofit2.Response
 import javax.inject.Inject
 
 interface RemoteDataSource {
     suspend fun getTask(taskId: String): Result<TaskResponse, DataError.Network>
-    suspend fun createTask(task: TaskNetworkModel): EmptyResult<DataError>
+    suspend fun createTask(task: TaskNetworkModel): Response<TaskResponse>
     suspend fun updateTask(task: UpdateTaskBody): EmptyResult<DataError>
     suspend fun deleteTask(taskId: String): EmptyResult<DataError>
 }
@@ -27,10 +28,13 @@ class TaskRemoteDataSource @Inject constructor(
         }
     }
 
-    override suspend fun createTask(task: TaskNetworkModel): EmptyResult<DataError> {
-        return safeApiCall {
-            taskApi.createNewTask(task)
-        }
+    override suspend fun createTask(task: TaskNetworkModel): Response<TaskResponse> {
+         return taskApi.createNewTask(task)
+
+
+    //        return safeApiCall {
+//            taskApi.createNewTask(task)
+//        }
     }
 
     override suspend fun updateTask(task: UpdateTaskBody): EmptyResult<DataError> {

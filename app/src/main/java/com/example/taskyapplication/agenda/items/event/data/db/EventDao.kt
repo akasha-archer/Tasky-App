@@ -46,6 +46,8 @@ interface EventDao {
     @Query("SELECT * FROM events")
     suspend fun getAllEventsWithPhotos(): List<EventWithPhotos>
 
+    @Query("SELECT * FROM events")
+    suspend fun getAllEventsWithoutPhotos(): List<EventEntity>
     @Transaction // Important for @Relation queries
     @Query("SELECT * FROM events WHERE startDate = :date ORDER BY startTime ASC")
      fun getAllEventsForSelectedDate(date: LocalDate): Flow<List<EventEntity>>
