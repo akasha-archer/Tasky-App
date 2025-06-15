@@ -1,20 +1,15 @@
 package com.example.taskyapplication.agenda.items.event.domain
 
 import com.example.taskyapplication.agenda.items.event.data.CreateEventNetworkModel
-import com.example.taskyapplication.agenda.items.event.data.CreatedEventResponse
 import com.example.taskyapplication.agenda.items.event.data.GetAttendeeResponse
 import com.example.taskyapplication.agenda.items.event.data.UpdateEventNetworkModel
-import com.example.taskyapplication.agenda.items.event.data.UpdatedEventResponse
 import com.example.taskyapplication.agenda.items.event.data.db.AttendeeEntity
 import com.example.taskyapplication.agenda.items.event.data.db.EventEntity
-import com.example.taskyapplication.domain.utils.DataError
-import com.example.taskyapplication.domain.utils.EmptyResult
-import com.example.taskyapplication.domain.utils.Result
 import okhttp3.MultipartBody
 
 interface EventRepository {
 
-    suspend fun validateAttendee(email: String): kotlin.Result<Unit>
+    suspend fun validateAttendee(email: String): kotlin.Result<GetAttendeeResponse>
     suspend fun getAttendeeListForEvent(eventId: String): List<AttendeeEntity>
     suspend fun createNewEvent(
         request: CreateEventNetworkModel,

@@ -67,7 +67,9 @@ fun VisitorGroup(
         VisitorHeader(
             modifier = Modifier,
             isEditingScreen = isEditingScreen,
-            userEmail = userEmail
+            emailText = userEmail,
+            onEmailTextChange = {},
+            onConfirmAddAttendee = {}
         )
         VisitorChips()
         if (visitorList.isNotEmpty()) {
@@ -248,16 +250,19 @@ fun VisitorNameRowHost(
 @Composable
 fun VisitorHeader(
     modifier: Modifier = Modifier,
-    showAddVisitorBottomSheet: () -> Unit = {},
-    onAddNewVisitor: (String) -> Unit = {},
-    onCancelAddingVisitor: () -> Unit = {},
+//    onAddNewVisitor: (String) -> Unit = {},
+//    onInputEmailChange: (String) -> Unit = {},
     showFeatureDisabledMessage: () -> Unit = {},
-    userEmail: String = "",
-    visitorList: List<String> = emptyList(),
-    isBottomSheetEnabled: Boolean = false,
-    isLoading: Boolean = false,
     isEditingScreen: Boolean = false,
+    isBottomSheetEnabled: Boolean = false,
+    showAddVisitorBottomSheet: () -> Unit = {},
+    onCancelAddingVisitor: () -> Unit = {},
+    emailText: String,
+    onEmailTextChange: (String) -> Unit,
+    onConfirmAddAttendee: () -> Unit,
+    isLoading: Boolean = false,
     isValidEmail: Boolean = false,
+    visitorList: List<String> = emptyList(),
     isDeviceOffline: Boolean = false
 ) {
     Column() {
@@ -321,12 +326,13 @@ fun VisitorHeader(
                     if (isBottomSheetEnabled) {
                         AddAttendeeBottomSheet(
                             modifier = Modifier,
-                            isLoading = false,
-                            userEmail = userEmail,
-                            isButtonEnabled = isLoading,
+                            isLoading = isLoading,
+                            emailInput = emailText,
+                            isButtonEnabled = emailText.isNotBlank() && !isLoading,
                             isValidEmail = isValidEmail,
-                            onAddAttendee = { onAddNewVisitor(userEmail) },
-                            onCancelAddAttendee = { onCancelAddingVisitor() }
+                            onEmailInputChange =  onEmailTextChange,
+                            onConfirmAdd = onConfirmAddAttendee,
+                            onCancelAddAttendee = onCancelAddingVisitor
                         )
                     }
                 }
@@ -373,7 +379,9 @@ fun VisitorHeaderPreview() {
         visitorList = responseList,
         isDeviceOffline = true,
         isEditingScreen = true,
-        userEmail = "charlesgdawe@examplepetstore.com"
+        emailText = "",
+        onEmailTextChange = {},
+        onConfirmAddAttendee = {}
     )
 }
 

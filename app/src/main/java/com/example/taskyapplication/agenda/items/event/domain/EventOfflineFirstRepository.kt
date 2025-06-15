@@ -2,10 +2,12 @@ package com.example.taskyapplication.agenda.items.event.domain
 
 import android.util.Log
 import com.example.taskyapplication.agenda.items.event.data.CreateEventNetworkModel
+import com.example.taskyapplication.agenda.items.event.data.GetAttendeeResponse
 import com.example.taskyapplication.agenda.items.event.data.UpdateEventNetworkModel
 import com.example.taskyapplication.agenda.items.event.data.db.AttendeeEntity
 import com.example.taskyapplication.agenda.items.event.data.db.DeletedEventIdEntity
 import com.example.taskyapplication.agenda.items.event.data.db.EventEntity
+import com.example.taskyapplication.agenda.items.event.data.db.asAttendeeEntity
 import com.example.taskyapplication.agenda.items.event.data.toEventEntity
 import com.example.taskyapplication.agenda.items.event.data.toPhotoEntities
 import com.example.taskyapplication.domain.utils.SUCCESS_CODE
@@ -22,12 +24,19 @@ class EventOfflineFirstRepository @Inject constructor(
 
     override suspend fun validateAttendee(
         email: String
-    ): kotlin.Result<Unit> {
+    ): kotlin.Result<GetAttendeeResponse> {
         return try {
             val remoteResult = remoteDataSource.verifyAttendee(email)
-            kotlin.Result.success(Unit)
+            if (remoteResult.isSuccessful && remoteResult.body() != null) {
+                 localDataSource.upsertAttendee(remoteResult.body()!!.attendee.asAttendeeEntity())
+                kotlin.Result.success(remoteResult.body()!!)
+            } else {
+                val errorMessage = remoteResult.errorBody()?.string() ?: "Attendee validation failed"
+                Log.e("EventRepo", "Attendee validation failed: ${remoteResult.code()} - $errorMessage")
+                kotlin.Result.failure(Exception("Attendee validation failed: ${remoteResult.code()} - $errorMessage"))
+            }
         } catch (e: Exception) {
-            Log.e("Event Repo:", e.message.toString())
+            Log.e("EventRepo", "Error validating attendee: ${e.message}", e)
             kotlin.Result.failure(e)
         }
     }

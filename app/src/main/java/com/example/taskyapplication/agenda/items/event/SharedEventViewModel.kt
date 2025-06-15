@@ -6,6 +6,8 @@ import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.taskyapplication.agenda.common.AgendaItemEvent
+import com.example.taskyapplication.agenda.common.INetworkObserver
+import com.example.taskyapplication.agenda.common.NetworkStatus
 import com.example.taskyapplication.agenda.items.event.data.toCreateEventNetworkModel
 import com.example.taskyapplication.agenda.items.event.data.toEventUiState
 import com.example.taskyapplication.agenda.items.event.data.toUpdateEventNetworkModel
@@ -18,7 +20,9 @@ import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.onStart
 import kotlinx.coroutines.flow.receiveAsFlow
+import kotlinx.coroutines.flow.shareIn
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
@@ -30,21 +34,26 @@ class SharedEventViewModel @Inject constructor(
     private val imageMultiPartProvider: ImageMultiPartProvider,
     private val eventRepository: EventRepository,
     @ApplicationContext private val applicationContext: Context,
+    private val networkObserver: INetworkObserver,
     savedStateHandle: SavedStateHandle
 ) : ViewModel() {
     private val eventId: String? = savedStateHandle.get<String>("eventId")
-
-    init {
-        if (eventId != null) {
-            loadExistingEvent(eventId)
-        }
-    }
 
     private val agendaEventChannel = Channel<AgendaItemEvent>()
     val agendaEvents = agendaEventChannel.receiveAsFlow()
 
     private val _eventUiState = MutableStateFlow(EventUiState())
-    val eventUiState = _eventUiState.stateIn(
+    val eventUiState = _eventUiState
+        .onStart {
+            networkObserver.networkStatus.collect { status ->
+                val isOnline = status == NetworkStatus.Available
+                _eventUiState.update { it.copy(isUserOnline = isOnline) }
+            }
+            if (eventId != null) {
+                loadExistingEvent(eventId)
+            }
+        }
+        .stateIn(
         scope = viewModelScope,
         started = SharingStarted.WhileSubscribed(5000L),
         initialValue = EventUiState()
@@ -52,9 +61,6 @@ class SharedEventViewModel @Inject constructor(
 
     private val _uploadedPhotos = MutableStateFlow<List<Uri>>(emptyList())
     val uploadedPhotos = _uploadedPhotos.asStateFlow()
-
-    private val _tempAttendeeList = MutableStateFlow<List<String>>(emptyList())
-    val tempAttendeeList = _tempAttendeeList.asStateFlow()
 
     private fun loadExistingEvent(eventId: String) {
         viewModelScope.launch {
@@ -131,22 +137,29 @@ class SharedEventViewModel @Inject constructor(
     private fun verifyEventAttendee(email: String) {
         viewModelScope.launch {
             _eventUiState.update { it.copy(isValidatingAttendee = true) }
-            val result = eventRepository.validateAttendee(email)
-            _eventUiState.update { it.copy(isValidatingAttendee = false) }
+            val validationResult = eventRepository.validateAttendee(email)
 
-            when {
-                result.isSuccess -> {
-                    agendaEventChannel.send(AgendaItemEvent.NewItemCreatedSuccess)
-                }
-
-                result.isFailure -> {
-                    agendaEventChannel.send(
-                        AgendaItemEvent.NewItemCreatedError(
-                            "User does not exist. Please try another email address."
+            validationResult.fold(
+                onSuccess = { attendeeResponse ->
+                    _eventUiState.update { currentState ->
+                        val updatedAttendeeList = currentState.attendeeNames + attendeeResponse.attendee.fullName
+                        currentState.copy(
+                            isValidatingAttendee = false,
+                            isValidUser = true,
+                            attendeeNames = updatedAttendeeList.distinct(),
                         )
-                    )
+                    }
+                },
+                onFailure = { exception ->
+                    _eventUiState.update {
+                        it.copy(
+                            isValidatingAttendee = false,
+                            isValidUser = false
+                        )
+                    }
+                     agendaEventChannel.send(AgendaItemEvent.AttendeeValidationError(exception.message))
                 }
-            }
+            )
         }
     }
 

@@ -28,7 +28,7 @@ sealed class NetworkStatus {
 
 interface INetworkObserver {
     val networkStatus: StateFlow<NetworkStatus>
-    fun isOnline(): Boolean // For a quick synchronous check if needed, based on last known status
+    fun isOnline(): Boolean
 }
 
 @Singleton
@@ -41,11 +41,7 @@ class NetworkStatusObserver @Inject constructor(
 
     private val _networkStatus = MutableStateFlow(getCurrentNetworkStatus())
     override val networkStatus: StateFlow<NetworkStatus> = _networkStatus.asStateFlow()
-
-//    // Optional: A CoroutineScope for managing observation and active probes
-//    // If not injected, create one. Ensure it's cancelled appropriately if NetworkObserver
-//    // is not a true singleton tied to Application lifecycle.
-//    private val coroutineScope: CoroutineScope = CoroutineScope(Dispatchers.IO + Job())
+    private val coroutineScope: CoroutineScope = CoroutineScope(Dispatchers.IO + Job())
 
 
     init {
@@ -61,7 +57,7 @@ class NetworkStatusObserver @Inject constructor(
             override fun onAvailable(network: Network) {
                 super.onAvailable(network)
                 _networkStatus.value = NetworkStatus.Available
-//                 performActiveProbe() // Optional: verify actual internet
+                 performActiveProbe()
             }
 
             override fun onLost(network: Network) {
@@ -109,43 +105,43 @@ class NetworkStatusObserver @Inject constructor(
     }
 
 
-//    /**
-//     * Optional: Actively probes internet connectivity.
-//     * This can be called periodically or when a network becomes available.
-//     */
-//    private fun performActiveProbe() {
-//        coroutineScope.launch {
-//            val hasInternet = try {
-//                // Simple socket connection test (adjust timeout as needed)
-//                Socket().use { socket ->
-//                    socket.connect(InetSocketAddress("8.8.8.8", 53), 1500) // Google DNS
-//                    true
-//                }
-//            } catch (e: IOException) {
-//                Log.e("NetworkStatusObserver", "No internet connection: ${e.message}")
-//                false
-//            } finally {
-//                cleanup()
-//            }
-//
-//            if (hasInternet) {
-//                if (_networkStatus.value != NetworkStatus.Available) {
-//                    _networkStatus.value = NetworkStatus.Available
-//                }
-//            } else {
-//                // If active probe fails, and system still thinks network is up,
-//                // we might consider it offline for practical purposes.
-//                if (_networkStatus.value == NetworkStatus.Available) {
-//                    // Be cautious with this. If the system says available but probe fails,
-//                    // it could be a temporary blip or firewall.
-//                    // For now, let's trust the probe if it says unavailable.
-//                    _networkStatus.value = NetworkStatus.Unavailable
-//                }
-//            }
-//        }
-//    }
-//
-//     fun cleanup() {
-//         coroutineScope.cancel()
-//     }
+    /**
+     * Optional: Actively probes internet connectivity.
+     * This can be called periodically or when a network becomes available.
+     */
+    private fun performActiveProbe() {
+        coroutineScope.launch {
+            val hasInternet = try {
+                // Simple socket connection test (adjust timeout as needed)
+                Socket().use { socket ->
+                    socket.connect(InetSocketAddress("8.8.8.8", 53), 1500) // Google DNS
+                    true
+                }
+            } catch (e: IOException) {
+                Log.e("NetworkStatusObserver", "No internet connection: ${e.message}")
+                false
+            } finally {
+                cleanup()
+            }
+
+            if (hasInternet) {
+                if (_networkStatus.value != NetworkStatus.Available) {
+                    _networkStatus.value = NetworkStatus.Available
+                }
+            } else {
+                // If active probe fails, and system still thinks network is up,
+                // we might consider it offline for practical purposes.
+                if (_networkStatus.value == NetworkStatus.Available) {
+                    // Be cautious with this. If the system says available but probe fails,
+                    // it could be a temporary blip or firewall.
+                    // For now, let's trust the probe if it says unavailable.
+                    _networkStatus.value = NetworkStatus.Unavailable
+                }
+            }
+        }
+    }
+
+     fun cleanup() {
+         coroutineScope.cancel()
+     }
 }

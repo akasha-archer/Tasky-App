@@ -112,6 +112,9 @@ fun TaskEditDateTimeRoot(
                     Toast.LENGTH_SHORT
                 ).show()
             }
+
+            is AgendaItemEvent.AttendeeValidationError -> { Unit }
+            AgendaItemEvent.AttendeeValidationSuccess ->  { Unit }
         }
     }
 

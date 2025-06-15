@@ -19,7 +19,7 @@ import retrofit2.http.Query
 interface EventApiService {
 
     @Multipart
-    @POST("/event")
+    @POST("event")
     suspend fun createEvent(
         @Part("create_event_request") createEventRequest: CreateEventNetworkModel,
         @Part images: List<MultipartBody.Part>
@@ -42,12 +42,12 @@ interface EventApiService {
         @Query("eventId") eventId: String
     ): Response<Unit>
 
-    @GET("/attendee/{email}")
+    @GET("attendee/{email}")
     suspend fun verifyAttendee(
         @Query("email") attendeeEmail: String
     ): Response<GetAttendeeResponse>
 
-    @DELETE("/attendee/{eventId}")
+    @DELETE("attendee/{eventId}")
     suspend fun deleteAttendee(
         @Query("eventId") eventId: String,
     ): Response<Unit>

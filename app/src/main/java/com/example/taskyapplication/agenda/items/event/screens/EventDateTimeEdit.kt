@@ -72,7 +72,6 @@ fun EventEditDateTimeRoot(
     eventViewModel: SharedEventViewModel
 ) {
     val uiState by eventViewModel.eventUiState.collectAsStateWithLifecycle()
-    val namelist by eventViewModel.tempAttendeeList.collectAsStateWithLifecycle()
     val context = LocalContext.current
 
     ObserveAsEvents(eventViewModel.agendaEvents) { event ->
@@ -124,6 +123,21 @@ fun EventEditDateTimeRoot(
                     Toast.LENGTH_SHORT
                 ).show()
             }
+
+            is AgendaItemEvent.AttendeeValidationError -> {
+                Toast.makeText(
+                    context,
+                    event.errorMessage,
+                    Toast.LENGTH_SHORT
+                ).show()
+            }
+            AgendaItemEvent.AttendeeValidationSuccess -> {
+                Toast.makeText(
+                    context,
+                    "Attendee added successfully",
+                    Toast.LENGTH_SHORT
+                ).show()
+            }
         }
     }
 
@@ -133,7 +147,6 @@ fun EventEditDateTimeRoot(
             EventDateTimeScreen(
                 modifier = modifier,
                 state = uiState,
-                tempVisitorList = namelist,
                 onAction = { action ->
                     when (action) {
                         EventItemAction.SaveDateTimeEdit -> onClickSave()
@@ -158,7 +171,6 @@ fun EventDateTimeScreen(
     agendaItem: String = "Event",
     onAction: (EventItemAction) -> Unit = {},
     isEditScreen: Boolean = true,
-    tempVisitorList: List<String> = emptyList(),
     state: EventUiState
 ) {
     // persisted photos are stored and displayed as urls
@@ -197,7 +209,7 @@ fun EventDateTimeScreen(
 
     var showVisitorBottomSheet by rememberSaveable { mutableStateOf(false) }
     var userEmail by rememberSaveable { mutableStateOf("") }
-
+    var userEmailForBottomSheet by rememberSaveable { mutableStateOf("") }
     Column(
         modifier = modifier
             .padding(top = 48.dp)
@@ -345,11 +357,9 @@ fun EventDateTimeScreen(
                                 VisitorHeader(
                                     modifier = Modifier,
                                     isEditingScreen = true,
-                                    onAddNewVisitor = {
-                                        onAction(EventItemAction.AddNewVisitor(userEmail))
-                                    },
                                     onCancelAddingVisitor = {
                                         showVisitorBottomSheet = false
+                                        userEmailForBottomSheet = ""
                                     },
                                     showAddVisitorBottomSheet = {
                                         showVisitorBottomSheet = true
@@ -364,8 +374,14 @@ fun EventDateTimeScreen(
                                     isBottomSheetEnabled = showVisitorBottomSheet,
                                     isLoading = state.isValidatingAttendee,
                                     isValidEmail = state.isValidUser,
-                                    userEmail = userEmail,
-                                    visitorList = tempVisitorList
+                                    emailText = userEmailForBottomSheet,
+                                    onEmailTextChange = { newEmail ->
+                                        userEmailForBottomSheet = newEmail
+                                    },
+                                    onConfirmAddAttendee = {
+                                        onAction(EventItemAction.AddNewVisitor(userEmail))
+                                    },
+                                    visitorList = state.attendeeNames
                                 )
                             },
                             launchDatePicker = { // start date pickers
