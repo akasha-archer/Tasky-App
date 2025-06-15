@@ -9,6 +9,7 @@ import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
+import kotlinx.coroutines.cancel
 import kotlinx.coroutines.channels.awaitClose
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -36,9 +37,6 @@ interface INetworkObserver {
 @Singleton
 class NetworkStatusObserver @Inject constructor(
     @ApplicationContext private val context: Context,
-    // Consider injecting a CoroutineScope if you want to control its lifecycle more explicitly
-    // For a Singleton, ApplicationScope is often appropriate.
-    // private val externalScope: CoroutineScope
 ) : INetworkObserver {
 
     private val connectivityManager =
@@ -65,15 +63,12 @@ class NetworkStatusObserver @Inject constructor(
         val networkCallback = object : ConnectivityManager.NetworkCallback() {
             override fun onAvailable(network: Network) {
                 super.onAvailable(network)
-                // A network is available, but we should verify internet access
-                // You could trigger an active probe here if desired
-                _networkStatus.value = NetworkStatus.Available // Optimistic update
-                // performActiveProbe() // Optional: verify actual internet
+                _networkStatus.value = NetworkStatus.Available
+                 performActiveProbe() // Optional: verify actual internet
             }
 
             override fun onLost(network: Network) {
                 super.onLost(network)
-                // Check if any other network is still available
                 _networkStatus.value = getCurrentNetworkStatus()
             }
 
@@ -87,25 +82,12 @@ class NetworkStatusObserver @Inject constructor(
                 if (isInternet) {
                     _networkStatus.value = NetworkStatus.Available
                 } else {
-                    // This specific network lost internet, check overall status
                     _networkStatus.value = getCurrentNetworkStatus()
                 }
             }
         }
 
         connectivityManager.registerNetworkCallback(networkRequest, networkCallback)
-
-        // For older APIs (before N), registerDefaultNetworkCallback is not available.
-        // The above registerNetworkCallback with NET_CAPABILITY_INTERNET is generally preferred.
-        // If you need to support very old devices, you might need BroadcastReceiver for CONNECTIVITY_ACTION
-        // but that's deprecated for API 28+.
-
-        // Optional: Unregister callback if this NetworkObserver's scope ends.
-        // If it's a @Singleton tied to Application, it might not be strictly necessary
-        // to manually unregister unless you have specific cleanup needs.
-        // externalScope.coroutineContext[Job]?.invokeOnCompletion {
-        //     connectivityManager.unregisterNetworkCallback(networkCallback)
-        // }
     }
 
     private fun getCurrentNetworkStatus(): NetworkStatus {
@@ -144,6 +126,8 @@ class NetworkStatusObserver @Inject constructor(
                 }
             } catch (e: IOException) {
                 false
+            } finally {
+                cleanup()
             }
 
             if (hasInternet) {
@@ -163,78 +147,7 @@ class NetworkStatusObserver @Inject constructor(
         }
     }
 
-    // If you create your own CoroutineScope, ensure it's cancelled when appropriate
-    // e.g., if NetworkObserver is not an @Singleton tied to the Application lifecycle.
-    // fun cleanup() {
-    //     coroutineScope.cancel()
-    // }
+     fun cleanup() {
+         coroutineScope.cancel()
+     }
 }
-
-/**
- * Alternative using callbackFlow (more idiomatic for wrapping callbacks)
- * This is a more advanced way to structure the callback listening.
- */
-fun Context.observeConnectivityAsFlow(): Flow<NetworkStatus> = callbackFlow {
-    val connectivityManager = getSystemService(Context.CONNECTIVITY_SERVICE) as ConnectivityManager
-
-    val callback = object : ConnectivityManager.NetworkCallback() {
-        override fun onAvailable(network: Network) {
-            trySend(NetworkStatus.Available)
-        }
-
-        override fun onLost(network: Network) {
-            // Check if another network is available before declaring unavailable
-            val activeNetwork = connectivityManager.activeNetwork
-            if (activeNetwork == null) {
-                trySend(NetworkStatus.Unavailable)
-            } else {
-                val capabilities = connectivityManager.getNetworkCapabilities(activeNetwork)
-                if (capabilities != null && capabilities.hasCapability(NetworkCapabilities.NET_CAPABILITY_INTERNET)) {
-                    trySend(NetworkStatus.Available)
-                } else {
-                    trySend(NetworkStatus.Unavailable)
-                }
-            }
-        }
-
-        override fun onCapabilitiesChanged(network: Network, networkCapabilities: NetworkCapabilities) {
-            if (networkCapabilities.hasCapability(NetworkCapabilities.NET_CAPABILITY_INTERNET) &&
-                networkCapabilities.hasCapability(NetworkCapabilities.NET_CAPABILITY_VALIDATED)) {
-                trySend(NetworkStatus.Available)
-            } else {
-                // It's possible this specific network lost internet, but another is active.
-                // Re-evaluate overall status.
-                val activeNetwork = connectivityManager.activeNetwork
-                val activeCaps = connectivityManager.getNetworkCapabilities(activeNetwork)
-                if (activeCaps != null && activeCaps.hasCapability(NetworkCapabilities.NET_CAPABILITY_INTERNET) &&
-                    activeCaps.hasCapability(NetworkCapabilities.NET_CAPABILITY_VALIDATED)) {
-                    trySend(NetworkStatus.Available)
-                } else {
-                    trySend(NetworkStatus.Unavailable)
-                }
-            }
-        }
-    }
-
-    // Get initial status
-    val activeNetwork = connectivityManager.activeNetwork
-    val capabilities = connectivityManager.getNetworkCapabilities(activeNetwork)
-    if (capabilities != null &&
-        capabilities.hasCapability(NetworkCapabilities.NET_CAPABILITY_INTERNET) &&
-        capabilities.hasCapability(NetworkCapabilities.NET_CAPABILITY_VALIDATED)
-    ) {
-        trySend(NetworkStatus.Available)
-    } else {
-        trySend(NetworkStatus.Unavailable)
-    }
-
-    val networkRequest = NetworkRequest.Builder()
-        .addCapability(NetworkCapabilities.NET_CAPABILITY_INTERNET)
-        .build()
-
-    connectivityManager.registerNetworkCallback(networkRequest, callback)
-
-    awaitClose {
-        connectivityManager.unregisterNetworkCallback(callback)
-    }
-}.distinctUntilChanged() // Only emit when the status actually changes
