@@ -191,6 +191,7 @@ class AgendaItemsMainInteractor @Inject constructor(
     private suspend fun clearLocalDataAfterLogout() {
         taskLocalDataSource.deleteAllTasks()
         reminderLocalDataSource.deleteAllReminders()
+        eventLocalDataSource.deleteAllEvents()
     }
 
     suspend fun deleteItemByType(type: AgendaItemType, itemId: String) {

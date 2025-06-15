@@ -26,7 +26,12 @@ fun LocalDateTime.convertToLong(): Long {
 }
 
 fun String.toInitials(): String {
-    return this.split(" ").mapNotNull { it.firstOrNull()?.toString() }.reduce { acc, s -> acc + s }
+    if (this.isBlank()) return ""
+    return this.split(" ")
+        .filter { it.isNotBlank() }
+        .mapNotNull { it.firstOrNull()?.toString()?.uppercase() }
+        .take(2)
+        .joinToString("")
 }
 
 fun Long.toLocalDateAndTime(): Pair<LocalDate, LocalTime> {
