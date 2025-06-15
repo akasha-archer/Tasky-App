@@ -144,7 +144,6 @@ fun VisitorNameRowEdit(
     modifier: Modifier = Modifier,
     onSelectDelete: (attendeeId: String) -> Unit = {},
     isEditingScreen: Boolean = false,
-    isMeetingHost: Boolean = false,
     visitorName: String = ""
 ) {
     Row(
@@ -196,7 +195,6 @@ fun VisitorNameRowEdit(
 @Composable
 fun VisitorNameRowHost(
     modifier: Modifier = Modifier,
-    onSelectDelete: (attendeeId: String) -> Unit = {},
     isMeetingHost: Boolean = false,
     visitorName: String = ""
 ) {

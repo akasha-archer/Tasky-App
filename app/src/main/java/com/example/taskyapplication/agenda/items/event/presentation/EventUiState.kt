@@ -30,9 +30,3 @@ data class EventUiState(
     val isValidatingAttendee: Boolean = false,
     val isUserOnline: Boolean = false
 )
-
-data class EventAttendeeData(
-    val id: String = "",
-    val fullName: String = "",
-    val email: String = ""
-)

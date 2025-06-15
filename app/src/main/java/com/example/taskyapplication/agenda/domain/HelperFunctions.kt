@@ -57,12 +57,6 @@ fun Long.toTimeAsString(): String =
     LocalTime.ofInstant(Instant.ofEpochMilli(this), ZoneId.of("America/New_York"))
         .format(DateTimeFormatter.ofPattern("h:mm a"))
 
-fun String.timeAsLong(): Long {
-    val simpleDate = SimpleDateFormat("h:mm a", Locale.getDefault())
-    return simpleDate.parse(this)?.time
-        ?: throw IllegalArgumentException("Invalid time string or pattern")
-}
-
 fun getReminderOption(
     selection: String,
 ): ReminderOptions {
