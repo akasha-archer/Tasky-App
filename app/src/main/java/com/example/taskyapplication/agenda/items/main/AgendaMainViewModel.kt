@@ -9,7 +9,6 @@ import com.example.taskyapplication.agenda.items.main.data.AgendaItemType
 import com.example.taskyapplication.agenda.items.main.data.AgendaReminderSummary
 import com.example.taskyapplication.agenda.items.main.data.AgendaSummary
 import com.example.taskyapplication.agenda.items.main.data.AgendaTaskSummary
-import com.example.taskyapplication.agenda.items.main.domain.AgendaOfflineFirstRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
@@ -22,8 +21,7 @@ import javax.inject.Inject
 
 @HiltViewModel
 class AgendaMainViewModel @Inject constructor(
-    private val repository: AgendaOfflineFirstRepository,
-    private val commonDataProvider: AgendaCommonDataProvider,
+    private val commonDataProvider: AgendaItemsMainInteractor,
     private val networkStatusObserver: NetworkStatusObserver,
 ) : ViewModel() {
 
@@ -33,6 +31,7 @@ class AgendaMainViewModel @Inject constructor(
         viewModelScope.launch {
             if (isDeviceConnectedToInternet()) {
                 commonDataProvider.syncLocalItemsWithRemoteStorage()
+                commonDataProvider.syncDeletedItemIds()
             }
         }
     }

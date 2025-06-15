@@ -129,7 +129,7 @@ class SharedTaskViewModel @Inject constructor(
                 result.isFailure -> {
                     agendaEventChannel.send(
                         AgendaItemEvent.DeleteError(
-                            errorMessage = "Item not deleted. Please try again later."
+                            errorMessage = "Task not deleted. Please try again later."
                         )
                     )
                 }

@@ -2,10 +2,12 @@ package com.example.taskyapplication.agenda.items.event.domain
 
 import android.database.sqlite.SQLiteFullException
 import com.example.taskyapplication.agenda.items.event.data.db.AttendeeEntity
+import com.example.taskyapplication.agenda.items.event.data.db.DeletedEventIdEntity
 import com.example.taskyapplication.agenda.items.event.data.db.EventDao
 import com.example.taskyapplication.agenda.items.event.data.db.EventEntity
 import com.example.taskyapplication.agenda.items.event.data.db.EventPhotoEntity
 import com.example.taskyapplication.agenda.items.event.data.db.EventWithPhotos
+import com.example.taskyapplication.agenda.items.task.data.local.entity.DeletedTaskIdEntity
 import com.example.taskyapplication.domain.utils.DataError
 import com.example.taskyapplication.domain.utils.Result
 import kotlinx.coroutines.flow.Flow
@@ -13,6 +15,8 @@ import java.time.LocalDate
 import javax.inject.Inject
 
 interface EventLocalDataSource {
+    suspend fun upsertDeletedEventId(deletedEventId: DeletedEventIdEntity): kotlin.Result<Unit>
+    suspend fun getDeletedEventIds(): List<DeletedEventIdEntity>
     suspend fun getEvents(): List<EventWithPhotos>
     suspend fun getEventsWithoutPhotos(): List<EventEntity>
     fun getEventsForSelectedDate(date: LocalDate): Flow<List<EventEntity>>
@@ -47,6 +51,20 @@ class EventLocalDataSourceImpl @Inject constructor(
     override suspend fun getEventById(eventId: String): EventEntity? {
         return eventDao.getEventById(eventId)
     }
+
+    override suspend fun upsertDeletedEventId(deletedEventId: DeletedEventIdEntity): kotlin.Result<Unit> {
+            return try {
+                eventDao.upsertDeletedEventId(deletedEventId)
+                kotlin.Result.success(Unit)
+            } catch (e: SQLiteFullException) {
+                kotlin.Result.failure(e)
+            }
+    }
+
+    override suspend fun getDeletedEventIds(): List<DeletedEventIdEntity> {
+        return eventDao.getDeletedEventIds()
+    }
+
     override suspend fun getEvents(): List<EventWithPhotos> {
         return eventDao.getAllEventsWithPhotos()
     }

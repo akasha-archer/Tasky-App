@@ -1,6 +1,7 @@
 package com.example.taskyapplication.agenda.items.task.data
 
 import android.util.Log
+import com.example.taskyapplication.agenda.items.task.data.local.entity.DeletedTaskIdEntity
 import com.example.taskyapplication.agenda.items.task.data.local.entity.TaskEntity
 import com.example.taskyapplication.agenda.items.task.data.mappers.asTaskEntity
 import com.example.taskyapplication.agenda.items.task.data.network.models.TaskNetworkModel
@@ -70,6 +71,7 @@ class OfflineFirstTaskRepository @Inject constructor(
             remoteDataSource.deleteTask(taskId)
         }.await()
         if (remoteResult.code() != SUCCESS_CODE) {
+            localDataSource.upsertDeletedTaskId(DeletedTaskIdEntity(taskId))
             Log.e("Task Repository", "error deleting task: $remoteResult")
         }
         return kotlin.Result.success(Unit)

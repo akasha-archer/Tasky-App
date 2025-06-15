@@ -5,6 +5,7 @@ import com.example.taskyapplication.agenda.items.event.data.CreateEventNetworkMo
 import com.example.taskyapplication.agenda.items.event.data.UpdateEventNetworkModel
 import com.example.taskyapplication.agenda.items.event.data.UpdatedEventResponse
 import com.example.taskyapplication.agenda.items.event.data.db.AttendeeEntity
+import com.example.taskyapplication.agenda.items.event.data.db.DeletedEventIdEntity
 import com.example.taskyapplication.agenda.items.event.data.db.EventEntity
 import com.example.taskyapplication.agenda.items.event.data.db.asAttendeeEntity
 import com.example.taskyapplication.agenda.items.event.data.toEventEntity
@@ -35,21 +36,6 @@ class EventOfflineFirstRepository @Inject constructor(
             Log.e("Event Repo:", e.message.toString())
             kotlin.Result.failure(e)
         }
-
-//        return when (remoteResult) {
-//            is Result.Error -> {
-//                Log.e("Event Repository", "error validating attendee")
-//                Result.Error(remoteResult.error)
-//            }
-//
-//            is Result.Success -> {
-//                if (remoteResult.data.doesUserExist) {
-//                    val attendee = remoteResult.data.attendee
-//                    localDataSource.upsertAttendee(attendee.asAttendeeEntity())
-//                }
-//                Result.Success(remoteResult.data)
-//            }
-//        }
     }
 
     override suspend fun getAttendeeListForEvent(eventId: String): List<AttendeeEntity> {
@@ -65,6 +51,8 @@ class EventOfflineFirstRepository @Inject constructor(
         )
         if (localResult != kotlin.Result.success(Unit)) {
             Log.e("Error inserting new event", "error: $localResult")
+        } else {
+            Log.i("Event Repository:", "Local Event created successfully")
         }
 
         return try {
@@ -140,6 +128,7 @@ class EventOfflineFirstRepository @Inject constructor(
         if (remoteResult.code() == SUCCESS_CODE) {
             Log.e("Event Repository", "Successfully deleted event: $remoteResult")
         } else {
+            localDataSource.upsertDeletedEventId(DeletedEventIdEntity(eventId))
             Log.e("Event Repository", "error deleting event: $remoteResult")
         }
         return kotlin.Result.success(Unit)

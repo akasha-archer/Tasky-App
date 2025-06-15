@@ -151,15 +151,6 @@ fun TaskDetailScreen(
                                     reminderTime = state.remindAt.timeString,
                                     isEditing = isEditScreen,
                                 )
-                                Text(
-                                    modifier = Modifier
-                                        .height(40.dp)
-                                        .background(color = Color.Yellow),
-                                    text = "Debug - Loaded Task ID in UI: ${state.id}",
-                                    style = TaskyTypography.labelSmall.copy(color = Color.Black))
-                                Text(text = "Debug - Loaded Task Title in UI: ${state.title}",
-                                    style = TaskyTypography.labelSmall.copy(color = Color.Black))
-
                             }
                         )
                         AgendaItemDeleteTextButton(

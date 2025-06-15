@@ -166,7 +166,7 @@ class SharedEventViewModel @Inject constructor(
                 result.isFailure -> {
                     agendaEventChannel.send(
                         AgendaItemEvent.NewItemCreatedError(
-                            "Item could not be deleted. Please try again later."
+                            "Event could not be deleted. Please try again later."
                         )
                     )
                 }

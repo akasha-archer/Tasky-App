@@ -4,9 +4,6 @@ import com.example.taskyapplication.agenda.items.main.data.AgendaItemsResponse
 import com.example.taskyapplication.agenda.items.main.data.DeletedAgendaItems
 import com.example.taskyapplication.agenda.items.main.data.FullAgendaResponse
 import com.example.taskyapplication.agenda.items.main.domain.network.AgendaApiService
-import com.example.taskyapplication.domain.utils.DataError
-import com.example.taskyapplication.domain.utils.Result
-import com.example.taskyapplication.domain.utils.safeApiCall
 import retrofit2.Response
 import javax.inject.Inject
 
@@ -16,7 +13,7 @@ interface AgendaRemoteDataSource {
     suspend fun getAgendaItemsForDate(
         date: Long
     ): Response<AgendaItemsResponse>
-    suspend fun syncDeletedAgendaItems(deletedAgendaItems: DeletedAgendaItems): Result<Unit, DataError.Network>
+    suspend fun syncDeletedAgendaItems(deletedAgendaItems: DeletedAgendaItems): Response<Unit>
     suspend fun fetchFullAgenda(): Response<FullAgendaResponse>
 }
 
@@ -30,10 +27,9 @@ class AgendaItemsRemoteDataSource @Inject constructor(
     // sync pending deleted items with server
     override suspend fun syncDeletedAgendaItems(
         deletedAgendaItems: DeletedAgendaItems
-    ): Result<Unit, DataError.Network> {
-        return safeApiCall {
-            agendaApiService.syncAgenda(deletedAgendaItems)
-        }
+    ): Response<Unit> {
+        return agendaApiService.syncDeletedAgendaIds(deletedAgendaItems)
+
     }
 
     override suspend fun fetchFullAgenda(): Response<FullAgendaResponse> {

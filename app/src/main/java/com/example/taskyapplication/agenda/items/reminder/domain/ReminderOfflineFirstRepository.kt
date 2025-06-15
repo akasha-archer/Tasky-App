@@ -1,6 +1,7 @@
 package com.example.taskyapplication.agenda.items.reminder.domain
 
 import android.util.Log
+import com.example.taskyapplication.agenda.items.reminder.data.db.DeletedReminderIdEntity
 import com.example.taskyapplication.agenda.items.reminder.data.db.ReminderEntity
 import com.example.taskyapplication.agenda.items.reminder.data.models.ReminderNetworkModel
 import com.example.taskyapplication.agenda.items.reminder.data.models.UpdateReminderNetworkModel
@@ -74,6 +75,9 @@ class ReminderOfflineFirstRepository @Inject constructor(
             remoteDataSource.deleteReminder(reminderId)
         }.await()
         if (remoteResult.code() == SUCCESS_CODE) {
+            Log.i("Reminder Repository", "successfully deleting reminder: $remoteResult")
+        } else {
+            localDataSource.upsertDeletedReminderId(DeletedReminderIdEntity(reminderId))
             Log.e("Reminder Repository", "error deleting reminder: $remoteResult")
         }
         return kotlin.Result.success(Unit)

@@ -3,11 +3,18 @@ package com.example.taskyapplication.agenda.items.reminder.data.db
 import androidx.room.Dao
 import androidx.room.Query
 import androidx.room.Upsert
+import com.example.taskyapplication.agenda.items.event.data.db.DeletedEventIdEntity
 import kotlinx.coroutines.flow.Flow
 import java.time.LocalDate
 
 @Dao
 interface ReminderDao {
+
+    @Upsert
+    suspend fun upsertDeletedReminderId(deletedReminderId: DeletedReminderIdEntity)
+
+    @Query("SELECT * FROM deleted_reminder_ids")
+    suspend fun getDeletedReminderIds(): List<DeletedReminderIdEntity>
 
     @Query("SELECT * FROM reminders")
     suspend fun getAllReminders(): List<ReminderEntity>

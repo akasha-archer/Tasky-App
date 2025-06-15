@@ -68,11 +68,6 @@ data class DeletedAgendaItems(
     val deletedReminderIds: List<String>
 )
 
-//data class AgendaScreenCalendar(
-//    val dayOfWeek: Char,
-//    val dayOfMonth: Int,
-//)
-
 enum class AgendaItemType(val color: Int) {
     EVENT(color = R.color.event_card),
     TASK(color = R.color.task_card),

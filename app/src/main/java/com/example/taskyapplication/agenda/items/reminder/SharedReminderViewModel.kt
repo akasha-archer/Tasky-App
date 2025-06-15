@@ -126,13 +126,12 @@ class SharedReminderViewModel @Inject constructor(
 
             when {
                 result.isSuccess -> {
-                    agendaEventChannel.send(AgendaItemEvent.NewItemCreatedSuccess)
+                    agendaEventChannel.send(AgendaItemEvent.DeleteSuccess)
                 }
-
                 result.isFailure -> {
                     agendaEventChannel.send(
                         AgendaItemEvent.NewItemCreatedError(
-                            "Something went wrong. Please try again later."
+                            "Reminder not deleted. Please try again later."
                         )
                     )
                 }

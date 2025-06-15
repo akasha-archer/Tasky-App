@@ -1,6 +1,7 @@
 package com.example.taskyapplication.agenda.items.reminder.domain
 
 import android.database.sqlite.SQLiteFullException
+import com.example.taskyapplication.agenda.items.reminder.data.db.DeletedReminderIdEntity
 import com.example.taskyapplication.agenda.items.reminder.data.db.ReminderDao
 import com.example.taskyapplication.agenda.items.reminder.data.db.ReminderEntity
 import com.example.taskyapplication.agenda.items.reminder.data.models.ReminderResponse
@@ -11,6 +12,9 @@ import javax.inject.Inject
 
 interface ReminderLocalDataSource {
 
+    suspend fun upsertDeletedReminderId(deletedReminderId: DeletedReminderIdEntity): kotlin.Result<Unit>
+
+    suspend fun getDeletedReminderIds(): List<DeletedReminderIdEntity>
     suspend fun getAllReminders(): List<ReminderEntity>
     fun getRemindersForDate(date: LocalDate): Flow<List<ReminderEntity>>
     suspend fun upsertReminder(reminder: ReminderEntity): kotlin.Result<Unit>
@@ -23,6 +27,18 @@ interface ReminderLocalDataSource {
 class ReminderLocalDataSourceImpl @Inject constructor(
    private val reminderDao: ReminderDao
 ): ReminderLocalDataSource {
+    override suspend fun upsertDeletedReminderId(deletedReminderId: DeletedReminderIdEntity): Result<Unit> {
+        return try {
+            reminderDao.upsertDeletedReminderId(deletedReminderId)
+            kotlin.Result.success(Unit)
+        } catch (e: SQLiteFullException) {
+            kotlin.Result.failure(e)
+        }
+    }
+
+    override suspend fun getDeletedReminderIds(): List<DeletedReminderIdEntity> {
+        return reminderDao.getDeletedReminderIds()
+    }
 
     override suspend fun getAllReminders(): List<ReminderEntity> {
         return reminderDao.getAllReminders()
