@@ -57,7 +57,7 @@ class AgendaCommonDataProvider @Inject constructor(
                  val taskToSync = task.toTaskNetworkModel()
                  val response = taskApiService.createNewTask(taskToSync)
 
-                 if (response.isSuccessful) {
+                 if (response.isSuccess) {
                      Log.d("CommonDateProvider:", "Successfully synced task")
                  } else {
                      Log.e("CommonDateProvider:", "Failed to sync task")

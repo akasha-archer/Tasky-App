@@ -96,6 +96,8 @@ dependencies {
     implementation(libs.androidx.datastore)
     implementation(libs.androidx.room)
     implementation(libs.coil.compose)
+    implementation(libs.retrofit.adapters.result)
+
     coreLibraryDesugaring(libs.desugar.jdk.libs)
 
     ksp(libs.hilt.compiler)

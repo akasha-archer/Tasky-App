@@ -29,15 +29,15 @@ class OfflineFirstTaskRepository @Inject constructor(
         if (localResult !is Result.Success) {
             Log.e("Task Repository: Error inserting new task", "error: $localResult")
         }
-
+        Log.i("Task Repository: Finished posting to database", "success")
         return try {
             val remoteResult = taskApiService.createNewTask(request)
-            if (remoteResult.isSuccessful) {
+            if (remoteResult.isSuccess) {
                 Log.i("Task Repository:", "Task created successfully")
             } else {
                 Log.e(
                     "Task Repository: Error creating ${request.title} task",
-                    remoteResult.message()
+                    remoteResult.toString()
                 )
             }
             kotlin.Result.success(Unit)

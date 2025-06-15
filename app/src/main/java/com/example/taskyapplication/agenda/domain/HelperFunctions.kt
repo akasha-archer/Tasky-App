@@ -22,7 +22,7 @@ fun combineLocalDateAndTime(date: LocalDate, time: LocalTime): LocalDateTime {
 }
 
 fun LocalDateTime.convertToLong(): Long {
-    return this.atZone(ZoneId.ofOffset("UTC", ZoneOffset.UTC)).toInstant().toEpochMilli()
+    return this.atZone(ZoneId.of("America/New_York")).toInstant().toEpochMilli()
 }
 
 fun String.toInitials(): String {
@@ -31,28 +31,25 @@ fun String.toInitials(): String {
 
 fun Long.toLocalDateAndTime(): Pair<LocalDate, LocalTime> {
     val instant = Instant.ofEpochMilli(this)
-    val zoneId = ZoneId.ofOffset("UTC", ZoneOffset.UTC)
-    val zonedDateTime = instant.atZone(zoneId)
-
-    val localDate = zonedDateTime.toLocalDate()
-    val localTime = zonedDateTime.toLocalTime()
-
+    val zonedDateTimeUTC = instant.atZone(ZoneOffset.UTC)
+    val localDate = zonedDateTimeUTC.toLocalDate()
+    val localTime = zonedDateTimeUTC.toLocalTime()
     return Pair(localDate, localTime)
 }
 
 fun LocalDate.toDateAsString(): String =
-    this.atStartOfDay().format(DateTimeFormatter.ofPattern("dd MMM yyyy"))
+    this.format(DateTimeFormatter.ofPattern("dd MMM yyyy"))
 
 fun LocalTime.toTimeAsString(): String =
     this.format(DateTimeFormatter.ofPattern("h:mm a"))
 
 fun Long.toDateAsString(): String {
-    return LocalDate.ofInstant(Instant.ofEpochMilli(this), ZoneId.ofOffset("UTC", ZoneOffset.UTC))
+    return LocalDate.ofInstant(Instant.ofEpochMilli(this), ZoneId.of("America/New_York"))
         .format(DateTimeFormatter.ofPattern("dd MMM yyyy"))
 }
 
 fun Long.toTimeAsString(): String =
-    LocalTime.ofInstant(Instant.ofEpochMilli(this), ZoneId.ofOffset("UTC", ZoneOffset.UTC))
+    LocalTime.ofInstant(Instant.ofEpochMilli(this), ZoneId.of("America/New_York"))
         .format(DateTimeFormatter.ofPattern("h:mm a"))
 
 fun String.timeAsLong(): Long {

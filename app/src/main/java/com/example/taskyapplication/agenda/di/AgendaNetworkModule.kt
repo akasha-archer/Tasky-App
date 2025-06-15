@@ -42,6 +42,7 @@ import kotlinx.serialization.json.Json
 import okhttp3.MediaType.Companion.toMediaType
 import okhttp3.OkHttpClient
 import retrofit2.Retrofit
+import javax.inject.Named
 import javax.inject.Singleton
 
 @InstallIn(SingletonComponent::class)
@@ -181,17 +182,10 @@ object AgendaNetworkModule {
     // TASKS
     @Singleton
     @Provides
-    fun provideTaskApi(): TaskApiService {
-        return Retrofit.Builder()
-            .baseUrl(BuildConfig.BASE_URL)
-            .client(provideAgendaOkHttpClient())
-            .addConverterFactory(
-                json.asConverterFactory(
-                    "application/json".toMediaType()
-                )
-            )
-            .build()
-            .create(TaskApiService::class.java)
+    fun provideTaskApi(
+        @Named("AuthenticatedClient") retrofit: Retrofit
+    ): TaskApiService {
+        return retrofit.create(TaskApiService::class.java)
     }
 
     @Singleton
