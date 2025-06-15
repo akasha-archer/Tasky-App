@@ -3,7 +3,6 @@ package com.example.taskyapplication.agenda.items.task.data.local.dao
 import androidx.room.Dao
 import androidx.room.Query
 import androidx.room.Upsert
-import com.example.taskyapplication.agenda.items.event.data.db.DeletedEventIdEntity
 import com.example.taskyapplication.agenda.items.task.data.local.entity.DeletedTaskIdEntity
 import com.example.taskyapplication.agenda.items.task.data.local.entity.TaskEntity
 import kotlinx.coroutines.flow.Flow

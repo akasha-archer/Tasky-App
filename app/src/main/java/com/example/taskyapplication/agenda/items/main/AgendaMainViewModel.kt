@@ -25,7 +25,7 @@ class AgendaMainViewModel @Inject constructor(
     private val networkStatusObserver: NetworkStatusObserver,
 ) : ViewModel() {
 
-    suspend fun isDeviceConnectedToInternet() = networkStatusObserver.isOnline()
+     fun isDeviceConnectedToInternet() = networkStatusObserver.isOnline()
 
     init {
         viewModelScope.launch {

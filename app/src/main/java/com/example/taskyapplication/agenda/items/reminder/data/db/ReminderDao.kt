@@ -3,7 +3,6 @@ package com.example.taskyapplication.agenda.items.reminder.data.db
 import androidx.room.Dao
 import androidx.room.Query
 import androidx.room.Upsert
-import com.example.taskyapplication.agenda.items.event.data.db.DeletedEventIdEntity
 import kotlinx.coroutines.flow.Flow
 import java.time.LocalDate
 

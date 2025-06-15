@@ -1,6 +1,5 @@
 package com.example.taskyapplication.agenda.items.task.presentation.screens
 
-import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize

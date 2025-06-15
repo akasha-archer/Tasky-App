@@ -70,7 +70,7 @@ class AgendaItemsMainInteractor @Inject constructor(
         }
     }
 
-    suspend fun syncLocalItemsWithRemoteStorage(): kotlin.Result<Unit> {
+    suspend fun syncLocalItemsWithRemoteStorage(): Result<Unit> {
         val localItems = fetchAllLocalItems()
         val localTasks = localItems.first
         val localReminders = localItems.second
@@ -146,10 +146,10 @@ class AgendaItemsMainInteractor @Inject constructor(
             val eventToSync = event.toEventEntity()
             val eventToVerify = eventLocalDataSource.getEventById(eventToSync.id)
             if (eventToVerify != null) {
-//                 eventLocalDataSource.upd(eventToSync)
+                 eventLocalDataSource.insertEventWithoutPhotos(eventToSync)
             }
         }
-        return kotlin.Result.success(Unit)
+        return Result.success(Unit)
     }
 
     suspend fun logout() {

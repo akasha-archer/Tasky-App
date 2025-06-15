@@ -7,7 +7,6 @@ import com.example.taskyapplication.agenda.items.event.data.db.EventDao
 import com.example.taskyapplication.agenda.items.event.data.db.EventEntity
 import com.example.taskyapplication.agenda.items.event.data.db.EventPhotoEntity
 import com.example.taskyapplication.agenda.items.event.data.db.EventWithPhotos
-import com.example.taskyapplication.agenda.items.task.data.local.entity.DeletedTaskIdEntity
 import com.example.taskyapplication.domain.utils.DataError
 import com.example.taskyapplication.domain.utils.Result
 import kotlinx.coroutines.flow.Flow
