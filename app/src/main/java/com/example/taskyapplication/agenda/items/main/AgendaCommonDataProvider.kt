@@ -26,6 +26,7 @@ import com.example.taskyapplication.agenda.items.task.domain.TaskLocalDataSource
 import com.example.taskyapplication.agenda.items.task.domain.TaskRepository
 import com.example.taskyapplication.agenda.items.task.domain.network.TaskApiService
 import com.example.taskyapplication.auth.domain.AuthRepository
+import com.example.taskyapplication.domain.utils.SUCCESS_CODE
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.map
@@ -57,7 +58,7 @@ class AgendaCommonDataProvider @Inject constructor(
                  val taskToSync = task.toTaskNetworkModel()
                  val response = taskApiService.createNewTask(taskToSync)
 
-                 if (response.isSuccess) {
+                 if (response.code() == SUCCESS_CODE) {
                      Log.d("CommonDateProvider:", "Successfully synced task")
                  } else {
                      Log.e("CommonDateProvider:", "Failed to sync task")

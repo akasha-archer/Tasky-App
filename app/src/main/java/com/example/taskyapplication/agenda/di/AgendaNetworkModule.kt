@@ -110,19 +110,13 @@ object AgendaNetworkModule {
         )
 
     // EVENTS
+
     @Singleton
     @Provides
-    fun provideEventApi(): EventApiService {
-        return Retrofit.Builder()
-            .baseUrl(BuildConfig.BASE_URL)
-            .client(provideAgendaOkHttpClient())
-            .addConverterFactory(
-                json.asConverterFactory(
-                    "application/json".toMediaType()
-                )
-            )
-            .build()
-            .create(EventApiService::class.java)
+    fun provideEventApi(
+        @Named("AuthenticatedClient") retrofit: Retrofit
+    ): EventApiService {
+        return retrofit.create(EventApiService::class.java)
     }
 
     @Singleton
@@ -147,17 +141,10 @@ object AgendaNetworkModule {
     // REMINDERS
     @Singleton
     @Provides
-    fun provideReminderApi(): ReminderApiService {
-        return Retrofit.Builder()
-            .baseUrl(BuildConfig.BASE_URL)
-            .client(provideAgendaOkHttpClient())
-            .addConverterFactory(
-                json.asConverterFactory(
-                    "application/json".toMediaType()
-                )
-            )
-            .build()
-            .create(ReminderApiService::class.java)
+    fun provideReminderApi(
+        @Named("AuthenticatedClient") retrofit: Retrofit
+    ): ReminderApiService {
+        return retrofit.create(ReminderApiService::class.java)
     }
 
     @Singleton
@@ -199,13 +186,11 @@ object AgendaNetworkModule {
     fun provideTaskRepository(
         localDataSource: LocalDataSource,
         remoteDataSource: RemoteDataSource,
-        api: TaskApiService,
         scope: CoroutineScope
     ): TaskRepository =
         OfflineFirstTaskRepository(
             localDataSource,
             remoteDataSource,
             scope,
-            api
         )
 }

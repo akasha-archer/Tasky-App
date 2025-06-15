@@ -33,7 +33,7 @@ class SharedEventViewModel @Inject constructor(
     private val eventRepository: EventRepository,
     @ApplicationContext private val applicationContext: Context,
     savedStateHandle: SavedStateHandle
-): ViewModel() {
+) : ViewModel() {
     private val eventId: String? = savedStateHandle.get<String>("eventId")
 
     init {
@@ -61,9 +61,12 @@ class SharedEventViewModel @Inject constructor(
     private fun loadExistingEvent(eventId: String) {
         viewModelScope.launch {
             val requestedTask = eventRepository.getEventWithoutImages(eventId)
-            _eventUiState.value = requestedTask.toEventUiState()
+            if (requestedTask != null) {
+                _eventUiState.value = requestedTask.toEventUiState()
+            }
         }
     }
+
     private fun isNewEvent(currentId: String) = currentId.isEmpty() || currentId.isBlank()
 
     private fun createOrUpdateEvent() {
@@ -111,25 +114,17 @@ class SharedEventViewModel @Inject constructor(
             }
             _eventUiState.update { it.copy(isEditingItem = false) }
 
-            when (result) {
-                is Result.Error -> {
-                    if (result.error == DataError.Network.NO_INTERNET) {
-                        agendaEventChannel.send(
-                            AgendaItemEvent.NewItemCreatedError(
-                                errorMessage = "Item not updated. Please check your internet connection."
-                            )
-                        )
-                    } else {
-                        agendaEventChannel.send(
-                            AgendaItemEvent.NewItemCreatedError(
-                                "Something went wrong. Please try again later."
-                            )
-                        )
-                    }
+            when {
+                result.isSuccess -> {
+                    agendaEventChannel.send(AgendaItemEvent.NewItemCreatedSuccess)
                 }
 
-                is Result.Success -> {
-                    agendaEventChannel.send(AgendaItemEvent.NewItemCreatedSuccess)
+                result.isFailure -> {
+                    agendaEventChannel.send(
+                        AgendaItemEvent.NewItemCreatedError(
+                            "Something went wrong. Please try again later."
+                        )
+                    )
                 }
             }
         }
@@ -141,16 +136,17 @@ class SharedEventViewModel @Inject constructor(
             val result = eventRepository.validateAttendee(email)
             _eventUiState.update { it.copy(isValidatingAttendee = false) }
 
-            when (result) {
-                is Result.Error -> {}
-                is Result.Success -> {
-                    if (result.data.doesUserExist) {
-                        _eventUiState.update { it.copy(
-                            isValidUser = true
+            when {
+                result.isSuccess -> {
+                    agendaEventChannel.send(AgendaItemEvent.NewItemCreatedSuccess)
+                }
+
+                result.isFailure -> {
+                    agendaEventChannel.send(
+                        AgendaItemEvent.NewItemCreatedError(
+                            "User does not exist. Please try another email address."
                         )
-                        }
-                        _tempAttendeeList.update { it + result.data.attendee.fullName }
-                    }
+                    )
                 }
             }
         }
@@ -162,25 +158,17 @@ class SharedEventViewModel @Inject constructor(
             val result = eventRepository.deleteEvent(eventId)
             _eventUiState.update { it.copy(isDeletingItem = false) }
 
-            when (result) {
-                is Result.Error -> {
-                    if (result.error == DataError.Network.NO_INTERNET) {
-                        agendaEventChannel.send(
-                            AgendaItemEvent.DeleteError(
-                                errorMessage = "Item not deleted. Please check your internet connection."
-                            )
-                        )
-                    } else {
-                        agendaEventChannel.send(
-                            AgendaItemEvent.DeleteError(
-                                "Something went wrong. Please try again later."
-                            )
-                        )
-                    }
+            when {
+                result.isSuccess -> {
+                    agendaEventChannel.send(AgendaItemEvent.NewItemCreatedSuccess)
                 }
 
-                is Result.Success -> {
-                    agendaEventChannel.send(AgendaItemEvent.DeleteSuccess)
+                result.isFailure -> {
+                    agendaEventChannel.send(
+                        AgendaItemEvent.NewItemCreatedError(
+                            "Item could not be deleted. Please try again later."
+                        )
+                    )
                 }
             }
         }
@@ -188,14 +176,18 @@ class SharedEventViewModel @Inject constructor(
 
     fun executeActions(action: EventItemAction) {
         when (action) {
-            EventItemAction.SaveAgendaItemUpdates -> { createOrUpdateEvent() }
+            EventItemAction.SaveAgendaItemUpdates -> {
+                createOrUpdateEvent()
+            }
 
             is EventItemAction.EditExistingEvent -> {
                 loadExistingEvent(action.eventId)
             }
+
             is EventItemAction.OpenExistingEvent -> {
                 loadExistingEvent(action.eventId)
             }
+
             is EventItemAction.SetTitle -> {
                 viewModelScope.launch {
                     _eventUiState.update { it.copy(title = action.title) }
@@ -230,6 +222,7 @@ class SharedEventViewModel @Inject constructor(
                     }
                 }
             }
+
             is EventItemAction.SetEndTime -> {
                 viewModelScope.launch {
                     _eventUiState.update {
@@ -240,6 +233,7 @@ class SharedEventViewModel @Inject constructor(
                     }
                 }
             }
+
             is EventItemAction.SetStartDate -> {
                 viewModelScope.launch {
                     _eventUiState.update {
@@ -250,6 +244,7 @@ class SharedEventViewModel @Inject constructor(
                     }
                 }
             }
+
             is EventItemAction.SetStartTime -> {
                 viewModelScope.launch {
                     _eventUiState.update {
@@ -260,11 +255,13 @@ class SharedEventViewModel @Inject constructor(
                     }
                 }
             }
+
             is EventItemAction.DeleteEvent -> {
                 viewModelScope.launch {
                     deleteEventById(action.eventId)
                 }
             }
+
             is EventItemAction.AddNewVisitor -> {
                 viewModelScope.launch {
                     verifyEventAttendee(action.visitorEmail)
@@ -360,7 +357,9 @@ class SharedEventViewModel @Inject constructor(
                 }
             }
             // go back to Agenda screen
-            EventItemAction.CloseDetailScreen -> { Unit }
+            EventItemAction.CloseDetailScreen -> {
+                Unit
+            }
 
             EventItemAction.SaveDateTimeEdit -> {
                 _eventUiState.update {

@@ -2,8 +2,6 @@ package com.example.taskyapplication.agenda.items.event.domain
 
 import android.util.Log
 import com.example.taskyapplication.agenda.items.event.data.CreateEventNetworkModel
-import com.example.taskyapplication.agenda.items.event.data.CreatedEventResponse
-import com.example.taskyapplication.agenda.items.event.data.GetAttendeeResponse
 import com.example.taskyapplication.agenda.items.event.data.UpdateEventNetworkModel
 import com.example.taskyapplication.agenda.items.event.data.UpdatedEventResponse
 import com.example.taskyapplication.agenda.items.event.data.db.AttendeeEntity
@@ -14,6 +12,7 @@ import com.example.taskyapplication.agenda.items.event.data.toPhotoEntities
 import com.example.taskyapplication.domain.utils.DataError
 import com.example.taskyapplication.domain.utils.EmptyResult
 import com.example.taskyapplication.domain.utils.Result
+import com.example.taskyapplication.domain.utils.SUCCESS_CODE
 import com.example.taskyapplication.domain.utils.asEmptyDataResult
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.async
@@ -28,22 +27,29 @@ class EventOfflineFirstRepository @Inject constructor(
 
     override suspend fun validateAttendee(
         email: String
-    ): Result<GetAttendeeResponse, DataError> {
-        val remoteResult = remoteDataSource.verifyAttendee(email)
-        return when (remoteResult) {
-            is Result.Error -> {
-                Log.e("Event Repository", "error validating attendee")
-                Result.Error(remoteResult.error)
-            }
-
-            is Result.Success -> {
-                if (remoteResult.data.doesUserExist) {
-                    val attendee = remoteResult.data.attendee
-                    localDataSource.upsertAttendee(attendee.asAttendeeEntity())
-                }
-                Result.Success(remoteResult.data)
-            }
+    ): kotlin.Result<Unit> {
+        return try {
+            val remoteResult = remoteDataSource.verifyAttendee(email)
+            kotlin.Result.success(Unit)
+        } catch (e: Exception) {
+            Log.e("Event Repo:", e.message.toString())
+            kotlin.Result.failure(e)
         }
+
+//        return when (remoteResult) {
+//            is Result.Error -> {
+//                Log.e("Event Repository", "error validating attendee")
+//                Result.Error(remoteResult.error)
+//            }
+//
+//            is Result.Success -> {
+//                if (remoteResult.data.doesUserExist) {
+//                    val attendee = remoteResult.data.attendee
+//                    localDataSource.upsertAttendee(attendee.asAttendeeEntity())
+//                }
+//                Result.Success(remoteResult.data)
+//            }
+//        }
     }
 
     override suspend fun getAttendeeListForEvent(eventId: String): List<AttendeeEntity> {
@@ -51,61 +57,73 @@ class EventOfflineFirstRepository @Inject constructor(
     }
 
     override suspend fun createNewEvent(
-        createEventNetworkModel: CreateEventNetworkModel,
+        request: CreateEventNetworkModel,
         photos: List<MultipartBody.Part>
-    ): Result<CreatedEventResponse, DataError> {
+    ): kotlin.Result<Unit> {
         val localResult = localDataSource.insertEventWithoutPhotos(
-            createEventNetworkModel.toEventEntity(),
+            request.toEventEntity(),
         )
-        if (localResult !is Result.Success) {
+        if (localResult != kotlin.Result.success(Unit)) {
             Log.e("Error inserting new event", "error: $localResult")
         }
-        val remoteResult = remoteDataSource.createEvent(
-            createEventNetworkModel,
-            photos
-        )
 
-        return when (remoteResult) {
-            is Result.Error -> {
-                Result.Error(remoteResult.error)
-            }
-            is Result.Success -> {
+        return try {
+            val remoteResult = remoteDataSource.createEvent(
+                event = request,
+                photos = photos
+            )
+            if (remoteResult.code() == SUCCESS_CODE) {
                 localDataSource.insertEventWithoutPhotos(
-                    remoteResult.data.toEventEntity()
+                    remoteResult.body()?.toEventEntity() ?: request.toEventEntity()
                 )
                 localDataSource.upsertPhotos(
-                    remoteResult.data.toPhotoEntities()
+                    remoteResult.body()?.toPhotoEntities() ?: emptyList()
                 )
-                Result.Success(remoteResult.data)
-            }
+                Log.i("Event Repository:", "Event created successfully")
+            } else {
+                Log.e(
+                    "Event Repository: Error creating ${request.title} event",
+                    remoteResult.message()
+                )            }
+            kotlin.Result.success(Unit)
+        } catch (e: Exception) {
+            Log.e("Event Repo:", e.message.toString())
+            kotlin.Result.failure(e)
         }
     }
 
     override suspend fun updateEvent(
-        updateEventNetworkModel: UpdateEventNetworkModel,
+        request: UpdateEventNetworkModel,
         photos: List<MultipartBody.Part>
-    ): Result<UpdatedEventResponse, DataError> {
+    ): kotlin.Result<Unit> {
         val localResult = localDataSource.insertEventWithoutPhotos(
-            updateEventNetworkModel.toEventEntity(),
+            request.toEventEntity(),
         )
-        if (localResult !is Result.Success) {
-            Log.e("Error inserting new event", "error: $localResult")
+        if (localResult != kotlin.Result.success(Unit)) {
+            Log.e("Error updating event", "error: $localResult")
         }
-        val remoteResult = remoteDataSource.updateEvent(
-            updateEventNetworkModel,
-            photos
-        )
-
-        return when (remoteResult) {
-            is Result.Error -> {
-                Result.Error(remoteResult.error)
-            }
-            is Result.Success -> {
-                localDataSource.upsertPhotos(
-                    remoteResult.data.toPhotoEntities()
+        return try {
+            val remoteResult = remoteDataSource.updateEvent(
+                event = request,
+                photos = photos
+            )
+            if (remoteResult.code() == SUCCESS_CODE) {
+                localDataSource.insertEventWithoutPhotos(
+                    remoteResult.body()?.toEventEntity() ?: request.toEventEntity()
                 )
-                Result.Success(remoteResult.data)
-            }
+                localDataSource.upsertPhotos(
+                    remoteResult.body()?.toPhotoEntities() ?: emptyList()
+                )
+                Log.i("Event Repository:", "Event created successfully")
+            } else {
+                Log.e(
+                    "Event Repository: Error creating ${request.title} event",
+                    remoteResult.message()
+                )            }
+            kotlin.Result.success(Unit)
+        } catch (e: Exception) {
+            Log.e("Event Repo:", e.message.toString())
+            kotlin.Result.failure(e)
         }
     }
 
@@ -113,18 +131,18 @@ class EventOfflineFirstRepository @Inject constructor(
         return localDataSource.getEventWithoutPhotos(eventId)
     }
 
-    override suspend fun deleteEvent(eventId: String): EmptyResult<DataError> {
+    override suspend fun deleteEvent(eventId: String): kotlin.Result<Unit> {
         localDataSource.deleteEvent(eventId)
         val remoteResult = applicationScope.async {
             remoteDataSource.deleteEvent(eventId)
         }.await()
 
-        if (remoteResult !is Result.Success) {
-           Log.e("Event Repository", "error deleting event: $remoteResult")
-        } else {
+        if (remoteResult.code() == SUCCESS_CODE) {
             Log.e("Event Repository", "Successfully deleted event: $remoteResult")
+        } else {
+            Log.e("Event Repository", "error deleting event: $remoteResult")
         }
-        return remoteResult.asEmptyDataResult()
+        return kotlin.Result.success(Unit)
     }
 
 }

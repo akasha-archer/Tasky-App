@@ -14,23 +14,23 @@ import okhttp3.MultipartBody
 
 interface EventRepository {
 
-    suspend fun validateAttendee(email: String):  Result<GetAttendeeResponse, DataError>
+    suspend fun validateAttendee(email: String): kotlin.Result<Unit>
     suspend fun getAttendeeListForEvent(eventId: String): List<AttendeeEntity>
     suspend fun createNewEvent(
-        createEventNetworkModel: CreateEventNetworkModel,
+        request: CreateEventNetworkModel,
         photos: List<MultipartBody.Part>
-    ): Result<CreatedEventResponse, DataError>
+    ): kotlin.Result<Unit>
 
     suspend fun updateEvent(
-        updateEventNetworkModel: UpdateEventNetworkModel,
+        request: UpdateEventNetworkModel,
         photos: List<MultipartBody.Part>
-    ): Result<UpdatedEventResponse, DataError>
+    ): kotlin.Result<Unit>
 
     suspend fun getEventWithoutImages(
         eventId: String
-    ): EventEntity
+    ): EventEntity?
 
     suspend fun deleteEvent(
         eventId: String
-    ): EmptyResult<DataError>
+    ): kotlin.Result<Unit>
 }

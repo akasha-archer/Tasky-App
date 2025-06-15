@@ -26,7 +26,7 @@ interface EventLocalDataSource {
         photos: List<EventPhotoEntity>
     ): Result<Unit, DataError.Local>
 
-    suspend fun insertEventWithoutPhotos(event: EventEntity): Result<Unit, DataError.Local>
+    suspend fun insertEventWithoutPhotos(event: EventEntity): kotlin.Result<Unit>
     suspend fun upsertAllEvents(events: List<EventEntity>): Result<Unit, DataError.Local>
     suspend fun getEventWithoutPhotos(eventId: String): EventEntity
     suspend fun deleteEvent(eventId: String)
@@ -83,12 +83,12 @@ class EventLocalDataSourceImpl @Inject constructor(
         }
     }
 
-    override suspend fun insertEventWithoutPhotos(event: EventEntity): Result<Unit, DataError.Local> {
+    override suspend fun insertEventWithoutPhotos(event: EventEntity): kotlin.Result<Unit> {
         return try {
             eventDao.upsertEvent(event)
-            Result.Success(Unit)
+            kotlin.Result.success(Unit)
         } catch (e: SQLiteFullException) {
-            Result.Error(DataError.Local.DISK_FULL)
+            kotlin.Result.failure(e)
         }
     }
 

@@ -11,25 +11,9 @@ interface TaskRepository {
         request: TaskNetworkModel
     ): Result<Unit>
 
-//    suspend fun updateTask(
-//        request: UpdateTaskBody
-//    ): Result<Unit>
-//
-//    suspend fun getTaskById(
-//        taskId: String
-//    ): TaskEntity
-//
-//    suspend fun deleteTask(
-//        taskId: String
-//    ): Result<Unit>
-
-//    suspend fun createNewTask(
-//        request: TaskNetworkModel
-//    ): EmptyResult<DataError>
-//
     suspend fun updateTask(
         request: UpdateTaskBody
-    ): EmptyResult<DataError>
+    ): Result<Unit>
 
     suspend fun getTaskById(
         taskId: String
@@ -37,5 +21,21 @@ interface TaskRepository {
 
     suspend fun deleteTask(
         taskId: String
-    ): EmptyResult<DataError>
+    ): Result<Unit>
+
+//    suspend fun createNewTask(
+//        request: TaskNetworkModel
+//    ): EmptyResult<DataError>
+
+//    suspend fun updateTask(
+//        request: UpdateTaskBody
+//    ): EmptyResult<DataError>
+//
+//    suspend fun getTaskById(
+//        taskId: String
+//    ): TaskEntity?
+//
+//    suspend fun deleteTask(
+//        taskId: String
+//    ): EmptyResult<DataError>
 }

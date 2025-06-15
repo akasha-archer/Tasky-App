@@ -9,17 +9,17 @@ import com.example.taskyapplication.domain.utils.EmptyResult
 interface ReminderRepository {
     suspend fun createNewReminder(
         request: ReminderNetworkModel
-    ): EmptyResult<DataError>
+    ): kotlin.Result<Unit>
 
     suspend fun updateReminder(
         request: UpdateReminderNetworkModel
-    ): EmptyResult<DataError>
+    ): kotlin.Result<Unit>
 
     suspend fun getReminderById(
         reminderId: String
-    ): ReminderEntity
+    ): ReminderEntity?
 
     suspend fun deleteReminder(
         reminderId: String
-    ): EmptyResult<DataError>
+    ):kotlin.Result<Unit>
 }
