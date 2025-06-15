@@ -188,6 +188,7 @@ fun EventDateTimeScreen(
     val timePickerState = rememberTimePickerState(
         is24Hour = false
     )
+    val ctxt = LocalContext.current
 
     var showStartTimePicker by rememberSaveable { mutableStateOf(false) }
     var showStartDatePicker by rememberSaveable { mutableStateOf(false) }
@@ -282,6 +283,13 @@ fun EventDateTimeScreen(
                                     PhotoRow(
                                         modifier = Modifier,
                                         photosToShow = combinedImageList,
+                                        showFeatureDisabledMessage = {
+                                            Toast.makeText(
+                                                ctxt,
+                                                "Feature not available when device is offline",
+                                                Toast.LENGTH_SHORT
+                                            ).show()
+                                        },
                                         onAddPhotoClick = {
                                             if (combinedImageList.size < 10) { // Check before launching
                                                 photoLauncher.launch(
@@ -345,6 +353,13 @@ fun EventDateTimeScreen(
                                     },
                                     showAddVisitorBottomSheet = {
                                         showVisitorBottomSheet = true
+                                    },
+                                    showFeatureDisabledMessage = {
+                                        Toast.makeText(
+                                            ctxt,
+                                            "Feature not available when device is offline",
+                                            Toast.LENGTH_SHORT
+                                        ).show()
                                     },
                                     isBottomSheetEnabled = showVisitorBottomSheet,
                                     isLoading = state.isValidatingAttendee,
