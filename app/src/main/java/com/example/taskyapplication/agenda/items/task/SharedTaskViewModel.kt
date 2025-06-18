@@ -10,8 +10,6 @@ import com.example.taskyapplication.agenda.items.task.data.mappers.asTaskUi
 import com.example.taskyapplication.agenda.items.task.data.mappers.asUpdateTaskNetworkModel
 import com.example.taskyapplication.agenda.items.task.domain.TaskRepository
 import com.example.taskyapplication.agenda.items.task.presentation.TaskUiState
-import com.example.taskyapplication.domain.utils.DataError
-import com.example.taskyapplication.domain.utils.Result
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -26,11 +24,11 @@ import javax.inject.Inject
 @HiltViewModel
 class SharedTaskViewModel @Inject constructor(
     private val repository: TaskRepository,
-//    private val itemId: String?
     savedStateHandle: SavedStateHandle
 ) : ViewModel() {
 
     private val taskId: String? = savedStateHandle.get<String>("taskId")
+
     init {
         if (taskId != null) {
             loadExistingTask(taskId)
@@ -43,14 +41,14 @@ class SharedTaskViewModel @Inject constructor(
     private val _uiState = MutableStateFlow(TaskUiState())
     val uiState = _uiState
         .stateIn(
-        scope = viewModelScope,
-        started = SharingStarted.WhileSubscribed(5000L),
-        initialValue = TaskUiState(),
-    )
+            scope = viewModelScope,
+            started = SharingStarted.WhileSubscribed(5000L),
+            initialValue = TaskUiState(),
+        )
 
-     private fun loadExistingTask(taskId: String) {
+    private fun loadExistingTask(taskId: String) {
         viewModelScope.launch {
-           val requestedTask = repository.getTaskById(taskId)
+            val requestedTask = repository.getTaskById(taskId)
             if (requestedTask != null) {
                 _uiState.value = requestedTask.asTaskUi()
             }
@@ -89,45 +87,37 @@ class SharedTaskViewModel @Inject constructor(
                 remindAt = reminderTime
             )
 
-            val result = repository.createNewTask(taskToCreateOrUpdate.asTaskNetworkModel())
-//            val result = if (isNewTask(currentTaskId)) {
-//                repository.createNewTask(
-//                    taskToCreateOrUpdate.asTaskNetworkModel()
-//                )
-//            }
-//            else {
-//                repository.updateTask(
-//                    taskToCreateOrUpdate.asUpdateTaskNetworkModel()
-//                )
-//            }
+            val result = if (isNewTask(currentTaskId)) {
+                repository.createNewTask(
+                    taskToCreateOrUpdate.asTaskNetworkModel()
+                )
+            }
+            else {
+                repository.updateTask(
+                    taskToCreateOrUpdate.asUpdateTaskNetworkModel()
+                )
+            }
 
             _uiState.update {
                 it.copy(isEditingItem = false)
             }
 
-            when (result) {
-//                is kotlin.Result.Companion.failure -> {
-//                    if (result.error == DataError.Network.NO_INTERNET) {
-//                        agendaEventChannel.send(
-//                            AgendaItemEvent.NewItemCreatedError(
-//                                errorMessage = "Item not updated. Please check your internet connection."
-//                            )
-//                        )
-//                    } else {
-//                        agendaEventChannel.send(
-//                            AgendaItemEvent.NewItemCreatedError(
-//                                "Something went wrong. Please try again later."
-//                            )
-//                        )
-//                    }
-//                }
-//
-//                is Result.Success -> {
-//                    agendaEventChannel.send(AgendaItemEvent.NewItemCreatedSuccess)
-//                }
+            when {
+                result.isFailure -> {
+                    agendaEventChannel.send(
+                        AgendaItemEvent.DeleteError(
+                            errorMessage = "Item not deleted. Please try again later."
+                        )
+                    )
+                }
+
+                result.isSuccess -> {
+                    agendaEventChannel.send(AgendaItemEvent.DeleteSuccess)
+                }
             }
         }
     }
+
 
     private fun deleteTask(taskId: String) {
         viewModelScope.launch {
@@ -135,24 +125,15 @@ class SharedTaskViewModel @Inject constructor(
             val result = repository.deleteTask(taskId)
             _uiState.update { it.copy(isDeletingItem = false) }
 
-            when (result) {
-                is Result.Error -> {
-                    if (result.error == DataError.Network.NO_INTERNET) {
-                        agendaEventChannel.send(
-                            AgendaItemEvent.DeleteError(
-                                errorMessage = "Item not deleted. Please check your internet connection."
-                            )
+            when {
+                result.isFailure -> {
+                    agendaEventChannel.send(
+                        AgendaItemEvent.DeleteError(
+                            errorMessage = "Task not deleted. Please try again later."
                         )
-                    } else {
-                        agendaEventChannel.send(
-                            AgendaItemEvent.DeleteError(
-                                "Something went wrong. Please try again later."
-                            )
-                        )
-                    }
+                    )
                 }
-
-                is Result.Success -> {
+                result.isSuccess -> {
                     agendaEventChannel.send(AgendaItemEvent.DeleteSuccess)
                 }
             }
@@ -162,12 +143,22 @@ class SharedTaskViewModel @Inject constructor(
     fun executeActions(action: AgendaItemAction) {
         when (action) {
             AgendaItemAction.SaveAgendaItemUpdates -> createOrUpdateTask()
-            is AgendaItemAction.OpenExistingTask -> { loadExistingTask(action.id) }
+            is AgendaItemAction.OpenExistingTask -> {
+                loadExistingTask(action.id)
+            }
+
             is AgendaItemAction.EditExistingTask -> {
                 loadExistingTask(action.id)
             }
-            is AgendaItemAction.OpenExistingReminder -> { Unit }
-            is AgendaItemAction.EditExistingReminder -> { Unit }
+
+            is AgendaItemAction.OpenExistingReminder -> {
+                Unit
+            }
+
+            is AgendaItemAction.EditExistingReminder -> {
+                Unit
+            }
+
             is AgendaItemAction.SetTitle -> {
                 viewModelScope.launch {
                     _uiState.update { it.copy(title = action.title) }

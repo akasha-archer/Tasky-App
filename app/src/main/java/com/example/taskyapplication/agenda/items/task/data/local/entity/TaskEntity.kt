@@ -17,3 +17,9 @@ data class TaskEntity(
     @ColumnInfo(name = "remind_at") val remindAt: Long,
     val isDone: Boolean = false
 )
+
+@Entity(tableName = "deleted_task_ids")
+data class DeletedTaskIdEntity(
+    @PrimaryKey
+    val id: String
+)

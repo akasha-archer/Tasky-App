@@ -9,6 +9,12 @@ import java.time.LocalDate
 @Dao
 interface ReminderDao {
 
+    @Upsert
+    suspend fun upsertDeletedReminderId(deletedReminderId: DeletedReminderIdEntity)
+
+    @Query("SELECT * FROM deleted_reminder_ids")
+    suspend fun getDeletedReminderIds(): List<DeletedReminderIdEntity>
+
     @Query("SELECT * FROM reminders")
     suspend fun getAllReminders(): List<ReminderEntity>
 
@@ -16,7 +22,7 @@ interface ReminderDao {
     fun getAllRemindersForSelectedDate(date: LocalDate): Flow<List<ReminderEntity>>
 
     @Query("SELECT * FROM reminders WHERE id = :reminderId")
-    suspend fun getReminderById(reminderId: String): ReminderEntity
+    suspend fun getReminderById(reminderId: String): ReminderEntity?
 
     @Query("DELETE FROM reminders WHERE id = :reminderId")
     suspend fun deleteReminderById(reminderId: String)

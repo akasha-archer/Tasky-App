@@ -11,6 +11,7 @@ data class EventUiState(
     val description: String = "Edit your description",
     val photos: List<String> = emptyList(),
     val attendeeIds: List<String> = emptyList(),
+    val attendeeNames: List<String> = emptyList(),
     val attendeeList: List<AttendeeEntity> = emptyList(),
     val deletedPhotoKeys: List<String> = emptyList(),
     val startTime: LocalTime = LocalTime.now(),
@@ -26,11 +27,6 @@ data class EventUiState(
     val isEditingEvent: Boolean = false,
     val isEditingReminder: Boolean = false,
     val isDeletingItem: Boolean = false,
-    val isValidatingAttendee: Boolean = false
-)
-
-data class EventAttendeeData(
-    val id: String = "",
-    val fullName: String = "",
-    val email: String = ""
+    val isValidatingAttendee: Boolean = false,
+    val isUserOnline: Boolean = false
 )

@@ -4,17 +4,18 @@ import android.database.sqlite.SQLiteFullException
 import com.example.taskyapplication.agenda.items.main.data.Task
 import com.example.taskyapplication.agenda.items.main.data.asTaskEntity
 import com.example.taskyapplication.agenda.items.task.data.local.dao.TaskDao
+import com.example.taskyapplication.agenda.items.task.data.local.entity.DeletedTaskIdEntity
 import com.example.taskyapplication.agenda.items.task.data.local.entity.TaskEntity
-import com.example.taskyapplication.domain.utils.DataError
-import com.example.taskyapplication.domain.utils.Result
 import kotlinx.coroutines.flow.Flow
 import java.time.LocalDate
 import javax.inject.Inject
 
 interface LocalDataSource {
+    suspend fun upsertDeletedTaskId(deletedTaskId: DeletedTaskIdEntity): Result<Unit>
+    suspend fun getAllDeletedTaskIds(): List<DeletedTaskIdEntity>
     fun getTasksByDate(date: LocalDate): Flow<List<TaskEntity>>
-    suspend fun upsertTask(task: TaskEntity): Result<Unit, DataError.Local>
-    suspend fun upsertAllTasks(tasks: List<Task>): Result<Unit, DataError.Local>
+    suspend fun upsertTask(task: TaskEntity): Result<Unit>
+    suspend fun upsertAllTasks(tasks: List<Task>): kotlin.Result<Unit>
     suspend fun getTask(taskId: String): TaskEntity?
     suspend fun deleteTask(taskId: String)
     suspend fun deleteAllTasks()
@@ -27,12 +28,12 @@ class TaskLocalDataSource @Inject constructor(
 
     override suspend fun getAllTasks() = dao.getAllTasks()
 
-    override suspend fun upsertTask(task: TaskEntity): Result<Unit, DataError.Local> {
+    override suspend fun upsertTask(task: TaskEntity): kotlin.Result<Unit> {
         return try {
             dao.upsertTask(task)
-            Result.Success(Unit)
-        } catch(e: SQLiteFullException) {
-            Result.Error(DataError.Local.DISK_FULL)
+            kotlin.Result.success(Unit)
+        } catch (e: SQLiteFullException) {
+            kotlin.Result.failure(e)
         }
     }
 
@@ -44,15 +45,28 @@ class TaskLocalDataSource @Inject constructor(
         dao.deleteTaskById(taskId)
     }
 
-    override suspend fun upsertAllTasks(tasks: List<Task>): Result<Unit, DataError.Local> {
-       return try {
-           tasks.forEach {
-               dao.upsertTask(it.asTaskEntity())
-           }
-           Result.Success(Unit)
-       } catch(e: SQLiteFullException) {
-           Result.Error(DataError.Local.DISK_FULL)
-       }
+    override suspend fun upsertAllTasks(tasks: List<Task>): kotlin.Result<Unit> {
+        return try {
+            tasks.forEach {
+                dao.upsertTask(it.asTaskEntity())
+            }
+            kotlin.Result.success(Unit)
+        } catch (e: SQLiteFullException) {
+            kotlin.Result.failure(e)
+        }
+    }
+
+    override suspend fun upsertDeletedTaskId(deletedTaskId: DeletedTaskIdEntity): Result<Unit> {
+        return try {
+            dao.upsertDeletedTaskId(deletedTaskId)
+            kotlin.Result.success(Unit)
+        } catch (e: SQLiteFullException) {
+            kotlin.Result.failure(e)
+        }
+    }
+
+    override suspend fun getAllDeletedTaskIds(): List<DeletedTaskIdEntity> {
+        return dao.getDeletedTaskIds()
     }
 
     override fun getTasksByDate(date: LocalDate): Flow<List<TaskEntity>> {

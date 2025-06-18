@@ -11,6 +11,12 @@ import java.time.LocalDate
 interface EventDao {
 
     @Upsert
+    suspend fun upsertDeletedEventId(deletedEventId: DeletedEventIdEntity)
+
+    @Query("SELECT * FROM deleted_event_ids")
+    suspend fun getDeletedEventIds(): List<DeletedEventIdEntity>
+
+    @Upsert
     suspend fun upsertEventPhotos(photos: List<EventPhotoEntity>)
 
     @Query("SELECT * FROM event_photos WHERE eventId = :eventId")

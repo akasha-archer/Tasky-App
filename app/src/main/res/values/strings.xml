@@ -41,6 +41,7 @@
     <string name="event_host">Creator</string>
     <string name="add_attendee_error_message">This email does not exist</string>
     <string name="empty_schedule_message">No items scheduled for today.\nTap the "+ " button below to get started</string>
+    <string name="feature_not_available">Feature not available when device is offline</string>
 
 
 </resources>

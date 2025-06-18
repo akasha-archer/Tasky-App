@@ -3,7 +3,6 @@ package com.example.taskyapplication.agenda.items.task.domain.network
 import com.example.taskyapplication.agenda.items.task.data.network.models.TaskResponse
 import com.example.taskyapplication.agenda.items.task.data.network.models.TaskNetworkModel
 import com.example.taskyapplication.agenda.items.task.data.network.models.UpdateTaskBody
-import okhttp3.ResponseBody
 import retrofit2.Response
 import retrofit2.http.Body
 import retrofit2.http.DELETE
@@ -16,7 +15,7 @@ interface TaskApiService {
     @POST("task")
     suspend fun createNewTask(
         @Body request: TaskNetworkModel
-    ): Result<Unit>
+    ): Response<Unit>
 
     @PUT("task")
     suspend fun updateTask(

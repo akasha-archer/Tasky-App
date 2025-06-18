@@ -18,19 +18,6 @@ data class TaskNetworkModel(
     val isDone: Boolean
 )
 
-//@Serializable
-//data class TaskNetworkModel(
-//    @SerialName("id")
-//    override val itemId: String,
-//    override val title: String,
-//    override val description: String,
-//    @SerialName("time")
-//    override val startTime: Long,
-//    @SerialName("remindAt")
-//    override val reminderTime: Long,
-//    val isDone: Boolean
-//): AgendaItem
-
 @Serializable
 data class UpdateTaskBody(
     @SerialName("id")

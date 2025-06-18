@@ -112,6 +112,9 @@ fun ReminderEditDateTimeRoot(
                     Toast.LENGTH_SHORT
                 ).show()
             }
+
+            is AgendaItemEvent.AttendeeValidationError -> { Unit }
+            AgendaItemEvent.AttendeeValidationSuccess -> { Unit }
         }
     }
 
@@ -148,13 +151,6 @@ fun ReminderEditDateTimeScreen(
     val timePickerState = rememberTimePickerState(
         is24Hour = false
     )
-    val timeOfDay = if (timePickerState.isAfternoon) "PM" else "AM"
-
-    // if user changed the date or time, but cancels the edit,
-    // we want to display the values that were previously entered
-    val previousDate = state.date
-    val previousTime = state.time
-    val previousReminder = state.remindAt
 
     Column(
         modifier = modifier
@@ -170,9 +166,6 @@ fun ReminderEditDateTimeScreen(
                     },
                     onClickCancel = {
                         onAction(AgendaItemAction.CancelEdit)
-                        onAction(AgendaItemAction.SetTime(previousTime))
-                        onAction(AgendaItemAction.SetDate(previousDate))
-                        onAction(AgendaItemAction.SetReminderTime(previousReminder))
                     }
                 )
             },

@@ -6,13 +6,9 @@ import com.example.taskyapplication.agenda.data.db.AgendaDatabase
 import com.example.taskyapplication.agenda.items.event.data.db.EventDao
 import com.example.taskyapplication.agenda.items.event.domain.EventLocalDataSource
 import com.example.taskyapplication.agenda.items.event.domain.EventLocalDataSourceImpl
-import com.example.taskyapplication.agenda.items.main.data.db.LocalAgendaSummaryDao
-import com.example.taskyapplication.agenda.items.main.domain.AgendaItemsLocalDataSource
-import com.example.taskyapplication.agenda.items.main.domain.AgendaLocalDataSource
 import com.example.taskyapplication.agenda.items.reminder.data.db.ReminderDao
 import com.example.taskyapplication.agenda.items.reminder.domain.ReminderLocalDataSource
 import com.example.taskyapplication.agenda.items.reminder.domain.ReminderLocalDataSourceImpl
-import com.example.taskyapplication.agenda.items.task.data.local.dao.PendingTaskDao
 import com.example.taskyapplication.agenda.items.task.data.local.dao.TaskDao
 import com.example.taskyapplication.agenda.items.task.domain.LocalDataSource
 import com.example.taskyapplication.agenda.items.task.domain.TaskLocalDataSource
@@ -27,18 +23,6 @@ import javax.inject.Singleton
 @Module
 object DatabaseModule {
 
-    // AGENDA SCREEN
-    @Singleton
-    @Provides
-    fun provideAgendaSummaryDao(database: AgendaDatabase): LocalAgendaSummaryDao {
-        return database.localAgendaSummaryDao()
-    }
-
-    @Singleton
-    @Provides
-    fun provideAgendaLocalDataSource(
-        dao: LocalAgendaSummaryDao
-    ): AgendaLocalDataSource = AgendaItemsLocalDataSource(dao)
 
     // EVENT
     @Singleton
@@ -72,12 +56,6 @@ object DatabaseModule {
     fun provideLocalDataSource(
         dao: TaskDao
     ): LocalDataSource = TaskLocalDataSource(dao)
-
-    @Provides
-    @Singleton
-    fun providePendingTaskDao(database: AgendaDatabase): PendingTaskDao {
-        return database.pendingTaskDao()
-    }
 
     @Provides
     @Singleton

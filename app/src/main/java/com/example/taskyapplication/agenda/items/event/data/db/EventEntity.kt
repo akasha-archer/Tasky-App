@@ -10,6 +10,12 @@ import androidx.room.Relation
 import java.time.LocalDate
 import java.time.LocalTime
 
+@Entity(tableName = "deleted_event_ids")
+data class DeletedEventIdEntity(
+    @PrimaryKey
+    val id: String
+)
+
 @Entity(tableName = "events")
 data class EventEntity(
     @PrimaryKey

@@ -16,3 +16,9 @@ data class ReminderEntity(
     val date: LocalDate,
     @ColumnInfo(name = "remind_at") val remindAt: Long
 )
+
+@Entity(tableName = "deleted_reminder_ids")
+data class DeletedReminderIdEntity(
+    @PrimaryKey
+    val id: String
+)

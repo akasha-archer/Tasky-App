@@ -12,57 +12,52 @@ import com.example.taskyapplication.domain.utils.EmptyResult
 import com.example.taskyapplication.domain.utils.Result
 import com.example.taskyapplication.domain.utils.safeApiCall
 import okhttp3.MultipartBody
+import retrofit2.Response
 import javax.inject.Inject
 
 interface EventRemoteDataSource {
-    suspend fun getEvent(eventId: String): Result<FetchedEventResponse, DataError.Network>
+    suspend fun getEvent(eventId: String): Response<FetchedEventResponse>
     suspend fun createEvent(
         event: CreateEventNetworkModel,
         photos: List<MultipartBody.Part>
-    ): Result<CreatedEventResponse, DataError.Network>
+    ): Response<CreatedEventResponse>
+
     suspend fun updateEvent(
         event: UpdateEventNetworkModel,
         photos: List<MultipartBody.Part>
-    ): Result<UpdatedEventResponse, DataError.Network>
-    suspend fun deleteEvent(eventId: String): EmptyResult<DataError>
-    suspend fun verifyAttendee(email: String): Result<GetAttendeeResponse, DataError.Network>
+    ): Response<UpdatedEventResponse>
+
+    suspend fun deleteEvent(eventId: String): Response<Unit>
+    suspend fun verifyAttendee(email: String): Response<GetAttendeeResponse>
 }
 
 class EventRemoteDataSourceImpl @Inject constructor(
     private val eventApi: EventApiService
 ) : EventRemoteDataSource {
 
-    override suspend fun getEvent(eventId: String): Result<FetchedEventResponse, DataError.Network> {
-        return safeApiCall {
-            eventApi.getEventById(eventId)
-        }
+    override suspend fun getEvent(eventId: String): Response<FetchedEventResponse> {
+        return eventApi.getEventById(eventId)
     }
 
     override suspend fun createEvent(
         event: CreateEventNetworkModel,
         photos: List<MultipartBody.Part>
-    ): Result<CreatedEventResponse, DataError.Network> {
-        return safeApiCall {
-            eventApi.createEvent(event, photos)
-        }
+    ): Response<CreatedEventResponse> {
+        return eventApi.createEvent(event, photos)
     }
 
     override suspend fun updateEvent(
         event: UpdateEventNetworkModel,
         photos: List<MultipartBody.Part>
-    ): Result<UpdatedEventResponse, DataError.Network> {
-        return safeApiCall {
-            eventApi.updateEvent(event, photos)
-        }
+    ): Response<UpdatedEventResponse> {
+        return eventApi.updateEvent(event, photos)
     }
 
-    override suspend fun deleteEvent(eventId: String): EmptyResult<DataError> {
-        return safeApiCall {
-            eventApi.deleteEvent(eventId)
-        }
+    override suspend fun deleteEvent(eventId: String): Response<Unit> {
+        return eventApi.deleteEvent(eventId)
     }
 
-    override suspend fun verifyAttendee(email: String): Result<GetAttendeeResponse, DataError.Network> {
-        return safeApiCall { eventApi.verifyAttendee(email) }
+    override suspend fun verifyAttendee(email: String): Response<GetAttendeeResponse> {
+        return eventApi.verifyAttendee(email)
     }
 }

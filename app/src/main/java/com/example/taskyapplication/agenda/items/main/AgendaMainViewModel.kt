@@ -2,14 +2,15 @@ package com.example.taskyapplication.agenda.items.main
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.example.taskyapplication.agenda.common.NetworkStatusObserver
+import com.example.taskyapplication.agenda.common.INetworkObserver
+import com.example.taskyapplication.agenda.common.NetworkStatus
 import com.example.taskyapplication.agenda.domain.toDateAsString
 import com.example.taskyapplication.agenda.items.main.data.AgendaEventSummary
 import com.example.taskyapplication.agenda.items.main.data.AgendaItemType
 import com.example.taskyapplication.agenda.items.main.data.AgendaReminderSummary
 import com.example.taskyapplication.agenda.items.main.data.AgendaSummary
 import com.example.taskyapplication.agenda.items.main.data.AgendaTaskSummary
-import com.example.taskyapplication.agenda.items.main.domain.AgendaOfflineFirstRepository
+import com.example.taskyapplication.auth.domain.AuthTokenManager
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
@@ -22,40 +23,48 @@ import javax.inject.Inject
 
 @HiltViewModel
 class AgendaMainViewModel @Inject constructor(
-    private val repository: AgendaOfflineFirstRepository,
-    private val commonDataProvider: AgendaCommonDataProvider,
-    private val networkStatusObserver: NetworkStatusObserver,
+    private val commonDataProvider: AgendaItemsMainInteractor,
+    private val networkObserver: INetworkObserver,
+    private val authTokenManager: AuthTokenManager
 ) : ViewModel() {
-
-    suspend fun isDeviceConnectedToInternet() = networkStatusObserver.isOnline()
-
-    init {
-        viewModelScope.launch {
-            if (isDeviceConnectedToInternet()) {
-                commonDataProvider.syncLocalItemsWithRemoteStorage()
-            }
-        }
-    }
 
     private val _agendaViewState = MutableStateFlow(AgendaMainViewState())
     val agendaViewState = _agendaViewState
-        .onStart { buildAgendaListForDate(_agendaViewState.value.selectedDate) }
+        .onStart {
+            networkObserver.networkStatus.collect { status ->
+                val isOnline = status == NetworkStatus.Available
+                _agendaViewState.update { it.copy(isUserOnline = isOnline) }
+            }
+            updateUserName()
+            buildAgendaListForDate(_agendaViewState.value.selectedDate)
+            if (_agendaViewState.value.isUserOnline) {
+                commonDataProvider.syncLocalItemsWithRemoteStorage()
+                commonDataProvider.syncDeletedItemIds()
+            }
+        }
         .stateIn(
             scope = viewModelScope,
             started = SharingStarted.WhileSubscribed(5000L),
             initialValue = AgendaMainViewState(),
         )
 
+    private fun updateUserName() {
+        viewModelScope.launch {
+            _agendaViewState.update { it.copy(userFullName = authTokenManager.readUserFullName() ?: "ZZ") }
+        }
+    }
+
     private fun buildAgendaListForDate(selectedDate: LocalDate) {
         viewModelScope.launch {
             commonDataProvider.buildAgendaForSelectedDate(selectedDate)
-                .collect { (tasks, reminders) ->
+                .collect { (tasks, reminders, events) ->
                     _agendaViewState.update {
                         it.copy(
                             displayDateHeading = showSelectedDate(selectedDate),
                             selectedTasks = tasks,
                             selectedReminders = reminders,
-                            combinedSummaryList = _agendaViewState.value.selectedTasks + _agendaViewState.value.selectedReminders
+                            selectedEvents = events,
+                            combinedSummaryList = _agendaViewState.value.selectedTasks + _agendaViewState.value.selectedReminders + _agendaViewState.value.selectedEvents
                         )
                     }
                 }
@@ -120,6 +129,8 @@ class AgendaMainViewModel @Inject constructor(
 
 data class AgendaMainViewState(
     val displayDateHeading: String = "Today",
+    val userFullName: String = "",
+    val isUserOnline: Boolean = true,
     val selectedDate: LocalDate = LocalDate.now(),
     val selectedEvents: List<AgendaEventSummary> = emptyList(),
     val selectedTasks: List<AgendaTaskSummary> = emptyList(),

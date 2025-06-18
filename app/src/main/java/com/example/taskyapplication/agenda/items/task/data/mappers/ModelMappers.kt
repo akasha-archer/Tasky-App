@@ -58,18 +58,6 @@ fun UpdateTaskBody.asTaskEntity(): TaskEntity {
     )
 }
 
-fun TaskResponse.asTaskUi(): TaskUiState {
-    return TaskUiState(
-        id = id,
-        title = title,
-        description = description ?: "task description",
-        time = time.toLocalDateAndTime().second,
-        date = time.toLocalDateAndTime().first,
-        remindAt = ReminderOptions.THIRTY_MINUTES_BEFORE,
-        isDone = isDone
-    )
-}
-
 fun TaskEntity.asTaskUi() = TaskUiState(
     id = id,
     title = title,

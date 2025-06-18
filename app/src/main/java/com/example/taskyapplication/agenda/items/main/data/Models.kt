@@ -6,6 +6,7 @@ import com.example.taskyapplication.agenda.items.event.data.db.EventEntity
 import com.example.taskyapplication.agenda.items.reminder.data.db.ReminderEntity
 import com.example.taskyapplication.agenda.items.reminder.data.models.ReminderResponse
 import com.example.taskyapplication.agenda.items.task.data.local.entity.TaskEntity
+import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 import java.time.LocalDate
 import java.time.LocalTime
@@ -62,16 +63,12 @@ data class AgendaReminderSummary(
     override val type: AgendaItemType = AgendaItemType.REMINDER,
 ): AgendaSummary
 
+@Serializable
 data class DeletedAgendaItems(
     val deletedEventIds: List<String>,
     val deletedTaskIds: List<String>,
     val deletedReminderIds: List<String>
 )
-
-//data class AgendaScreenCalendar(
-//    val dayOfWeek: Char,
-//    val dayOfMonth: Int,
-//)
 
 enum class AgendaItemType(val color: Int) {
     EVENT(color = R.color.event_card),

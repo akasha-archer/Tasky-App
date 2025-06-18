@@ -63,15 +63,8 @@ fun TaskEditDateTimeRoot(
     onClickCancel: () -> Unit,
     onSelectEditTitle: () -> Unit,
     onSelectEditDescription: () -> Unit,
-//    taskId: String,
     taskViewModel: SharedTaskViewModel
 ) {
-//    if (taskId.isNotBlank() || taskId.isNotEmpty()) {
-//        LaunchedEffect(taskId) {
-//            taskViewModel.loadExistingTask(taskId)
-//        }
-//    }
-
     val uiState by taskViewModel.uiState.collectAsStateWithLifecycle()
     val context = LocalContext.current
 
@@ -119,6 +112,9 @@ fun TaskEditDateTimeRoot(
                     Toast.LENGTH_SHORT
                 ).show()
             }
+
+            is AgendaItemEvent.AttendeeValidationError -> { Unit }
+            AgendaItemEvent.AttendeeValidationSuccess ->  { Unit }
         }
     }
 

@@ -19,6 +19,7 @@ import androidx.compose.foundation.lazy.grid.LazyHorizontalGrid
 import androidx.compose.foundation.lazy.grid.items
 import androidx.compose.foundation.lazy.grid.rememberLazyGridState
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
@@ -128,7 +129,10 @@ fun AgendaSummary(
                 modifier = Modifier
             )
         } else {
-            LazyColumn {
+            LazyColumn(
+                modifier = Modifier,
+                state = rememberLazyListState(),
+            ) {
                 items(dailySummary) { item ->
                     AgendaItemCard(
                         modifier = Modifier,

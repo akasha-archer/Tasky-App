@@ -16,7 +16,7 @@ interface AgendaApiService {
     ): Response<AgendaItemsResponse>
 
     @POST("syncAgenda")
-    suspend fun syncAgenda(
+    suspend fun syncDeletedAgendaIds(
         @Body deletedAgendaItems: DeletedAgendaItems
     ): Response<Unit>
 

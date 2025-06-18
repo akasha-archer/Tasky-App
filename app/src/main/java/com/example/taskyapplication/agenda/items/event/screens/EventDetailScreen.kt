@@ -169,15 +169,19 @@ fun EventDetailScreen(
                                 )
                             },
                             eventVisitorSection = {
-                                if (state.attendeeList.isNotEmpty()) {
-                                    val nameList = state.attendeeList.map { it.fullName }
+                                if (state.attendeeNames.isNotEmpty()) {
+                                    val nameList = state.attendeeNames
                                     VisitorHeader(
                                         modifier = Modifier,
                                         isEditingScreen = false,
                                         isBottomSheetEnabled = false,
                                         isLoading = state.isValidatingAttendee,
                                         isValidEmail = state.isValidUser,
-                                        visitorList = nameList
+                                        visitorList = nameList,
+                                        emailText = "",
+                                        onEmailTextChange = {},
+                                        onConfirmAddAttendee = {},
+                                        onCancelAddingVisitor = {}
                                     )
                                 }
                             },

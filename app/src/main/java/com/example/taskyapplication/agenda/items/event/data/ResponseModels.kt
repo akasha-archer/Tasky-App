@@ -44,26 +44,6 @@ data class FetchedEventResponse(
     val photos: List<EventPhotoResponse>
 )
 
-//@Serializable
-//data class FetchedEventAttendeeResponse(
-//    val email: String,
-//    val fullName: String,
-//    val userId: String,
-//    val eventId: String,
-//    val isGoing: Boolean,
-//    val remindAt: Long
-//)
-
-//@Serializable
-//data class UpdatedEventAttendeeResponse(
-//    val email: String,
-//    val fullName: String,
-//    val userId: String,
-//    val eventId: String,
-//    val isGoing: Boolean,
-//    val remindAt: Long
-//)
-
 @Serializable
 data class AttendeeResponse(
     val email: String,

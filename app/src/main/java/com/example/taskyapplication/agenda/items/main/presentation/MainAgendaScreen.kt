@@ -21,6 +21,7 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.example.taskyapplication.TaskyBaseScreen
 import com.example.taskyapplication.agenda.AgendaItemAction
+import com.example.taskyapplication.agenda.domain.toInitials
 import com.example.taskyapplication.agenda.domain.toLocalDateAndTime
 import com.example.taskyapplication.agenda.items.event.EventItemAction
 import com.example.taskyapplication.agenda.items.event.SharedEventViewModel
@@ -91,21 +92,10 @@ fun AgendaMainRoot(
         onAction = { action ->
             when (action) {
                 is MainScreenAction.ItemToOpen -> {
-//                    when (action.type) {
-//                        AgendaItemType.EVENT -> launchNewEventScreen(action.itemId)
-//                        AgendaItemType.REMINDER -> launchNewReminderScreen(action.itemId)
-//                        AgendaItemType.TASK -> launchNewTaskScreen(action.itemId)
-//
-//                    }
-//                    openSelectedItem(action.itemId, action.type)
+                    openSelectedItem(action.itemId, action.type)
                 }
 
                 is MainScreenAction.ItemToEdit -> {
-//                    when (action.type) {
-//                        AgendaItemType.EVENT -> launchNewEventScreen(action.itemId)
-//                        AgendaItemType.REMINDER -> launchNewReminderScreen(action.itemId)
-//                        AgendaItemType.TASK -> launchNewTaskScreen(action.itemId)
-//                    }
                     editSelectedItem(action.itemId, action.type)
                 }
                 else -> { Unit }
@@ -131,8 +121,8 @@ fun AgendaMainScreen(
     var showLogoutDropDown by rememberSaveable { mutableStateOf(false) }
     val datePickerState = rememberDatePickerState()
     var expandedItemId by rememberSaveable { mutableStateOf<String?>(null) }
+    val userInitials = agendaViewState.userFullName.toInitials().ifEmpty { "zz" }
 
-    val ctxt = LocalContext.current
     TaskyBaseScreen(
         modifier = modifier,
         screenHeader = {
@@ -145,7 +135,7 @@ fun AgendaMainScreen(
                 onLogoutClick = { onAction(MainScreenAction.LogoutUser) },
                 onDismissRequest = { showLogoutDropDown = false },
                 showLogoutDropDown = showLogoutDropDown,
-                userInitials = "JD"
+                userInitials =  userInitials
             )
         },
         mainContent = {
@@ -162,12 +152,6 @@ fun AgendaMainScreen(
                             dailySummary = agendaViewState.combinedSummaryList,
                             dateHeading = agendaViewState.displayDateHeading,
                             onOpenClick = { itemId, type ->
-                                Toast.makeText(
-                                    ctxt,
-                                    "open item clicked id $itemId type is $type",
-                                    Toast.LENGTH_SHORT
-                                ).show()
-
                                 when (type) {
                                     AgendaItemType.EVENT -> {
                                         onEventAction(EventItemAction.OpenExistingEvent(itemId))
@@ -208,8 +192,6 @@ fun AgendaMainScreen(
                                 } else {
                                     itemId
                                 }
-                                Toast.makeText(ctxt, "menu clicked id $itemId", Toast.LENGTH_SHORT)
-                                    .show()
                             },
                             currentlyExpandedItemId = expandedItemId
 

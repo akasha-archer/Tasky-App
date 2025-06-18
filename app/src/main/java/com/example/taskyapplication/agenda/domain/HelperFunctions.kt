@@ -26,7 +26,12 @@ fun LocalDateTime.convertToLong(): Long {
 }
 
 fun String.toInitials(): String {
-    return this.split(" ").mapNotNull { it.firstOrNull()?.toString() }.reduce { acc, s -> acc + s }
+    if (this.isBlank()) return ""
+    return this.split(" ")
+        .filter { it.isNotBlank() }
+        .mapNotNull { it.firstOrNull()?.toString()?.uppercase() }
+        .take(2)
+        .joinToString("")
 }
 
 fun Long.toLocalDateAndTime(): Pair<LocalDate, LocalTime> {
@@ -51,12 +56,6 @@ fun Long.toDateAsString(): String {
 fun Long.toTimeAsString(): String =
     LocalTime.ofInstant(Instant.ofEpochMilli(this), ZoneId.of("America/New_York"))
         .format(DateTimeFormatter.ofPattern("h:mm a"))
-
-fun String.timeAsLong(): Long {
-    val simpleDate = SimpleDateFormat("h:mm a", Locale.getDefault())
-    return simpleDate.parse(this)?.time
-        ?: throw IllegalArgumentException("Invalid time string or pattern")
-}
 
 fun getReminderOption(
     selection: String,

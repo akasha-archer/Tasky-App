@@ -30,6 +30,7 @@ class SharedReminderViewModel @Inject constructor(
 ) : ViewModel() {
 
     private val reminderId: String? = savedStateHandle.get<String>("reminderId")
+
     init {
         if (reminderId != null) {
             loadExistingReminder(reminderId)
@@ -45,12 +46,16 @@ class SharedReminderViewModel @Inject constructor(
         started = SharingStarted.WhileSubscribed(5000L),
         initialValue = ReminderUiState()
     )
+
     private fun loadExistingReminder(reminderId: String) {
         viewModelScope.launch {
-            val requestedTask = reminderRepository.getReminderById(reminderId)
-            _reminderUiState.value = requestedTask.toReminderUiState()
+            val requestedReminder = reminderRepository.getReminderById(reminderId)
+            if (requestedReminder != null) {
+                _reminderUiState.value = requestedReminder.toReminderUiState()
+            }
         }
     }
+
     private fun isNewReminder(currentId: String) = currentId.isEmpty() || currentId.isBlank()
 
     private fun createOrUpdateReminder() {
@@ -96,26 +101,17 @@ class SharedReminderViewModel @Inject constructor(
             _reminderUiState.update {
                 it.copy(isEditingItem = false)
             }
-
-            when (result) {
-                is Result.Error -> {
-                    if (result.error == DataError.Network.NO_INTERNET) {
-                        agendaEventChannel.send(
-                            AgendaItemEvent.NewItemCreatedError(
-                                errorMessage = "Item not updated. Please check your internet connection."
-                            )
-                        )
-                    } else {
-                        agendaEventChannel.send(
-                            AgendaItemEvent.NewItemCreatedError(
-                                "Something went wrong. Please try again later."
-                            )
-                        )
-                    }
+            when {
+                result.isSuccess -> {
+                    agendaEventChannel.send(AgendaItemEvent.NewItemCreatedSuccess)
                 }
 
-                is Result.Success -> {
-                    agendaEventChannel.send(AgendaItemEvent.NewItemCreatedSuccess)
+                result.isFailure -> {
+                    agendaEventChannel.send(
+                        AgendaItemEvent.NewItemCreatedError(
+                            "Something went wrong. Please try again later."
+                        )
+                    )
                 }
             }
         }
@@ -128,25 +124,16 @@ class SharedReminderViewModel @Inject constructor(
             val result = reminderRepository.deleteReminder(reminderId)
             _reminderUiState.update { it.copy(isDeletingItem = false) }
 
-            when (result) {
-                is Result.Error -> {
-                    if (result.error == DataError.Network.NO_INTERNET) {
-                        agendaEventChannel.send(
-                            AgendaItemEvent.DeleteError(
-                                errorMessage = "Item not deleted. Please check your internet connection."
-                            )
-                        )
-                    } else {
-                        agendaEventChannel.send(
-                            AgendaItemEvent.DeleteError(
-                                "Something went wrong. Please try again later."
-                            )
-                        )
-                    }
-                }
-
-                is Result.Success -> {
+            when {
+                result.isSuccess -> {
                     agendaEventChannel.send(AgendaItemEvent.DeleteSuccess)
+                }
+                result.isFailure -> {
+                    agendaEventChannel.send(
+                        AgendaItemEvent.NewItemCreatedError(
+                            "Reminder not deleted. Please try again later."
+                        )
+                    )
                 }
             }
         }
@@ -154,32 +141,49 @@ class SharedReminderViewModel @Inject constructor(
 
     fun executeActions(action: AgendaItemAction) {
         when (action) {
-            AgendaItemAction.SaveAgendaItemUpdates -> { createOrUpdateReminder() }
+            AgendaItemAction.SaveAgendaItemUpdates -> {
+                createOrUpdateReminder()
+            }
+
             is AgendaItemAction.EditExistingReminder -> {
                 loadExistingReminder(action.id)
             }
+
             is AgendaItemAction.OpenExistingReminder -> {
                 loadExistingReminder(action.id)
             }
-            is AgendaItemAction.OpenExistingTask -> { Unit }
-            is AgendaItemAction.EditExistingTask -> { Unit }
+
+            is AgendaItemAction.OpenExistingTask -> {
+                Unit
+            }
+
+            is AgendaItemAction.EditExistingTask -> {
+                Unit
+            }
+
             is AgendaItemAction.SetTitle -> {
                 viewModelScope.launch {
                     _reminderUiState.update { it.copy(title = action.title) }
                 }
             }
+
             is AgendaItemAction.SetDate -> {
-                _reminderUiState.update { it.copy(
-                    date = action.date,
-                    isEditingDate = false
-                ) }
+                _reminderUiState.update {
+                    it.copy(
+                        date = action.date,
+                        isEditingDate = false
+                    )
+                }
             }
+
             is AgendaItemAction.SetDescription -> {
                 _reminderUiState.update { it.copy(description = action.description) }
             }
+
             is AgendaItemAction.SetReminderTime -> {
                 _reminderUiState.update { it.copy(remindAt = action.reminder) }
             }
+
             is AgendaItemAction.SetTime -> {
                 _reminderUiState.update {
                     it.copy(
@@ -188,56 +192,69 @@ class SharedReminderViewModel @Inject constructor(
                     )
                 }
             }
-            is AgendaItemAction.DeleteItem -> { deleteReminder(action.id) }
+
+            is AgendaItemAction.DeleteItem -> {
+                deleteReminder(action.id)
+            }
 
             AgendaItemAction.ShowDatePicker -> {
                 _reminderUiState.update { it.copy(isEditingDate = true) }
             }
+
             AgendaItemAction.HideDatePicker -> {
                 _reminderUiState.update {
                     it.copy(isEditingDate = false)
                 }
             }
+
             AgendaItemAction.ShowReminderDropDown -> {
                 _reminderUiState.update {
                     it.copy(isEditingReminder = true)
                 }
             }
+
             AgendaItemAction.HideReminderDropDown -> {
                 _reminderUiState.update {
                     it.copy(isEditingReminder = false)
                 }
             }
+
             AgendaItemAction.ShowTimePicker -> {
                 _reminderUiState.update {
                     it.copy(isEditingTime = true)
                 }
             }
+
             AgendaItemAction.HideTimePicker -> {
                 _reminderUiState.update {
                     it.copy(isEditingTime = false)
                 }
             }
+
             AgendaItemAction.CloseEditDescriptionScreen -> {
                 _reminderUiState.update {
                     it.copy(isEditingItem = false)
                 }
             }
+
             AgendaItemAction.CloseEditTitleScreen -> {
                 _reminderUiState.update {
                     it.copy(isEditingItem = false)
                 }
             }
+
             AgendaItemAction.LaunchEditDescriptionScreen -> {
                 _reminderUiState.update {
                     it.copy(isEditingItem = true)
                 }
             }
+
             AgendaItemAction.LaunchEditTitleScreen -> {
                 _reminderUiState.update {
                     it.copy(isEditingItem = true)
                 }
             }
+
             AgendaItemAction.CancelEdit -> {
                 _reminderUiState.update {
                     it.copy(
@@ -248,15 +265,18 @@ class SharedReminderViewModel @Inject constructor(
                     )
                 }
             }
+
             AgendaItemAction.LaunchDateTimeEditScreen -> {
                 _reminderUiState.update {
                     it.copy(isEditingItem = true)
                 }
             }
+
             AgendaItemAction.CloseDetailScreen -> {
                 Unit
                 // go back to Agenda screen
             }
+
             AgendaItemAction.SaveDateTimeEdit -> {
                 _reminderUiState.update {
                     it.copy(isEditingItem = false)

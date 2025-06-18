@@ -1,6 +1,5 @@
 package com.example.taskyapplication.agenda.items.task.presentation.screens
 
-import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
@@ -151,15 +150,6 @@ fun TaskDetailScreen(
                                     reminderTime = state.remindAt.timeString,
                                     isEditing = isEditScreen,
                                 )
-                                Text(
-                                    modifier = Modifier
-                                        .height(40.dp)
-                                        .background(color = Color.Yellow),
-                                    text = "Debug - Loaded Task ID in UI: ${state.id}",
-                                    style = TaskyTypography.labelSmall.copy(color = Color.Black))
-                                Text(text = "Debug - Loaded Task Title in UI: ${state.title}",
-                                    style = TaskyTypography.labelSmall.copy(color = Color.Black))
-
                             }
                         )
                         AgendaItemDeleteTextButton(

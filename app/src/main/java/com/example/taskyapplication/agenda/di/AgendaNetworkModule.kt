@@ -11,10 +11,7 @@ import com.example.taskyapplication.agenda.items.event.domain.EventRemoteDataSou
 import com.example.taskyapplication.agenda.items.event.domain.EventRepository
 import com.example.taskyapplication.agenda.items.event.network.EventApiService
 import com.example.taskyapplication.agenda.items.main.domain.AgendaItemsRemoteDataSource
-import com.example.taskyapplication.agenda.items.main.domain.AgendaLocalDataSource
-import com.example.taskyapplication.agenda.items.main.domain.AgendaOfflineFirstRepository
 import com.example.taskyapplication.agenda.items.main.domain.AgendaRemoteDataSource
-import com.example.taskyapplication.agenda.items.main.domain.AgendaRepository
 import com.example.taskyapplication.agenda.items.main.domain.network.AgendaApiService
 import com.example.taskyapplication.agenda.items.reminder.domain.ReminderLocalDataSource
 import com.example.taskyapplication.agenda.items.reminder.domain.ReminderOfflineFirstRepository
@@ -23,7 +20,6 @@ import com.example.taskyapplication.agenda.items.reminder.domain.ReminderRemoteD
 import com.example.taskyapplication.agenda.items.reminder.domain.ReminderRepository
 import com.example.taskyapplication.agenda.items.reminder.domain.network.ReminderApiService
 import com.example.taskyapplication.agenda.items.task.data.OfflineFirstTaskRepository
-import com.example.taskyapplication.agenda.items.task.data.local.dao.PendingTaskDao
 import com.example.taskyapplication.agenda.items.task.domain.LocalDataSource
 import com.example.taskyapplication.agenda.items.task.domain.RemoteDataSource
 import com.example.taskyapplication.agenda.items.task.domain.TaskRemoteDataSource
@@ -97,32 +93,13 @@ object AgendaNetworkModule {
         apiService: AgendaApiService
     ): AgendaRemoteDataSource = AgendaItemsRemoteDataSource(apiService)
 
-    @Singleton
-    @Provides
-    fun provideAgendaRepository(
-        localDataSource: AgendaLocalDataSource,
-        remoteDataSource: AgendaRemoteDataSource,
-//        scope: CoroutineScope
-    ): AgendaRepository =
-        AgendaOfflineFirstRepository(
-            localDataSource,
-            remoteDataSource
-        )
-
     // EVENTS
     @Singleton
     @Provides
-    fun provideEventApi(): EventApiService {
-        return Retrofit.Builder()
-            .baseUrl(BuildConfig.BASE_URL)
-            .client(provideAgendaOkHttpClient())
-            .addConverterFactory(
-                json.asConverterFactory(
-                    "application/json".toMediaType()
-                )
-            )
-            .build()
-            .create(EventApiService::class.java)
+    fun provideEventApi(
+        @Named("AuthenticatedClient") retrofit: Retrofit
+    ): EventApiService {
+        return retrofit.create(EventApiService::class.java)
     }
 
     @Singleton
@@ -147,17 +124,10 @@ object AgendaNetworkModule {
     // REMINDERS
     @Singleton
     @Provides
-    fun provideReminderApi(): ReminderApiService {
-        return Retrofit.Builder()
-            .baseUrl(BuildConfig.BASE_URL)
-            .client(provideAgendaOkHttpClient())
-            .addConverterFactory(
-                json.asConverterFactory(
-                    "application/json".toMediaType()
-                )
-            )
-            .build()
-            .create(ReminderApiService::class.java)
+    fun provideReminderApi(
+        @Named("AuthenticatedClient") retrofit: Retrofit
+    ): ReminderApiService {
+        return retrofit.create(ReminderApiService::class.java)
     }
 
     @Singleton
@@ -199,13 +169,11 @@ object AgendaNetworkModule {
     fun provideTaskRepository(
         localDataSource: LocalDataSource,
         remoteDataSource: RemoteDataSource,
-        api: TaskApiService,
         scope: CoroutineScope
     ): TaskRepository =
         OfflineFirstTaskRepository(
             localDataSource,
             remoteDataSource,
             scope,
-            api
         )
 }

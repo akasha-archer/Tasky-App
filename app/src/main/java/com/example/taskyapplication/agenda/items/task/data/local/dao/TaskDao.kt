@@ -3,12 +3,19 @@ package com.example.taskyapplication.agenda.items.task.data.local.dao
 import androidx.room.Dao
 import androidx.room.Query
 import androidx.room.Upsert
+import com.example.taskyapplication.agenda.items.task.data.local.entity.DeletedTaskIdEntity
 import com.example.taskyapplication.agenda.items.task.data.local.entity.TaskEntity
 import kotlinx.coroutines.flow.Flow
 import java.time.LocalDate
 
 @Dao
 interface TaskDao {
+
+    @Upsert
+    suspend fun upsertDeletedTaskId(deletedTaskId: DeletedTaskIdEntity)
+
+    @Query("SELECT * FROM deleted_task_ids")
+    suspend fun getDeletedTaskIds(): List<DeletedTaskIdEntity>
 
     @Query("SELECT * FROM tasks WHERE date = :date ORDER BY time ASC")
     fun getAllTasksForSelectedDate(date: LocalDate): Flow<List<TaskEntity>>

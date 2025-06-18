@@ -33,7 +33,6 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalWindowInfo
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.taskyapplication.R
@@ -45,11 +44,12 @@ import com.example.taskyapplication.ui.theme.TaskyTypography
 @Composable
 fun AddAttendeeBottomSheet(
     modifier: Modifier = Modifier,
-    userEmail: String,
+    emailInput: String,
     isLoading: Boolean = false,
     isButtonEnabled: Boolean = false,
     isValidEmail: Boolean = false,
-    onAddAttendee: (String) -> Unit = {},
+    onEmailInputChange: (String) -> Unit, // Callback when email text changes
+    onConfirmAdd: () -> Unit,
     onCancelAddAttendee: () -> Unit = {},
 ) {
     val screenWidth = LocalWindowInfo.current.containerSize.width.dp
@@ -101,11 +101,11 @@ fun AddAttendeeBottomSheet(
                 TextField(
                     modifier = Modifier
                         .fillMaxWidth(),
-                    value = userEmail,
-                    onValueChange = {},
+                    value = emailInput,
+                    onValueChange = onEmailInputChange,
                     shape = RoundedCornerShape(12.dp),
                     supportingText = {
-                        if (isValidEmail) {
+                        if (isValidEmail && emailInput.isNotEmpty()) {
                             Text(
                                 modifier = Modifier.padding(bottom = 8.dp),
                                 text = stringResource(R.string.add_attendee_error_message),
@@ -140,7 +140,7 @@ fun AddAttendeeBottomSheet(
                         .height(96.dp)
                         .padding(start = 20.dp, end = 20.dp, top = 16.dp, bottom = 16.dp)
                         .clip(RoundedCornerShape(25.dp)),
-                    onClick = { onAddAttendee(userEmail) },
+                    onClick = onConfirmAdd,
                     enabled = isButtonEnabled,
                     colors = ButtonDefaults.buttonColors(
                         containerColor = taskyColors.primary,
@@ -178,10 +178,10 @@ fun AddAttendeeBottomSheet(
     )
 }
 
-@Preview(showBackground = true)
-@Composable
-fun AddAttendeeBottomSheetPreview() {
-    AddAttendeeBottomSheet(
-        userEmail = "william.henry.moody@my-own-personal-domain.com"
-    )
-}
+//@Preview(showBackground = true)
+//@Composable
+//fun AddAttendeeBottomSheetPreview() {
+//    AddAttendeeBottomSheet(
+//        userEmail = "william.henry.moody@my-own-personal-domain.com"
+//    )
+//}
