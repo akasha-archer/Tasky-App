@@ -1,6 +1,5 @@
 package com.example.taskyapplication.agenda.items.event
 
-import android.content.Context
 import android.net.Uri
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
@@ -12,10 +11,8 @@ import com.example.taskyapplication.agenda.items.event.data.toCreateEventNetwork
 import com.example.taskyapplication.agenda.items.event.data.toEventUiState
 import com.example.taskyapplication.agenda.items.event.data.toUpdateEventNetworkModel
 import com.example.taskyapplication.agenda.items.event.domain.EventRepository
-import com.example.taskyapplication.agenda.items.event.domain.ImageMultiPartProvider
 import com.example.taskyapplication.agenda.items.event.presentation.EventUiState
 import dagger.hilt.android.lifecycle.HiltViewModel
-import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
@@ -30,9 +27,7 @@ import javax.inject.Inject
 
 @HiltViewModel
 class SharedEventViewModel @Inject constructor(
-    private val imageMultiPartProvider: ImageMultiPartProvider,
     private val eventRepository: EventRepository,
-    @ApplicationContext private val applicationContext: Context,
     private val networkObserver: INetworkObserver,
     savedStateHandle: SavedStateHandle
 ) : ViewModel() {
@@ -106,13 +101,13 @@ class SharedEventViewModel @Inject constructor(
             )
             val result = if (isNewEvent(currentId)) {
                 eventRepository.createNewEvent(
-                    eventToCreateOrUpdate.toCreateEventNetworkModel(),
-                    imageMultiPartProvider.createMultipartParts(applicationContext, photosToUpload)
+                    request = eventToCreateOrUpdate.toCreateEventNetworkModel(),
+                    photos = eventRepository.createMultiPartImages( photosToUpload)
                 )
             } else {
                 eventRepository.updateEvent(
-                    eventToCreateOrUpdate.toUpdateEventNetworkModel(),
-                    imageMultiPartProvider.createMultipartParts(applicationContext, photosToUpload)
+                    request = eventToCreateOrUpdate.toUpdateEventNetworkModel(),
+                    photos = eventRepository.createMultiPartImages( photosToUpload)
                 )
             }
             _eventUiState.update { it.copy(isEditingItem = false) }

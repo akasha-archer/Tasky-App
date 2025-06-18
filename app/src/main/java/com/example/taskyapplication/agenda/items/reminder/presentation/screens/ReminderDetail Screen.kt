@@ -7,7 +7,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
-import androidx.compose.material.Icon
+import androidx.compose.material3.Icon
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.outlined.CheckCircle
 import androidx.compose.material3.Text
@@ -68,7 +68,7 @@ fun ReminderDetailRoot(
 }
 
 @Composable
-fun ReminderDetailScreen(
+private fun ReminderDetailScreen(
     modifier: Modifier = Modifier,
     agendaItem: String = "Reminder",
     onAction: (AgendaItemAction) -> Unit = {},
