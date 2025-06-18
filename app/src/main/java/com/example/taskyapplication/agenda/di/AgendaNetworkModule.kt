@@ -4,11 +4,12 @@ import android.content.Context
 import com.example.taskyapplication.BuildConfig
 import com.example.taskyapplication.agenda.common.INetworkObserver
 import com.example.taskyapplication.agenda.common.NetworkStatusObserver
-import com.example.taskyapplication.agenda.items.event.domain.EventLocalDataSource
+import com.example.taskyapplication.agenda.items.event.data.EventLocalDataSource
 import com.example.taskyapplication.agenda.items.event.domain.EventOfflineFirstRepository
-import com.example.taskyapplication.agenda.items.event.domain.EventRemoteDataSource
-import com.example.taskyapplication.agenda.items.event.domain.EventRemoteDataSourceImpl
+import com.example.taskyapplication.agenda.items.event.data.EventRemoteDataSource
+import com.example.taskyapplication.agenda.items.event.data.EventRemoteDataSourceImpl
 import com.example.taskyapplication.agenda.items.event.domain.EventRepository
+import com.example.taskyapplication.agenda.items.event.domain.ImageMultiPartProvider
 import com.example.taskyapplication.agenda.items.event.network.EventApiService
 import com.example.taskyapplication.agenda.items.main.domain.AgendaItemsRemoteDataSource
 import com.example.taskyapplication.agenda.items.main.domain.AgendaRemoteDataSource
@@ -113,12 +114,16 @@ object AgendaNetworkModule {
     fun provideEventRepository(
         localDataSource: EventLocalDataSource,
         remoteDataSource: EventRemoteDataSource,
-        scope: CoroutineScope
+        imageMultiPartProvider: ImageMultiPartProvider,
+        scope: CoroutineScope,
+        @ApplicationContext applicationContext: Context
     ): EventRepository =
         EventOfflineFirstRepository(
-            localDataSource,
-            remoteDataSource,
-            scope
+            localDataSource = localDataSource,
+            remoteDataSource = remoteDataSource,
+            applicationScope = scope,
+            applicationContext = applicationContext,
+            imageMultiPartProvider = imageMultiPartProvider
         )
 
     // REMINDERS
