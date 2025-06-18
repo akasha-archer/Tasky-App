@@ -11,17 +11,17 @@ import okhttp3.MultipartBody
 interface EventRepository {
     suspend fun createMultiPartImages(userPhots: List<Uri>): List<MultipartBody.Part>
 
-    suspend fun validateAttendee(email: String): kotlin.Result<GetAttendeeResponse>
+    suspend fun validateAttendee(email: String): Result<GetAttendeeResponse>
     suspend fun getAttendeeListForEvent(eventId: String): List<AttendeeEntity>
     suspend fun createNewEvent(
         request: CreateEventNetworkModel,
         photos: List<MultipartBody.Part>
-    ): kotlin.Result<Unit>
+    ): Result<Unit>
 
     suspend fun updateEvent(
         request: UpdateEventNetworkModel,
         photos: List<MultipartBody.Part>
-    ): kotlin.Result<Unit>
+    ): Result<Unit>
 
     suspend fun getEventWithoutImages(
         eventId: String
@@ -29,5 +29,5 @@ interface EventRepository {
 
     suspend fun deleteEvent(
         eventId: String
-    ): kotlin.Result<Unit>
+    ): Result<Unit>
 }

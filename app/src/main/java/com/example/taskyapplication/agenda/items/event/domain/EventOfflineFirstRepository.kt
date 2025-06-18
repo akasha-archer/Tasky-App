@@ -35,20 +35,20 @@ class EventOfflineFirstRepository @Inject constructor(
 
     override suspend fun validateAttendee(
         email: String
-    ): kotlin.Result<GetAttendeeResponse> {
+    ): Result<GetAttendeeResponse> {
         return try {
             val remoteResult = remoteDataSource.verifyAttendee(email)
             if (remoteResult.isSuccessful && remoteResult.body() != null) {
                  localDataSource.upsertAttendee(remoteResult.body()!!.attendee.asAttendeeEntity())
-                kotlin.Result.success(remoteResult.body()!!)
+                Result.success(remoteResult.body()!!)
             } else {
                 val errorMessage = remoteResult.errorBody()?.string() ?: "Attendee validation failed"
                 Log.e("EventRepo", "Attendee validation failed: ${remoteResult.code()} - $errorMessage")
-                kotlin.Result.failure(Exception("Attendee validation failed: ${remoteResult.code()} - $errorMessage"))
+                Result.failure(Exception("Attendee validation failed: ${remoteResult.code()} - $errorMessage"))
             }
         } catch (e: Exception) {
             Log.e("EventRepo", "Error validating attendee: ${e.message}", e)
-            kotlin.Result.failure(e)
+            Result.failure(e)
         }
     }
 
@@ -59,11 +59,11 @@ class EventOfflineFirstRepository @Inject constructor(
     override suspend fun createNewEvent(
         request: CreateEventNetworkModel,
         photos: List<MultipartBody.Part>
-    ): kotlin.Result<Unit> {
+    ): Result<Unit> {
         val localResult = localDataSource.insertEventWithoutPhotos(
             request.toEventEntity(),
         )
-        if (localResult != kotlin.Result.success(Unit)) {
+        if (localResult != Result.success(Unit)) {
             Log.e("Error inserting new event", "error: $localResult")
         } else {
             Log.i("Event Repository:", "Local Event created successfully")
@@ -87,21 +87,21 @@ class EventOfflineFirstRepository @Inject constructor(
                     "Event Repository: Error creating ${request.title} event",
                     remoteResult.message()
                 )            }
-            kotlin.Result.success(Unit)
+            Result.success(Unit)
         } catch (e: Exception) {
             Log.e("Event Repo:", e.message.toString())
-            kotlin.Result.failure(e)
+            Result.failure(e)
         }
     }
 
     override suspend fun updateEvent(
         request: UpdateEventNetworkModel,
         photos: List<MultipartBody.Part>
-    ): kotlin.Result<Unit> {
+    ): Result<Unit> {
         val localResult = localDataSource.insertEventWithoutPhotos(
             request.toEventEntity(),
         )
-        if (localResult != kotlin.Result.success(Unit)) {
+        if (localResult != Result.success(Unit)) {
             Log.e("Error updating event", "error: $localResult")
         }
         return try {
@@ -122,10 +122,10 @@ class EventOfflineFirstRepository @Inject constructor(
                     "Event Repository: Error creating ${request.title} event",
                     remoteResult.message()
                 )            }
-            kotlin.Result.success(Unit)
+            Result.success(Unit)
         } catch (e: Exception) {
             Log.e("Event Repo:", e.message.toString())
-            kotlin.Result.failure(e)
+            Result.failure(e)
         }
     }
 
@@ -133,7 +133,7 @@ class EventOfflineFirstRepository @Inject constructor(
         return localDataSource.getEventWithoutPhotos(eventId)
     }
 
-    override suspend fun deleteEvent(eventId: String): kotlin.Result<Unit> {
+    override suspend fun deleteEvent(eventId: String): Result<Unit> {
         localDataSource.deleteEvent(eventId)
         val remoteResult = applicationScope.async {
             remoteDataSource.deleteEvent(eventId)
@@ -145,7 +145,7 @@ class EventOfflineFirstRepository @Inject constructor(
             localDataSource.upsertDeletedEventId(DeletedEventIdEntity(eventId))
             Log.e("Event Repository", "error deleting event: $remoteResult")
         }
-        return kotlin.Result.success(Unit)
+        return Result.success(Unit)
     }
 
 }
