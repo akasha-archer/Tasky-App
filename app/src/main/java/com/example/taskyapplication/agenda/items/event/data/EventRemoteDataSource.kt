@@ -1,11 +1,5 @@
-package com.example.taskyapplication.agenda.items.event.domain
+package com.example.taskyapplication.agenda.items.event.data
 
-import com.example.taskyapplication.agenda.items.event.data.CreateEventNetworkModel
-import com.example.taskyapplication.agenda.items.event.data.CreatedEventResponse
-import com.example.taskyapplication.agenda.items.event.data.FetchedEventResponse
-import com.example.taskyapplication.agenda.items.event.data.GetAttendeeResponse
-import com.example.taskyapplication.agenda.items.event.data.UpdateEventNetworkModel
-import com.example.taskyapplication.agenda.items.event.data.UpdatedEventResponse
 import com.example.taskyapplication.agenda.items.event.network.EventApiService
 import com.example.taskyapplication.domain.utils.DataError
 import com.example.taskyapplication.domain.utils.EmptyResult

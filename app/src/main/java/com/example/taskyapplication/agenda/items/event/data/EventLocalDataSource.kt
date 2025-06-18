@@ -1,4 +1,4 @@
-package com.example.taskyapplication.agenda.items.event.domain
+package com.example.taskyapplication.agenda.items.event.data
 
 import android.database.sqlite.SQLiteFullException
 import com.example.taskyapplication.agenda.items.event.data.db.AttendeeEntity

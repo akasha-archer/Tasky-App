@@ -12,21 +12,30 @@ import java.io.ByteArrayOutputStream
 import java.io.InputStream
 import javax.inject.Inject
 import androidx.core.graphics.scale
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.withContext
 
 class ImageMultiPartProvider @Inject constructor() {
 
-    fun createMultipartParts(context: Context, imageUris: List<Uri>): List<MultipartBody.Part> {
+    suspend fun createMultipartParts(context: Context, imageUris: List<Uri>): List<MultipartBody.Part> {
         val parts = mutableListOf<MultipartBody.Part>()
-        imageUris.forEachIndexed { index, uri ->
-            context.contentResolver.openInputStream(uri)?.use { inputStream ->
-                val compressedImage = compressUploadedImage(context, uri)
-                if (compressedImage != null) {
-                    val requestFile = compressedImage.toRequestBody(
-                        "image/jpeg".toMediaTypeOrNull()
-                    )
-                    val part =
-                        MultipartBody.Part.createFormData("photo", "photo$index.jpg", requestFile)
-                    parts.add(part)
+
+        withContext(Dispatchers.IO) {
+            imageUris.forEachIndexed { index, uri ->
+                context.contentResolver.openInputStream(uri)?.use { inputStream ->
+                    val compressedImage = compressUploadedImage(context, uri)
+                    if (compressedImage != null) {
+                        val requestFile = compressedImage.toRequestBody(
+                            "image/jpeg".toMediaTypeOrNull()
+                        )
+                        val part =
+                            MultipartBody.Part.createFormData(
+                                "photo",
+                                "photo$index.jpg",
+                                requestFile
+                            )
+                        parts.add(part)
+                    }
                 }
             }
         }

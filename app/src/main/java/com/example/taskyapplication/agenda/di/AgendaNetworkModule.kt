@@ -4,10 +4,10 @@ import android.content.Context
 import com.example.taskyapplication.BuildConfig
 import com.example.taskyapplication.agenda.common.INetworkObserver
 import com.example.taskyapplication.agenda.common.NetworkStatusObserver
-import com.example.taskyapplication.agenda.items.event.domain.EventLocalDataSource
+import com.example.taskyapplication.agenda.items.event.data.EventLocalDataSource
 import com.example.taskyapplication.agenda.items.event.domain.EventOfflineFirstRepository
-import com.example.taskyapplication.agenda.items.event.domain.EventRemoteDataSource
-import com.example.taskyapplication.agenda.items.event.domain.EventRemoteDataSourceImpl
+import com.example.taskyapplication.agenda.items.event.data.EventRemoteDataSource
+import com.example.taskyapplication.agenda.items.event.data.EventRemoteDataSourceImpl
 import com.example.taskyapplication.agenda.items.event.domain.EventRepository
 import com.example.taskyapplication.agenda.items.event.network.EventApiService
 import com.example.taskyapplication.agenda.items.main.domain.AgendaItemsRemoteDataSource
@@ -23,7 +23,6 @@ import com.example.taskyapplication.agenda.items.reminder.domain.ReminderRemoteD
 import com.example.taskyapplication.agenda.items.reminder.domain.ReminderRepository
 import com.example.taskyapplication.agenda.items.reminder.domain.network.ReminderApiService
 import com.example.taskyapplication.agenda.items.task.data.OfflineFirstTaskRepository
-import com.example.taskyapplication.agenda.items.task.data.local.dao.PendingTaskDao
 import com.example.taskyapplication.agenda.items.task.domain.LocalDataSource
 import com.example.taskyapplication.agenda.items.task.domain.RemoteDataSource
 import com.example.taskyapplication.agenda.items.task.domain.TaskRemoteDataSource

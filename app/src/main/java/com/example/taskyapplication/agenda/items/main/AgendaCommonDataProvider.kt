@@ -4,7 +4,7 @@ import android.util.Log
 import com.example.taskyapplication.agenda.items.event.data.db.EventEntity
 import com.example.taskyapplication.agenda.items.event.data.toCreateEventNetworkModel
 import com.example.taskyapplication.agenda.items.event.data.toEventEntity
-import com.example.taskyapplication.agenda.items.event.domain.EventLocalDataSource
+import com.example.taskyapplication.agenda.items.event.data.EventLocalDataSource
 import com.example.taskyapplication.agenda.items.event.domain.EventRepository
 import com.example.taskyapplication.agenda.items.event.network.EventApiService
 import com.example.taskyapplication.agenda.items.main.data.AgendaItemType

@@ -4,8 +4,8 @@ import android.content.Context
 import androidx.room.Room
 import com.example.taskyapplication.agenda.data.db.AgendaDatabase
 import com.example.taskyapplication.agenda.items.event.data.db.EventDao
-import com.example.taskyapplication.agenda.items.event.domain.EventLocalDataSource
-import com.example.taskyapplication.agenda.items.event.domain.EventLocalDataSourceImpl
+import com.example.taskyapplication.agenda.items.event.data.EventLocalDataSource
+import com.example.taskyapplication.agenda.items.event.data.EventLocalDataSourceImpl
 import com.example.taskyapplication.agenda.items.main.data.db.LocalAgendaSummaryDao
 import com.example.taskyapplication.agenda.items.main.domain.AgendaItemsLocalDataSource
 import com.example.taskyapplication.agenda.items.main.domain.AgendaLocalDataSource
