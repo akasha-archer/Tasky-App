@@ -29,9 +29,9 @@ import javax.inject.Inject
 
 @HiltViewModel
 class SharedEventViewModel @Inject constructor(
-    private val imageMultiPartProvider: ImageMultiPartProvider,
+//    private val imageMultiPartProvider: ImageMultiPartProvider,
     private val eventRepository: EventRepository,
-    @ApplicationContext private val applicationContext: Context,
+//    @ApplicationContext private val applicationContext: Context,
     savedStateHandle: SavedStateHandle
 ): ViewModel() {
     private val eventId: String? = savedStateHandle.get<String>("eventId")
@@ -100,13 +100,13 @@ class SharedEventViewModel @Inject constructor(
             )
             val result = if (isNewEvent(currentId)) {
                 eventRepository.createNewEvent(
-                    eventToCreateOrUpdate.toCreateEventNetworkModel(),
-                    imageMultiPartProvider.createMultipartParts(applicationContext, photosToUpload)
+                    createEventNetworkModel = eventToCreateOrUpdate.toCreateEventNetworkModel(),
+                    photos = eventRepository.createMultiPartImages( photosToUpload)
                 )
             } else {
                 eventRepository.updateEvent(
-                    eventToCreateOrUpdate.toUpdateEventNetworkModel(),
-                    imageMultiPartProvider.createMultipartParts(applicationContext, photosToUpload)
+                    updateEventNetworkModel = eventToCreateOrUpdate.toUpdateEventNetworkModel(),
+                    photos = eventRepository.createMultiPartImages( photosToUpload)
                 )
             }
             _eventUiState.update { it.copy(isEditingItem = false) }

@@ -1,5 +1,7 @@
 package com.example.taskyapplication.agenda.items.event.domain
 
+import android.content.Context
+import android.net.Uri
 import android.util.Log
 import com.example.taskyapplication.agenda.items.event.data.CreateEventNetworkModel
 import com.example.taskyapplication.agenda.items.event.data.CreatedEventResponse
@@ -15,6 +17,7 @@ import com.example.taskyapplication.domain.utils.DataError
 import com.example.taskyapplication.domain.utils.EmptyResult
 import com.example.taskyapplication.domain.utils.Result
 import com.example.taskyapplication.domain.utils.asEmptyDataResult
+import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.async
 import okhttp3.MultipartBody
@@ -23,8 +26,16 @@ import javax.inject.Inject
 class EventOfflineFirstRepository @Inject constructor(
     private val localDataSource: EventLocalDataSource,
     private val remoteDataSource: EventRemoteDataSource,
-    private val applicationScope: CoroutineScope
-) : EventRepository {
+    private val imageMultiPartProvider: ImageMultiPartProvider,
+    private val applicationScope: CoroutineScope,
+    @ApplicationContext private val applicationContext: Context,
+    ) : EventRepository {
+
+    override suspend fun createMultiPartImages(
+        userPhots: List<Uri>
+    ): List<MultipartBody.Part> {
+        return imageMultiPartProvider.createMultipartParts(applicationContext, userPhots)
+    }
 
     override suspend fun validateAttendee(
         email: String

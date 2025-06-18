@@ -1,5 +1,7 @@
 package com.example.taskyapplication.agenda.items.event.domain
 
+import android.content.Context
+import android.net.Uri
 import com.example.taskyapplication.agenda.items.event.data.CreateEventNetworkModel
 import com.example.taskyapplication.agenda.items.event.data.CreatedEventResponse
 import com.example.taskyapplication.agenda.items.event.data.GetAttendeeResponse
@@ -13,6 +15,8 @@ import com.example.taskyapplication.domain.utils.Result
 import okhttp3.MultipartBody
 
 interface EventRepository {
+
+    suspend fun createMultiPartImages(userPhots: List<Uri>): List<MultipartBody.Part>
 
     suspend fun validateAttendee(email: String):  Result<GetAttendeeResponse, DataError>
     suspend fun getAttendeeListForEvent(eventId: String): List<AttendeeEntity>
