@@ -27,11 +27,10 @@ fun LocalDateTime.convertToLong(): Long {
 
 fun String.toInitials(): String {
     if (this.isBlank()) return ""
-    return this.split(" ")
-        .filter { it.isNotBlank() }
-        .mapNotNull { it.firstOrNull()?.toString()?.uppercase() }
-        .take(2)
-        .joinToString("")
+    val nameList = this.split(" ")
+    val firstInitial = nameList.firstOrNull()?.get(0)
+    val lastInitial = nameList.lastOrNull()?.get(0)
+    return (firstInitial?.uppercase() ?: "") + (lastInitial?.uppercase() ?: "")
 }
 
 fun Long.toLocalDateAndTime(): Pair<LocalDate, LocalTime> {
@@ -88,8 +87,8 @@ data class AgendaScreenCalendarList(
 )
 
 fun buildAgendaScreenCalendar(): List<AgendaScreenCalendarList> {
-    val daysBefore = 15L
-    val daysAfter = 15L
+    val daysBefore = NUM_DAYS_BEFORE_AND_AFTER
+    val daysAfter = NUM_DAYS_BEFORE_AND_AFTER
 
     val today = LocalDate.now()
     val dateListWithDate = mutableListOf<AgendaScreenCalendarList>()
@@ -109,3 +108,5 @@ fun buildAgendaScreenCalendar(): List<AgendaScreenCalendarList> {
     }
     return dateListWithDate
 }
+
+const val NUM_DAYS_BEFORE_AND_AFTER = 15L
