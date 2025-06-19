@@ -1,5 +1,6 @@
 package com.example.taskyapplication.agenda.items.main
 
+import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.taskyapplication.agenda.common.INetworkObserver
@@ -13,9 +14,8 @@ import com.example.taskyapplication.agenda.items.main.data.AgendaTaskSummary
 import com.example.taskyapplication.auth.domain.AuthTokenManager
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.SharingStarted
-import kotlinx.coroutines.flow.onStart
-import kotlinx.coroutines.flow.stateIn
+import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import java.time.LocalDate
@@ -23,40 +23,52 @@ import javax.inject.Inject
 
 @HiltViewModel
 class AgendaMainViewModel @Inject constructor(
-    private val commonDataProvider: AgendaItemsMainInteractor,
+    private val itemsMainInteractor: AgendaItemsMainInteractor,
     private val networkObserver: INetworkObserver,
     private val authTokenManager: AuthTokenManager
 ) : ViewModel() {
 
     private val _agendaViewState = MutableStateFlow(AgendaMainViewState())
-    val agendaViewState = _agendaViewState
-        .onStart {
+    val agendaViewState: StateFlow<AgendaMainViewState> = _agendaViewState.asStateFlow()
+
+    init {
+        // Coroutine for fetching initial user name
+        viewModelScope.launch {
+            val userName = itemsMainInteractor.getUserName() ?: ""
+            Log.d("AgendaVM", "Fetched userName in init: '$userName'")
+            _agendaViewState.update { it.copy(userFullName = userName) }
+        }
+
+        // Coroutine for observing network status and performing sync operations
+        viewModelScope.launch {
+            var initialSyncAttempted = false
             networkObserver.networkStatus.collect { status ->
                 val isOnline = status == NetworkStatus.Available
+                val previouslyOnline = _agendaViewState.value.isUserOnline
+
                 _agendaViewState.update { it.copy(isUserOnline = isOnline) }
-            }
-            updateUserName()
-            buildAgendaListForDate(_agendaViewState.value.selectedDate)
-            if (_agendaViewState.value.isUserOnline) {
-                commonDataProvider.syncLocalItemsWithRemoteStorage()
-                commonDataProvider.syncDeletedItemIds()
+                Log.d("AgendaVM", "Network status changed. Is Online: $isOnline")
+
+                if (isOnline) {
+                    // Sync if coming online OR if it's the first check and we are online
+                    if (!previouslyOnline || !initialSyncAttempted) {
+                        Log.d("AgendaVM", "Network is online. Triggering sync.")
+                        itemsMainInteractor.syncLocalItemsWithRemoteStorage()
+                        itemsMainInteractor.syncDeletedItemIds()
+                        initialSyncAttempted = true
+                    }
+                }
             }
         }
-        .stateIn(
-            scope = viewModelScope,
-            started = SharingStarted.WhileSubscribed(5000L),
-            initialValue = AgendaMainViewState(),
-        )
-
-    private fun updateUserName() {
+        // Coroutine for building/observing the agenda list for the selected date
         viewModelScope.launch {
-            _agendaViewState.update { it.copy(userFullName = authTokenManager.readUserFullName() ?: "ZZ") }
+            buildAgendaListForDate(_agendaViewState.value.selectedDate)
         }
     }
 
     private fun buildAgendaListForDate(selectedDate: LocalDate) {
         viewModelScope.launch {
-            commonDataProvider.buildAgendaForSelectedDate(selectedDate)
+            itemsMainInteractor.buildAgendaForSelectedDate(selectedDate)
                 .collect { (tasks, reminders, events) ->
                     _agendaViewState.update {
                         it.copy(
@@ -82,19 +94,19 @@ class AgendaMainViewModel @Inject constructor(
 
     private fun logoutUser() {
         viewModelScope.launch {
-            commonDataProvider.logout()
+            itemsMainInteractor.logout()
         }
     }
 
     private fun deleteAgendaItem(itemId: String, type: AgendaItemType) {
         viewModelScope.launch {
-            commonDataProvider.deleteItemByType(type, itemId)
+            itemsMainInteractor.deleteItemByType(type, itemId)
         }
     }
 
     private fun getAgendaItem(itemId: String, type: AgendaItemType) {
         viewModelScope.launch {
-            commonDataProvider.getItemByType(type, itemId)
+            itemsMainInteractor.getItemByType(type, itemId)
         }
 
     }
@@ -129,7 +141,7 @@ class AgendaMainViewModel @Inject constructor(
 
 data class AgendaMainViewState(
     val displayDateHeading: String = "Today",
-    val userFullName: String = "",
+    val userFullName: String? = "",
     val isUserOnline: Boolean = true,
     val selectedDate: LocalDate = LocalDate.now(),
     val selectedEvents: List<AgendaEventSummary> = emptyList(),

@@ -51,6 +51,7 @@ class AgendaItemsMainInteractor @Inject constructor(
     private val eventApiService: EventApiService,
     private val agendaApiService: AgendaApiService
 ) {
+    suspend fun getUserName(): String? = authRepository.fetchUserName()
 
     suspend fun syncDeletedItemIds(): Result<Unit> {
         return try {
