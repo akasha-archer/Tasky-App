@@ -30,8 +30,8 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.example.taskyapplication.TaskyBaseScreen
 import com.example.taskyapplication.agenda.AgendaItemAction
 import com.example.taskyapplication.agenda.common.AgendaItemEvent
-import com.example.taskyapplication.agenda.data.model.ReminderOptions
-import com.example.taskyapplication.agenda.domain.getReminderOption
+import com.example.taskyapplication.agenda.data.model.ReminderNotificationOption
+import com.example.taskyapplication.agenda.data.model.getReminderNotificationFromString
 import com.example.taskyapplication.agenda.domain.toDateAsString
 import com.example.taskyapplication.agenda.domain.toLocalDateAndTime
 import com.example.taskyapplication.agenda.domain.toTimeAsString
@@ -241,7 +241,7 @@ fun ReminderEditDateTimeScreen(
                                     contentAlignment = Alignment.CenterEnd
                                 ) {
                                     ReminderTimeRow(
-                                        reminderTime = state.remindAt.timeString.ifEmpty { ReminderOptions.THIRTY_MINUTES_BEFORE.timeString },
+                                        reminderTime = state.remindAt.timeString.ifEmpty { ReminderNotificationOption.THIRTY_MINUTES_BEFORE.timeString },
                                         isEditing = isEditScreen,
                                         onClickDropDown = {
                                             onAction(AgendaItemAction.ShowReminderDropDown)
@@ -256,7 +256,9 @@ fun ReminderEditDateTimeScreen(
                                             },
                                             isExpanded = true,
                                             onTimeSelected = { time ->
-                                                onAction(AgendaItemAction.SetReminderTime(getReminderOption(time)))
+                                                onAction(AgendaItemAction.SetReminderTime(
+                                                    getReminderNotificationFromString(time)
+                                                ))
                                             },
                                         )
                                     }

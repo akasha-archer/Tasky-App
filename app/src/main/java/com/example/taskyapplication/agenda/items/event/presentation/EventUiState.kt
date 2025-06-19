@@ -1,6 +1,6 @@
 package com.example.taskyapplication.agenda.items.event.presentation
 
-import com.example.taskyapplication.agenda.data.model.ReminderOptions
+import com.example.taskyapplication.agenda.data.model.ReminderNotificationOption
 import com.example.taskyapplication.agenda.items.event.data.db.AttendeeEntity
 import java.time.LocalDate
 import java.time.LocalTime
@@ -18,7 +18,7 @@ data class EventUiState(
     val startDate: LocalDate = LocalDate.now(),
     val endTime: LocalTime = LocalTime.now(),
     val endDate: LocalDate = LocalDate.now(),
-    val remindAt: ReminderOptions = ReminderOptions.THIRTY_MINUTES_BEFORE,
+    val remindAt: ReminderNotificationOption = ReminderNotificationOption.THIRTY_MINUTES_BEFORE,
     val isValidUser: Boolean = false,
     val isGoingToEvent: Boolean = false,
     val isEditingItem: Boolean = false,

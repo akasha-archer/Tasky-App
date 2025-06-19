@@ -1,11 +1,5 @@
 package com.example.taskyapplication.agenda.domain
 
-import com.example.taskyapplication.agenda.data.model.ReminderOptions
-import com.example.taskyapplication.agenda.data.model.ReminderTimeItem.Companion.REMINDER_ONE_DAY_BEFORE
-import com.example.taskyapplication.agenda.data.model.ReminderTimeItem.Companion.REMINDER_ONE_HOUR_BEFORE
-import com.example.taskyapplication.agenda.data.model.ReminderTimeItem.Companion.REMINDER_SIX_HOURS_BEFORE
-import com.example.taskyapplication.agenda.data.model.ReminderTimeItem.Companion.REMINDER_TEN_MINUTES_BEFORE
-import com.example.taskyapplication.agenda.data.model.ReminderTimeItem.Companion.REMINDER_THIRTY_MINUTES_BEFORE
 import java.time.Instant
 import java.time.LocalDate
 import java.time.LocalDateTime
@@ -54,30 +48,6 @@ fun Long.toDateAsString(): String {
 fun Long.toTimeAsString(): String =
     LocalTime.ofInstant(Instant.ofEpochMilli(this), ZoneId.of("America/New_York"))
         .format(DateTimeFormatter.ofPattern("h:mm a"))
-
-fun getReminderOption(
-    selection: String,
-): ReminderOptions {
-    return when (selection) {
-        REMINDER_TEN_MINUTES_BEFORE -> ReminderOptions.TEN_MINUTES_BEFORE
-        REMINDER_THIRTY_MINUTES_BEFORE -> ReminderOptions.THIRTY_MINUTES_BEFORE
-        REMINDER_ONE_HOUR_BEFORE -> ReminderOptions.ONE_HOUR_BEFORE
-        REMINDER_ONE_DAY_BEFORE -> ReminderOptions.ONE_DAY_BEFORE
-        REMINDER_SIX_HOURS_BEFORE -> ReminderOptions.SIX_HOURS_BEFORE
-        else -> ReminderOptions.THIRTY_MINUTES_BEFORE // default value
-    }
-}
-
-fun getReminderOptionFromMillis(millis: Long): ReminderOptions {
-    return when (millis) {
-        ReminderOptions.TEN_MINUTES_BEFORE.asLong -> ReminderOptions.TEN_MINUTES_BEFORE
-        ReminderOptions.THIRTY_MINUTES_BEFORE.asLong -> ReminderOptions.THIRTY_MINUTES_BEFORE
-        ReminderOptions.ONE_HOUR_BEFORE.asLong -> ReminderOptions.ONE_HOUR_BEFORE
-        ReminderOptions.SIX_HOURS_BEFORE.asLong -> ReminderOptions.SIX_HOURS_BEFORE
-        ReminderOptions.ONE_DAY_BEFORE.asLong -> ReminderOptions.ONE_DAY_BEFORE
-        else -> ReminderOptions.THIRTY_MINUTES_BEFORE // default value
-    }
-}
 
 data class AgendaScreenCalendarList(
     val dayOfWeek: String,
