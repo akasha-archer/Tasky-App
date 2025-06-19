@@ -11,7 +11,6 @@ import com.example.taskyapplication.agenda.items.main.data.AgendaItemType
 import com.example.taskyapplication.agenda.items.main.data.AgendaReminderSummary
 import com.example.taskyapplication.agenda.items.main.data.AgendaSummary
 import com.example.taskyapplication.agenda.items.main.data.AgendaTaskSummary
-import com.example.taskyapplication.auth.domain.AuthTokenManager
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -25,7 +24,6 @@ import javax.inject.Inject
 class AgendaMainViewModel @Inject constructor(
     private val itemsMainInteractor: AgendaItemsMainInteractor,
     private val networkObserver: INetworkObserver,
-    private val authTokenManager: AuthTokenManager
 ) : ViewModel() {
 
     private val _agendaViewState = MutableStateFlow(AgendaMainViewState())
