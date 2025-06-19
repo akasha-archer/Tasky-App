@@ -2,13 +2,14 @@ package com.example.taskyapplication.agenda.items.event.data
 
 import com.example.taskyapplication.agenda.items.event.network.EventApiService
 import okhttp3.MultipartBody
+import okhttp3.RequestBody
 import retrofit2.Response
 import javax.inject.Inject
 
 interface EventRemoteDataSource {
     suspend fun getEvent(eventId: String): Response<FetchedEventResponse>
     suspend fun createEvent(
-        event: CreateEventNetworkModel,
+        event: RequestBody,
         photos: List<MultipartBody.Part>
     ): Response<CreatedEventResponse>
 
@@ -30,7 +31,7 @@ class EventRemoteDataSourceImpl @Inject constructor(
     }
 
     override suspend fun createEvent(
-        event: CreateEventNetworkModel,
+        event: RequestBody,
         photos: List<MultipartBody.Part>
     ): Response<CreatedEventResponse> {
         return eventApi.createEvent(event, photos)

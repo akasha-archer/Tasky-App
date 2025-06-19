@@ -295,6 +295,7 @@ fun EventDateTimeScreen(
                                     PhotoRow(
                                         modifier = Modifier,
                                         photosToShow = combinedImageList,
+                                        isDeviceOffline = state.isUserOnline,
                                         showFeatureDisabledMessage = {
                                             Toast.makeText(
                                                 ctxt,
@@ -346,7 +347,7 @@ fun EventDateTimeScreen(
                             },
                             agendaItemReminderTime = {
                                 ReminderTimeRow(
-                                    reminderTime = state.remindAt.timeString,
+//                                    reminderTime = state.remindAt.timeString,
                                     isEditing = isEditScreen,
                                     onClickDropDown = {
                                         onAction(EventItemAction.ShowReminderDropDown)

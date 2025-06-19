@@ -92,7 +92,7 @@ class SharedEventViewModel @Inject constructor(
                 id = if (isNewEvent(currentId)) eventId else currentId,
                 title = newTitle,
                 description = newDescription,
-                attendeeIds = eventAttendees,
+                attendeeIds = emptyList(),
                 startTime = eventStartTime,
                 endTime = eventEndTime,
                 startDate = eventStartDate,
@@ -182,15 +182,21 @@ class SharedEventViewModel @Inject constructor(
     fun executeActions(action: EventItemAction) {
         when (action) {
             EventItemAction.SaveAgendaItemUpdates -> {
-                createOrUpdateEvent()
+                viewModelScope.launch {
+                    createOrUpdateEvent()
+                }
             }
 
             is EventItemAction.EditExistingEvent -> {
-                loadExistingEvent(action.eventId)
+                viewModelScope.launch {
+                    loadExistingEvent(action.eventId)
+                }
             }
 
             is EventItemAction.OpenExistingEvent -> {
-                loadExistingEvent(action.eventId)
+                viewModelScope.launch {
+                    loadExistingEvent(action.eventId)
+                }
             }
 
             is EventItemAction.SetTitle -> {
@@ -200,9 +206,9 @@ class SharedEventViewModel @Inject constructor(
             }
 
             is EventItemAction.SetDescription -> {
-                viewModelScope.launch {
+//                viewModelScope.launch {
                     _eventUiState.update { it.copy(description = action.description) }
-                }
+//                }
             }
 
             is EventItemAction.SetReminderTime -> {
@@ -328,14 +334,18 @@ class SharedEventViewModel @Inject constructor(
             }
 
             EventItemAction.CloseEditTitleScreen -> {
-                _eventUiState.update {
-                    it.copy(isEditingItem = false)
+                viewModelScope.launch {
+                    _eventUiState.update {
+                        it.copy(isEditingItem = false)
+                    }
                 }
             }
 
             EventItemAction.LaunchEditDescriptionScreen -> {
-                _eventUiState.update {
-                    it.copy(isEditingItem = true)
+                viewModelScope.launch {
+                    _eventUiState.update {
+                        it.copy(isEditingItem = true)
+                    }
                 }
             }
 
@@ -346,19 +356,23 @@ class SharedEventViewModel @Inject constructor(
             }
 
             EventItemAction.CancelEdit -> {
-                _eventUiState.update {
-                    it.copy(
-                        isEditingItem = false,
-                        isEditingDate = false,
-                        isEditingTime = false,
-                        isEditingReminder = false
-                    )
+                viewModelScope.launch {
+                    _eventUiState.update {
+                        it.copy(
+                            isEditingItem = false,
+                            isEditingDate = false,
+                            isEditingTime = false,
+                            isEditingReminder = false
+                        )
+                    }
                 }
             }
 
             EventItemAction.LaunchDateTimeEditScreen -> {
+                viewModelScope.launch {
                 _eventUiState.update {
-                    it.copy(isEditingItem = true)
+                        it.copy(isEditingItem = true)
+                    }
                 }
             }
             // go back to Agenda screen
@@ -367,8 +381,10 @@ class SharedEventViewModel @Inject constructor(
             }
 
             EventItemAction.SaveDateTimeEdit -> {
-                _eventUiState.update {
-                    it.copy(isEditingItem = false)
+                viewModelScope.launch {
+                    _eventUiState.update {
+                        it.copy(isEditingItem = false)
+                    }
                 }
             }
         }

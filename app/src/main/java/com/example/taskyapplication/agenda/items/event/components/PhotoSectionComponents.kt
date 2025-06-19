@@ -5,6 +5,7 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
@@ -42,6 +43,8 @@ import com.example.taskyapplication.ui.theme.TaskyTypography
 fun PhotoRowEmptyState(
     modifier: Modifier = Modifier,
     launchPhotoPicker: () -> Unit = {},
+    isDeviceOffline: Boolean = false,
+    showFeatureDisabledMessage: () -> Unit = {}
 ) {
     val screenWidth = LocalWindowInfo.current.containerSize.width.dp
     Row(
@@ -54,15 +57,33 @@ fun PhotoRowEmptyState(
     ) {
         TextButton(
             modifier = Modifier,
-            onClick = { launchPhotoPicker() },
+            onClick = {
+                if (isDeviceOffline) {
+                    showFeatureDisabledMessage()
+                } else {
+                    launchPhotoPicker()
+                }
+            },
             content = {
-                Icon(
-                    imageVector = Icons.Default.Add,
-                    tint = taskyColors.outline,
-                    contentDescription = "Add new Photo",
-                    modifier = Modifier
-                        .scale(1f)
-                )
+                Box {
+                    if (isDeviceOffline) {
+                        Image(
+                            modifier = Modifier
+                                .padding(end = 8.dp)
+                                .clickable { showFeatureDisabledMessage() },
+                            painter = painterResource(R.drawable.cloud_offline),
+                            contentDescription = "offline symbol",
+                        )
+                    } else {
+                        Icon(
+                            imageVector = Icons.Default.Add,
+                            tint = taskyColors.outline,
+                            contentDescription = "Add new Photo",
+                            modifier = Modifier
+                                .scale(1f)
+                        )
+                    }
+                }
                 Text(
                     text = " ADD PHOTOS",
                     color = taskyColors.outline,

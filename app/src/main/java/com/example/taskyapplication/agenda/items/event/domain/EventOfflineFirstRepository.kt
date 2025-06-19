@@ -14,12 +14,16 @@ import com.example.taskyapplication.agenda.items.event.data.db.EventEntity
 import com.example.taskyapplication.agenda.items.event.data.db.asAttendeeEntity
 import com.example.taskyapplication.agenda.items.event.data.toEventEntity
 import com.example.taskyapplication.agenda.items.event.data.toPhotoEntities
+import com.example.taskyapplication.di.json
 import com.example.taskyapplication.domain.utils.SUCCESS_CODE
 import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.async
+import okhttp3.MediaType.Companion.toMediaType
 import okhttp3.MultipartBody
+import okhttp3.RequestBody.Companion.toRequestBody
 import javax.inject.Inject
+import kotlin.coroutines.cancellation.CancellationException
 
 class EventOfflineFirstRepository @Inject constructor(
     private val localDataSource: EventLocalDataSource,
@@ -72,8 +76,9 @@ class EventOfflineFirstRepository @Inject constructor(
         }
 
         return try {
+            val jsonRequest = json.encodeToString(request).toRequestBody("application/json".toMediaType())
             val remoteResult = remoteDataSource.createEvent(
-                event = request,
+                event = jsonRequest,
                 photos = photos
             )
             if (remoteResult.code() == SUCCESS_CODE) {
@@ -88,8 +93,12 @@ class EventOfflineFirstRepository @Inject constructor(
                 Log.e(
                     "Event Repository: Error creating ${request.title} event",
                     remoteResult.message()
-                )            }
+                )
+                Result.failure<Unit>(Exception("Remote event creation failed: ${remoteResult.code()} - ${remoteResult.message()}"))
+            }
             Result.success(Unit)
+        } catch (e: CancellationException) {
+            throw e
         } catch (e: Exception) {
             Log.e("Event Repo:", e.message.toString())
             Result.failure(e)
@@ -149,5 +158,4 @@ class EventOfflineFirstRepository @Inject constructor(
         }
         return Result.success(Unit)
     }
-
 }

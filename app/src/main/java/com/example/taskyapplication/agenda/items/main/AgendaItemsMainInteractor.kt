@@ -29,10 +29,12 @@ import com.example.taskyapplication.agenda.items.task.domain.TaskLocalDataSource
 import com.example.taskyapplication.agenda.items.task.domain.TaskRepository
 import com.example.taskyapplication.agenda.items.task.domain.network.TaskApiService
 import com.example.taskyapplication.auth.domain.AuthRepository
+import com.example.taskyapplication.di.json
 import com.example.taskyapplication.domain.utils.SUCCESS_CODE
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.map
+import okhttp3.RequestBody.Companion.toRequestBody
 import java.time.LocalDate
 import javax.inject.Inject
 
@@ -109,7 +111,8 @@ class AgendaItemsMainInteractor @Inject constructor(
         localEvents.forEach { event ->
             try {
                 val eventToSync = event.toCreateEventNetworkModel()
-                val response = eventApiService.createEvent(eventToSync, emptyList())
+                val eventRequest = json.encodeToString(eventToSync).toRequestBody()
+                val response = eventApiService.createEvent(eventRequest, emptyList())
 
                 if (response.isSuccessful) {
                     Log.d("CommonDateProvider:", "Successfully synced event")
