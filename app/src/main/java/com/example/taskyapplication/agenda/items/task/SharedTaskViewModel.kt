@@ -1,5 +1,6 @@
 package com.example.taskyapplication.agenda.items.task
 
+import android.util.Log
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
@@ -29,7 +30,11 @@ class SharedTaskViewModel @Inject constructor(
 
     private val taskId: String? = savedStateHandle.get<String>("taskId")
 
+    var count = 1
+
     init {
+        Log.i("SharedTaskViewModel", "SharedTaskViewModel created with count: ${count++}")
+
         if (taskId != null) {
             loadExistingTask(taskId)
         }

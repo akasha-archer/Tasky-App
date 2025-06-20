@@ -45,12 +45,12 @@ import com.example.taskyapplication.ui.theme.TaskyTypography
 fun AddAttendeeBottomSheet(
     modifier: Modifier = Modifier,
     emailInput: String,
+    onEmailInputChange: (String) -> Unit,
+    onConfirmAdd: () -> Unit,
+    onCancelAddAttendee: () -> Unit = {},
     isLoading: Boolean = false,
     isButtonEnabled: Boolean = false,
     isValidEmail: Boolean = false,
-    onEmailInputChange: (String) -> Unit, // Callback when email text changes
-    onConfirmAdd: () -> Unit,
-    onCancelAddAttendee: () -> Unit = {},
 ) {
     val screenWidth = LocalWindowInfo.current.containerSize.width.dp
 
@@ -177,11 +177,3 @@ fun AddAttendeeBottomSheet(
         }
     )
 }
-
-//@Preview(showBackground = true)
-//@Composable
-//fun AddAttendeeBottomSheetPreview() {
-//    AddAttendeeBottomSheet(
-//        userEmail = "william.henry.moody@my-own-personal-domain.com"
-//    )
-//}

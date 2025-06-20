@@ -192,7 +192,7 @@ fun NavigationRoot(
                         navController.navigateUp()
                     },
                     onClickSave = {
-                        navController.navigateUp()
+                        navController.navigate(NavigationRoutes.EventDetail(null))
                     },
                     onSelectEditTitle = {
                         navController.navigate(NavigationRoutes.EventEditTitle)

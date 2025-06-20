@@ -1,13 +1,11 @@
 package com.example.taskyapplication.agenda.items.reminder.data.models
 
+import com.example.taskyapplication.agenda.data.model.getReminderNotificationFromLong
 import com.example.taskyapplication.agenda.domain.convertToLong
-import com.example.taskyapplication.agenda.domain.getReminderOptionFromMillis
 import com.example.taskyapplication.agenda.domain.toLocalDateAndTime
 import com.example.taskyapplication.agenda.items.reminder.data.db.ReminderEntity
 import com.example.taskyapplication.agenda.items.reminder.presentation.ReminderUiState
-import com.example.taskyapplication.agenda.items.task.data.network.models.TaskNetworkModel
 import java.time.LocalDateTime
-import java.time.ZoneId
 
 fun ReminderNetworkModel.toReminderEntity(): ReminderEntity {
     return ReminderEntity(
@@ -55,8 +53,8 @@ fun ReminderResponse.toReminderEntity(): ReminderEntity {
 
 fun ReminderUiState.toUpdateReminderNetworkModel(): UpdateReminderNetworkModel {
     val combinedStartTime = LocalDateTime.of(date, time)
-    val startTimeAsLong = combinedStartTime.atZone(ZoneId.systemDefault()).toInstant().toEpochMilli()
-    val reminderTimeMillis = startTimeAsLong - remindAt.asLong
+    val startTimeAsLong = combinedStartTime.convertToLong()
+    val reminderTimeMillis = startTimeAsLong.minus(remindAt.minutesAsInt.toLong())
 
     return UpdateReminderNetworkModel(
         itemId = id,
@@ -69,8 +67,8 @@ fun ReminderUiState.toUpdateReminderNetworkModel(): UpdateReminderNetworkModel {
 
 fun ReminderUiState.toReminderNetworkModel(): ReminderNetworkModel {
     val combinedStartTime = LocalDateTime.of(date, time)
-    val startTimeAsLong = combinedStartTime.atZone(ZoneId.systemDefault()).toInstant().toEpochMilli()
-    val reminderTimeMillis = startTimeAsLong - remindAt.asLong
+    val startTimeAsLong = combinedStartTime.convertToLong()
+    val reminderTimeMillis = startTimeAsLong.minus(remindAt.minutesAsInt.toLong())
 
     return ReminderNetworkModel(
         itemId = id,
@@ -88,6 +86,6 @@ fun ReminderEntity.toReminderUiState(): ReminderUiState {
         description = description,
         time = time,
         date = date,
-        remindAt = getReminderOptionFromMillis(remindAt)
+        remindAt = getReminderNotificationFromLong(time, date, remindAt),
     )
 }

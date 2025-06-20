@@ -1,12 +1,12 @@
 package com.example.taskyapplication.agenda.items.event.network
 
-import com.example.taskyapplication.agenda.items.event.data.CreateEventNetworkModel
 import com.example.taskyapplication.agenda.items.event.data.CreatedEventResponse
 import com.example.taskyapplication.agenda.items.event.data.GetAttendeeResponse
 import com.example.taskyapplication.agenda.items.event.data.FetchedEventResponse
 import com.example.taskyapplication.agenda.items.event.data.UpdateEventNetworkModel
 import com.example.taskyapplication.agenda.items.event.data.UpdatedEventResponse
 import okhttp3.MultipartBody
+import okhttp3.RequestBody
 import retrofit2.Response
 import retrofit2.http.DELETE
 import retrofit2.http.GET
@@ -21,7 +21,7 @@ interface EventApiService {
     @Multipart
     @POST("event")
     suspend fun createEvent(
-        @Part("create_event_request") createEventRequest: CreateEventNetworkModel,
+        @Part("create_event_request") createEventRequest: RequestBody,
         @Part images: List<MultipartBody.Part>
     ): Response<CreatedEventResponse>
 

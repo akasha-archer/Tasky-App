@@ -29,7 +29,7 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.example.taskyapplication.R
-import com.example.taskyapplication.agenda.data.model.ReminderTimeItem.Companion.REMINDER_THIRTY_MINUTES_BEFORE
+import com.example.taskyapplication.agenda.data.model.ReminderNotificationOption
 import com.example.taskyapplication.agenda.data.model.reminderTimeList
 import com.example.taskyapplication.ui.theme.TaskyDesignSystem.Companion.taskyColors
 import com.example.taskyapplication.ui.theme.TaskyTypography
@@ -37,7 +37,7 @@ import com.example.taskyapplication.ui.theme.TaskyTypography
 @Composable
 fun ReminderTimeRow(
     modifier: Modifier = Modifier,
-    reminderTime: String = REMINDER_THIRTY_MINUTES_BEFORE,
+    reminderTime: String = ReminderNotificationOption.THIRTY_MINUTES_BEFORE.timeString,
     onClickDropDown: () -> Unit = {},
     isEditing: Boolean = false
 ) {
@@ -93,7 +93,7 @@ fun ReminderDropDown(
     onTimeSelected: (String) -> Unit = {},
     onDismiss: () -> Unit = {},
 ) {
-    var selectedTime by rememberSaveable { mutableStateOf(reminderTimeList[0].reminderTime) }
+    var selectedTime by rememberSaveable { mutableStateOf(reminderTimeList[0]) }
     DropdownMenu(
         modifier = modifier
             .fillMaxWidth()
@@ -105,24 +105,24 @@ fun ReminderDropDown(
         shape = RoundedCornerShape(8.dp),
         tonalElevation = 4.dp,
         content = {
-            reminderTimeList.forEachIndexed { index, time ->
+            reminderTimeList.forEach { time ->
                 DropdownMenuItem(
                     onClick = {
-                        selectedTime = time.reminderTime
+                        selectedTime = time
                         onTimeSelected(selectedTime)
                     },
                     text = {
-                        Text(text = time.reminderTime)
+                        Text(text = time)
                     },
                     trailingIcon = {
-                        val isSelectedRow = selectedTime == time.reminderTime
+                        val isSelectedRow = selectedTime == time
                         if (isSelectedRow) {
                             Icon(
                                 modifier = Modifier
                                     .padding(end = 8.dp),
                                 imageVector = Icons.Filled.Check,
                                 tint = taskyColors.validInput,
-                                contentDescription = ""
+                                contentDescription = "drop down menu items"
                             )
                         }
                     }

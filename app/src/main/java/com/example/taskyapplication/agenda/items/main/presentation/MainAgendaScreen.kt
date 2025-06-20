@@ -1,6 +1,5 @@
 package com.example.taskyapplication.agenda.items.main.presentation
 
-import android.widget.Toast
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
@@ -14,7 +13,6 @@ import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
@@ -32,6 +30,7 @@ import com.example.taskyapplication.agenda.items.main.data.AgendaItemType
 import com.example.taskyapplication.agenda.items.reminder.SharedReminderViewModel
 import com.example.taskyapplication.agenda.items.task.SharedTaskViewModel
 import com.example.taskyapplication.agenda.presentation.components.TaskyDatePicker
+import com.example.taskyapplication.main.presentation.components.TaskyScaffold
 import java.time.LocalDate
 
 @Composable
@@ -49,60 +48,79 @@ fun AgendaMainRoot(
 ) {
     val viewState by viewModel.agendaViewState.collectAsStateWithLifecycle()
 
-    AgendaMainScreen(
+    TaskyScaffold(
         modifier = modifier,
-        createNewItem = { type ->
-            when (type) {
-                AgendaItemType.EVENT -> launchNewEventScreen(null)
-                AgendaItemType.REMINDER -> launchNewReminderScreen(null)
-                AgendaItemType.TASK -> launchNewTaskScreen(null)
-            }
-        },
-        onEventAction = { eventAction ->
-            when(eventAction) {
-                is EventItemAction.OpenExistingEvent -> {
-                    openSelectedItem(eventAction.eventId, AgendaItemType.EVENT)
-                }
-                is EventItemAction.EditExistingEvent -> {
-                    editSelectedItem(eventAction.eventId, AgendaItemType.EVENT)
-                }
-                else -> Unit
-            }
-            eventViewModel.executeActions(eventAction)
-        },
-        onItemAction = { itemAction ->
-            when(itemAction) {
-                is AgendaItemAction.OpenExistingReminder -> {
-                    openSelectedItem(itemAction.id, AgendaItemType.REMINDER)
-                }
-                is AgendaItemAction.OpenExistingTask -> {
-                    openSelectedItem(itemAction.id, AgendaItemType.TASK)
-                }
-                is AgendaItemAction.EditExistingReminder -> {
-                    editSelectedItem(itemAction.id, AgendaItemType.REMINDER)
-                }
-                is AgendaItemAction.EditExistingTask -> {
-                    editSelectedItem(itemAction.id, AgendaItemType.TASK)
-                }
-                else -> Unit
-            }
-            taskViewModel.executeActions(itemAction)
-            reminderViewModel.executeActions(itemAction)
-        },
-        onAction = { action ->
-            when (action) {
-                is MainScreenAction.ItemToOpen -> {
-                    openSelectedItem(action.itemId, action.type)
-                }
+        mainContent = { innerPadding ->
+            AgendaMainScreen(
+                modifier = Modifier
+                    .padding(innerPadding),
+                createNewItem = { type ->
+                    when (type) {
+                        AgendaItemType.EVENT -> launchNewEventScreen(null)
+                        AgendaItemType.REMINDER -> launchNewReminderScreen(null)
+                        AgendaItemType.TASK -> launchNewTaskScreen(null)
+                    }
+                },
+                onEventAction = { eventAction ->
+                    when (eventAction) {
+                        is EventItemAction.OpenExistingEvent -> {
+                            openSelectedItem(eventAction.eventId, AgendaItemType.EVENT)
+                        }
 
-                is MainScreenAction.ItemToEdit -> {
-                    editSelectedItem(action.itemId, action.type)
-                }
-                else -> { Unit }
-            }
-          viewModel.executeAgendaActions(action)
-        },
-        agendaViewState = viewState
+                        is EventItemAction.EditExistingEvent -> {
+                            editSelectedItem(eventAction.eventId, AgendaItemType.EVENT)
+                        }
+
+                        else -> Unit
+                    }
+                    eventViewModel.executeActions(eventAction)
+                },
+                onItemAction = { itemAction ->
+                    when (itemAction) {
+                        is AgendaItemAction.OpenExistingReminder -> {
+                            openSelectedItem(itemAction.id, AgendaItemType.REMINDER)
+                        }
+
+                        is AgendaItemAction.OpenExistingTask -> {
+                            openSelectedItem(itemAction.id, AgendaItemType.TASK)
+                        }
+
+                        is AgendaItemAction.EditExistingReminder -> {
+                            editSelectedItem(itemAction.id, AgendaItemType.REMINDER)
+                        }
+
+                        is AgendaItemAction.EditExistingTask -> {
+                            editSelectedItem(itemAction.id, AgendaItemType.TASK)
+                        }
+
+                        else -> Unit
+                    }
+                    taskViewModel.executeActions(itemAction)
+                    reminderViewModel.executeActions(itemAction)
+                },
+                onAction = { action ->
+                    when (action) {
+                        is MainScreenAction.ItemToOpen -> {
+                            openSelectedItem(action.itemId, action.type)
+                        }
+
+                        is MainScreenAction.ItemToEdit -> {
+                            editSelectedItem(action.itemId, action.type)
+                        }
+
+                        is MainScreenAction.SelectAgendaDate -> {
+                            viewModel.executeAgendaActions(action)
+                        }
+
+                        else -> {
+                            Unit
+                        }
+                    }
+                    viewModel.executeAgendaActions(action)
+                },
+                agendaViewState = viewState
+            )
+        }
     )
 }
 
@@ -121,7 +139,6 @@ fun AgendaMainScreen(
     var showLogoutDropDown by rememberSaveable { mutableStateOf(false) }
     val datePickerState = rememberDatePickerState()
     var expandedItemId by rememberSaveable { mutableStateOf<String?>(null) }
-    val userInitials = agendaViewState.userFullName.toInitials().ifEmpty { "zz" }
 
     TaskyBaseScreen(
         modifier = modifier,
@@ -135,7 +152,7 @@ fun AgendaMainScreen(
                 onLogoutClick = { onAction(MainScreenAction.LogoutUser) },
                 onDismissRequest = { showLogoutDropDown = false },
                 showLogoutDropDown = showLogoutDropDown,
-                userInitials =  userInitials
+                userInitials = agendaViewState.userFullName?.toInitials()?.ifEmpty { "zz" } ?: "gg"
             )
         },
         mainContent = {
@@ -146,56 +163,66 @@ fun AgendaMainScreen(
                 Column(
                     modifier = Modifier
                 ) {
-                    AgendaScreenScrollableDates()
-                        AgendaSummary(
-                            modifier = Modifier,
-                            dailySummary = agendaViewState.combinedSummaryList,
-                            dateHeading = agendaViewState.displayDateHeading,
-                            onOpenClick = { itemId, type ->
-                                when (type) {
-                                    AgendaItemType.EVENT -> {
-                                        onEventAction(EventItemAction.OpenExistingEvent(itemId))
-                                    }
-
-                                    AgendaItemType.REMINDER -> {
-                                        onItemAction(AgendaItemAction.OpenExistingReminder(itemId))
-                                    }
-
-                                    AgendaItemType.TASK -> {
-                                        onItemAction(AgendaItemAction.OpenExistingTask(itemId))
-                                    }
+                    val date = LocalDate.now()
+                    val month = date.month
+                    val year = date.year
+                    AgendaScreenScrollableDates(
+                        onSelectDate = { dayOfMonth ->
+                            onAction(MainScreenAction.SelectAgendaDate(
+                                    LocalDate.of(year, month, dayOfMonth.toInt())
+                                )
+                            )
+                        }
+                    )
+                    AgendaSummary(
+                        modifier = Modifier,
+                        dailySummary = agendaViewState.combinedSummaryList,
+                        dateHeading = agendaViewState.displayDateHeading,
+                        onOpenClick = { itemId, type ->
+                            when (type) {
+                                AgendaItemType.EVENT -> {
+                                    onEventAction(EventItemAction.OpenExistingEvent(itemId))
                                 }
-                                onAction(MainScreenAction.ItemToOpen(itemId, type))
-                            },
-                            onEditClick = { itemId, type ->
-                                when (type) {
-                                    AgendaItemType.EVENT -> {
-                                        onEventAction(EventItemAction.EditExistingEvent(itemId))
-                                    }
 
-                                    AgendaItemType.REMINDER -> {
-                                        onItemAction(AgendaItemAction.EditExistingReminder(itemId))
-                                    }
-
-                                    AgendaItemType.TASK -> {
-                                        onItemAction(AgendaItemAction.OpenExistingTask(itemId))
-                                    }
+                                AgendaItemType.REMINDER -> {
+                                    onItemAction(AgendaItemAction.OpenExistingReminder(itemId))
                                 }
-                                onAction(MainScreenAction.ItemToEdit(itemId, type))
-                            },
-                            onDeleteClick = { itemId, type ->
-                                onAction(MainScreenAction.ItemToDelete(itemId, type))
-                            },
-                            onToggleItemMenu = { itemId ->
-                                expandedItemId = if (expandedItemId == itemId) {
-                                    null
-                                } else {
-                                    itemId
-                                }
-                            },
-                            currentlyExpandedItemId = expandedItemId
 
-                        )
+                                AgendaItemType.TASK -> {
+                                    onItemAction(AgendaItemAction.OpenExistingTask(itemId))
+                                }
+                            }
+                            onAction(MainScreenAction.ItemToOpen(itemId, type))
+                        },
+                        onEditClick = { itemId, type ->
+                            when (type) {
+                                AgendaItemType.EVENT -> {
+                                    onEventAction(EventItemAction.EditExistingEvent(itemId))
+                                }
+
+                                AgendaItemType.REMINDER -> {
+                                    onItemAction(AgendaItemAction.EditExistingReminder(itemId))
+                                }
+
+                                AgendaItemType.TASK -> {
+                                    onItemAction(AgendaItemAction.OpenExistingTask(itemId))
+                                }
+                            }
+                            onAction(MainScreenAction.ItemToEdit(itemId, type))
+                        },
+                        onDeleteClick = { itemId, type ->
+                            onAction(MainScreenAction.ItemToDelete(itemId, type))
+                        },
+                        onToggleItemMenu = { itemId ->
+                            expandedItemId = if (expandedItemId == itemId) {
+                                null
+                            } else {
+                                itemId
+                            }
+                        },
+                        currentlyExpandedItemId = expandedItemId
+
+                    )
                 }
                 Box(
                     modifier = Modifier
@@ -228,7 +255,8 @@ fun AgendaMainScreen(
                     onConfirm = {
                         onAction(
                             MainScreenAction.SelectAgendaDate(
-                                datePickerState.selectedDateMillis?.toLocalDateAndTime()?.first ?: LocalDate.now()
+                                datePickerState.selectedDateMillis?.toLocalDateAndTime()?.first
+                                    ?: LocalDate.now()
                             )
                         )
                         showMonthDatePicker = false

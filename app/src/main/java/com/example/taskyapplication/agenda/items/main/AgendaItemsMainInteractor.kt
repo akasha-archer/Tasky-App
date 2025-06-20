@@ -4,7 +4,7 @@ import android.util.Log
 import com.example.taskyapplication.agenda.items.event.data.db.EventEntity
 import com.example.taskyapplication.agenda.items.event.data.toCreateEventNetworkModel
 import com.example.taskyapplication.agenda.items.event.data.toEventEntity
-import com.example.taskyapplication.agenda.items.event.domain.EventLocalDataSource
+import com.example.taskyapplication.agenda.items.event.data.EventLocalDataSource
 import com.example.taskyapplication.agenda.items.event.domain.EventRepository
 import com.example.taskyapplication.agenda.items.event.network.EventApiService
 import com.example.taskyapplication.agenda.items.main.data.AgendaEventSummary
@@ -29,10 +29,12 @@ import com.example.taskyapplication.agenda.items.task.domain.TaskLocalDataSource
 import com.example.taskyapplication.agenda.items.task.domain.TaskRepository
 import com.example.taskyapplication.agenda.items.task.domain.network.TaskApiService
 import com.example.taskyapplication.auth.domain.AuthRepository
+import com.example.taskyapplication.di.json
 import com.example.taskyapplication.domain.utils.SUCCESS_CODE
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.map
+import okhttp3.RequestBody.Companion.toRequestBody
 import java.time.LocalDate
 import javax.inject.Inject
 
@@ -49,6 +51,7 @@ class AgendaItemsMainInteractor @Inject constructor(
     private val eventApiService: EventApiService,
     private val agendaApiService: AgendaApiService
 ) {
+    suspend fun getUserName(): String? = authRepository.fetchUserName()
 
     suspend fun syncDeletedItemIds(): Result<Unit> {
         return try {
@@ -82,12 +85,12 @@ class AgendaItemsMainInteractor @Inject constructor(
                 val response = taskApiService.createNewTask(taskToSync)
 
                 if (response.code() == SUCCESS_CODE) {
-                    Log.d("CommonDateProvider:", "Successfully synced task")
+                    Log.d("AgendaItemsMainInteractor:", "Successfully synced task")
                 } else {
-                    Log.e("CommonDateProvider:", "Failed to sync task")
+                    Log.e("AgendaItemsMainInteractor:", "Failed to sync task")
                 }
             } catch (e: Exception) {
-                Log.e("CommonDataProvider", e.message.toString())
+                Log.e("AgendaItemsMainInteractor", e.message.toString())
             }
         }
 
@@ -97,27 +100,28 @@ class AgendaItemsMainInteractor @Inject constructor(
                 val response = reminderApiService.createNewReminder(reminderToSync)
 
                 if (response.isSuccessful) {
-                    Log.d("CommonDateProvider:", "Successfully synced reminder")
+                    Log.d("AgendaItemsMainInteractor:", "Successfully synced reminder")
                 } else {
-                    Log.e("CommonDateProvider:", "Failed to sync reminder")
+                    Log.e("AgendaItemsMainInteractor:", "Failed to sync reminder")
                 }
             } catch (e: Exception) {
-                Log.e("CommonDataProvider", e.message.toString())
+                Log.e("AgendaItemsMainInteractor", e.message.toString())
             }
         }
 
         localEvents.forEach { event ->
             try {
                 val eventToSync = event.toCreateEventNetworkModel()
-                val response = eventApiService.createEvent(eventToSync, emptyList())
+                val eventRequest = json.encodeToString(eventToSync).toRequestBody()
+                val response = eventApiService.createEvent(eventRequest, emptyList())
 
                 if (response.isSuccessful) {
-                    Log.d("CommonDateProvider:", "Successfully synced event")
+                    Log.d("AgendaItemsMainInteractor:", "Successfully synced event")
                 } else {
-                    Log.e("CommonDateProvider:", "Failed to sync event")
+                    Log.e("AgendaItemsMainInteractor:", "Failed to sync event")
                 }
             } catch (e: Exception) {
-                Log.e("CommonDataProvider", e.message.toString())
+                Log.e("AgendaItemsMainInteractor", e.message.toString())
             }
         }
 

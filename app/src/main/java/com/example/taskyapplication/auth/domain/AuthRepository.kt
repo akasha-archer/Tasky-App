@@ -4,7 +4,6 @@ import com.example.taskyapplication.auth.data.LoggedInUserResponse
 import com.example.taskyapplication.domain.utils.DataError
 import com.example.taskyapplication.domain.utils.EmptyResult
 import com.example.taskyapplication.domain.utils.asEmptyDataResult
-import com.example.taskyapplication.domain.utils.onError
 import com.example.taskyapplication.domain.utils.onSuccess
 import com.example.taskyapplication.domain.utils.safeApiCall
 import com.example.taskyapplication.network.AuthApiService
@@ -13,6 +12,8 @@ import javax.inject.Inject
 import javax.inject.Singleton
 
 interface AuthRepository {
+
+    suspend fun fetchUserName(): String?
     suspend fun registerNewUser(
         registerData: RegisterData
     ): EmptyResult<DataError>
@@ -32,6 +33,10 @@ class AuthRepositoryImpl @Inject constructor(
     private val tokenRefreshApi: TokenRefreshApi,
     private val authTokenManager: AuthTokenManager
 ) : AuthRepository {
+
+    override suspend fun fetchUserName(): String? {
+        return authTokenManager.readUserFullName()
+    }
 
     override suspend fun registerNewUser(
         registerData: RegisterData

@@ -1,15 +1,9 @@
 package com.example.taskyapplication.agenda.data.model
 
-import com.example.taskyapplication.agenda.data.model.ReminderTimeItem.Companion.REMINDER_ONE_DAY_BEFORE
-import com.example.taskyapplication.agenda.data.model.ReminderTimeItem.Companion.REMINDER_ONE_HOUR_BEFORE
-import com.example.taskyapplication.agenda.data.model.ReminderTimeItem.Companion.REMINDER_SIX_HOURS_BEFORE
-import com.example.taskyapplication.agenda.data.model.ReminderTimeItem.Companion.REMINDER_TEN_MINUTES_BEFORE
-import com.example.taskyapplication.agenda.data.model.ReminderTimeItem.Companion.REMINDER_THIRTY_MINUTES_BEFORE
-import kotlin.time.Duration
-import kotlin.time.Duration.Companion.days
-import kotlin.time.Duration.Companion.hours
-import kotlin.time.Duration.Companion.minutes
-import kotlin.time.DurationUnit
+import com.example.taskyapplication.agenda.domain.convertToLong
+import java.time.LocalDate
+import java.time.LocalDateTime
+import java.time.LocalTime
 
 enum class VisitorStatus(val value: String) {
     ALL("All"),
@@ -17,30 +11,54 @@ enum class VisitorStatus(val value: String) {
     NOT_GOING("Not Going")
 }
 
-enum class ReminderOptions(val value: Duration, val timeString: String, val asLong: Long) {
-    TEN_MINUTES_BEFORE(10L.minutes, REMINDER_TEN_MINUTES_BEFORE, 10L.minutes.toLong(DurationUnit.MILLISECONDS)),
-    THIRTY_MINUTES_BEFORE(30L.minutes, REMINDER_THIRTY_MINUTES_BEFORE, 30L.minutes.toLong(DurationUnit.MILLISECONDS)),
-    ONE_HOUR_BEFORE(1L.hours, REMINDER_ONE_HOUR_BEFORE, 1L.hours.toLong(DurationUnit.MILLISECONDS)),
-    SIX_HOURS_BEFORE(6L.hours, REMINDER_SIX_HOURS_BEFORE, 6L.hours.toLong(DurationUnit.MILLISECONDS)),
-    ONE_DAY_BEFORE(1L.days, REMINDER_ONE_DAY_BEFORE, 1L.days.toLong(DurationUnit.MILLISECONDS)),
-}
+const val TEN_MINUTES = 10
+const val THIRTY_MINUTES = 30
+const val ONE_HOUR = 60
+const val SIX_HOURS = 360
+const val ONE_DAY = 1440
 
-data class ReminderTimeItem(
-    val reminderTime: String,
-) {
-    companion object {
-        const val REMINDER_THIRTY_MINUTES_BEFORE = "30 minutes before"
-        const val REMINDER_TEN_MINUTES_BEFORE = "10 minutes before"
-        const val REMINDER_ONE_HOUR_BEFORE = "1 hour before"
-        const val REMINDER_ONE_DAY_BEFORE = "1 day before"
-        const val REMINDER_SIX_HOURS_BEFORE = "6 hours before"
-    }
+
+enum class ReminderNotificationOption(val timeString: String, val minutesAsInt: Int) {
+    TEN_MINUTES_BEFORE("10 minutes before", TEN_MINUTES),
+    THIRTY_MINUTES_BEFORE("30 minutes before", THIRTY_MINUTES),
+    ONE_HOUR_BEFORE("1 hour before", ONE_HOUR),
+    SIX_HOURS_BEFORE("6 hours before", SIX_HOURS),
+    ONE_DAY_BEFORE("1 day before", ONE_DAY),
 }
 
 val reminderTimeList = listOf(
-    ReminderTimeItem(REMINDER_THIRTY_MINUTES_BEFORE),
-    ReminderTimeItem(REMINDER_TEN_MINUTES_BEFORE),
-    ReminderTimeItem(REMINDER_ONE_HOUR_BEFORE),
-    ReminderTimeItem(REMINDER_SIX_HOURS_BEFORE),
-    ReminderTimeItem(REMINDER_ONE_DAY_BEFORE),
+    ReminderNotificationOption.THIRTY_MINUTES_BEFORE.timeString,
+    ReminderNotificationOption.TEN_MINUTES_BEFORE.timeString,
+    ReminderNotificationOption.ONE_HOUR_BEFORE.timeString,
+    ReminderNotificationOption.SIX_HOURS_BEFORE.timeString,
+    ReminderNotificationOption.ONE_DAY_BEFORE.timeString,
 )
+
+fun getReminderNotificationFromString(
+    selection: String,
+): ReminderNotificationOption {
+    return when (selection) {
+        ReminderNotificationOption.THIRTY_MINUTES_BEFORE.timeString -> ReminderNotificationOption.THIRTY_MINUTES_BEFORE
+        ReminderNotificationOption.TEN_MINUTES_BEFORE.timeString -> ReminderNotificationOption.TEN_MINUTES_BEFORE
+        ReminderNotificationOption.ONE_HOUR_BEFORE.timeString -> ReminderNotificationOption.ONE_HOUR_BEFORE
+        ReminderNotificationOption.SIX_HOURS_BEFORE.timeString -> ReminderNotificationOption.SIX_HOURS_BEFORE
+        ReminderNotificationOption.ONE_DAY_BEFORE.timeString -> ReminderNotificationOption.ONE_DAY_BEFORE
+        else -> ReminderNotificationOption.THIRTY_MINUTES_BEFORE // default value
+    }
+}
+
+fun getReminderNotificationFromLong(
+    startTime: LocalTime,
+    startDate: LocalDate,
+    reminderMillis: Long
+): ReminderNotificationOption {
+    val from = LocalDateTime.of(startDate, startTime).convertToLong() - reminderMillis
+    return when(from) {
+        TEN_MINUTES.toLong() -> ReminderNotificationOption.TEN_MINUTES_BEFORE
+        THIRTY_MINUTES.toLong() -> ReminderNotificationOption.THIRTY_MINUTES_BEFORE
+        ONE_HOUR.toLong() -> ReminderNotificationOption.ONE_HOUR_BEFORE
+        SIX_HOURS.toLong() -> ReminderNotificationOption.SIX_HOURS_BEFORE
+        ONE_DAY.toLong() -> ReminderNotificationOption.ONE_DAY_BEFORE
+        else -> ReminderNotificationOption.THIRTY_MINUTES_BEFORE
+    }
+}

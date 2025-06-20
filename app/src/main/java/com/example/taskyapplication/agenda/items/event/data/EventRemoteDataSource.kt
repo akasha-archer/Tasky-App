@@ -1,24 +1,15 @@
-package com.example.taskyapplication.agenda.items.event.domain
+package com.example.taskyapplication.agenda.items.event.data
 
-import com.example.taskyapplication.agenda.items.event.data.CreateEventNetworkModel
-import com.example.taskyapplication.agenda.items.event.data.CreatedEventResponse
-import com.example.taskyapplication.agenda.items.event.data.FetchedEventResponse
-import com.example.taskyapplication.agenda.items.event.data.GetAttendeeResponse
-import com.example.taskyapplication.agenda.items.event.data.UpdateEventNetworkModel
-import com.example.taskyapplication.agenda.items.event.data.UpdatedEventResponse
 import com.example.taskyapplication.agenda.items.event.network.EventApiService
-import com.example.taskyapplication.domain.utils.DataError
-import com.example.taskyapplication.domain.utils.EmptyResult
-import com.example.taskyapplication.domain.utils.Result
-import com.example.taskyapplication.domain.utils.safeApiCall
 import okhttp3.MultipartBody
+import okhttp3.RequestBody
 import retrofit2.Response
 import javax.inject.Inject
 
 interface EventRemoteDataSource {
     suspend fun getEvent(eventId: String): Response<FetchedEventResponse>
     suspend fun createEvent(
-        event: CreateEventNetworkModel,
+        event: RequestBody,
         photos: List<MultipartBody.Part>
     ): Response<CreatedEventResponse>
 
@@ -40,7 +31,7 @@ class EventRemoteDataSourceImpl @Inject constructor(
     }
 
     override suspend fun createEvent(
-        event: CreateEventNetworkModel,
+        event: RequestBody,
         photos: List<MultipartBody.Part>
     ): Response<CreatedEventResponse> {
         return eventApi.createEvent(event, photos)

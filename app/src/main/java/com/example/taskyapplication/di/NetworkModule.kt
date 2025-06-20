@@ -21,12 +21,11 @@ import retrofit2.Retrofit
 import kotlinx.serialization.json.Json
 import okhttp3.MediaType.Companion.toMediaType
 import okhttp3.logging.HttpLoggingInterceptor
-import retrofit2.converter.gson.GsonConverterFactory
 import javax.inject.Named
 import javax.inject.Provider
 import javax.inject.Singleton
 
-private val json = Json {
+val json = Json {
     ignoreUnknownKeys = true
     coerceInputValues = true
 }

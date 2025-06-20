@@ -1,6 +1,7 @@
-package com.example.taskyapplication.agenda.items.event.domain
+package com.example.taskyapplication.agenda.items.event.data
 
 import android.database.sqlite.SQLiteFullException
+import android.util.Log
 import com.example.taskyapplication.agenda.items.event.data.db.AttendeeEntity
 import com.example.taskyapplication.agenda.items.event.data.db.DeletedEventIdEntity
 import com.example.taskyapplication.agenda.items.event.data.db.EventDao
@@ -84,6 +85,7 @@ class EventLocalDataSourceImpl @Inject constructor(
             eventDao.insertEventWithPhotos(event, photos)
             Result.Success(Unit)
         } catch (e: SQLiteFullException) {
+            Log.e("EventLocalDataSourceImpl", "Error creating event: ${e.message}")
             Result.Error(DataError.Local.DISK_FULL)
         }
     }
@@ -96,6 +98,7 @@ class EventLocalDataSourceImpl @Inject constructor(
             eventDao.updateEventWithPhotos(event, photos)
             Result.Success(Unit)
         } catch (e: SQLiteFullException) {
+            Log.e("EventLocalDataSourceImpl", "Error updating event: ${e.message}")
             Result.Error(DataError.Local.DISK_FULL)
         }
     }
@@ -116,6 +119,7 @@ class EventLocalDataSourceImpl @Inject constructor(
             }
             Result.Success(Unit)
         } catch (e: SQLiteFullException) {
+            Log.e("EventLocalDataSourceImpl", "Error upserting events: ${e.message}")
             Result.Error(DataError.Local.DISK_FULL)
         }
     }
@@ -125,6 +129,7 @@ class EventLocalDataSourceImpl @Inject constructor(
             eventDao.upsertEventPhotos(photos)
             Result.Success(Unit)
         } catch (e: SQLiteFullException) {
+            Log.e("EventLocalDataSourceImpl", "Error upserting photos: ${e.message}")
             Result.Error(DataError.Local.DISK_FULL)
         }
     }

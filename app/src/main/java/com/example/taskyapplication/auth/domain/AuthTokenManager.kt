@@ -1,10 +1,11 @@
 package com.example.taskyapplication.auth.domain
 
 import android.content.Context
+import android.util.Log
 import androidx.datastore.dataStore
 import com.example.taskyapplication.auth.data.LoggedInUserResponse
-import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.flow.firstOrNull
 import javax.inject.Inject
 
 val Context.dataStore by dataStore(fileName = "auth_manager.json", serializer = AuthInfoSerializer)
@@ -35,7 +36,9 @@ class AuthTokenManagerImpl @Inject constructor(
     }
 
     override suspend fun readUserFullName(): String? {
-        return context.dataStore.data.first().fullName
+        val name = context.dataStore.data.firstOrNull()?.fullName
+        Log.d("AuthTokenManager", "Reading USER_FULL_NAME from DataStore: '$name'")
+        return name
     }
 
     override suspend fun readAccessToken(): String {

@@ -1,6 +1,6 @@
 package com.example.taskyapplication.agenda.items.event.data
 
-import com.example.taskyapplication.agenda.data.model.ReminderOptions
+import com.example.taskyapplication.agenda.data.model.getReminderNotificationFromLong
 import com.example.taskyapplication.agenda.domain.combineLocalDateAndTime
 import com.example.taskyapplication.agenda.domain.convertToLong
 import com.example.taskyapplication.agenda.domain.toLocalDateAndTime
@@ -20,7 +20,7 @@ fun EventEntity.toEventUiState(): EventUiState {
         startDate = startDate,
         endTime = endTime,
         endDate = endDate,
-        remindAt = ReminderOptions.THIRTY_MINUTES_BEFORE,
+        remindAt = getReminderNotificationFromLong(startTime, startDate, remindAt),
     )
 }
 
@@ -34,7 +34,7 @@ fun EventEntity.toCreateEventNetworkModel(): CreateEventNetworkModel {
         description = description,
         from = eventStart,
         to = eventEnd,
-        remindAt = ReminderOptions.THIRTY_MINUTES_BEFORE.asLong,
+        remindAt = remindAt,
         attendeeIds = emptyList(),
     )
 }
@@ -48,7 +48,7 @@ fun EventUiState.toCreateEventNetworkModel(): CreateEventNetworkModel {
         description = description,
         from = startDateTime,
         to = endDateTime,
-        remindAt = 0L,
+        remindAt = 30.toLong(),
         attendeeIds = attendeeIds
     )
 }
