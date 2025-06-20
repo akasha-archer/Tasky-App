@@ -20,7 +20,7 @@ class OfflineFirstTaskRepository @Inject constructor(
     private val applicationScope: CoroutineScope,
 ) : TaskRepository {
 
-    override suspend fun createNewTask(request: TaskNetworkModel): kotlin.Result<Unit> {
+    override suspend fun createNewTask(request: TaskNetworkModel): Result<Unit> {
         val localResult = localDataSource.upsertTask(request.asTaskEntity())
         if (localResult != kotlin.Result.success(Unit)) {
             Log.e("Task Repository: Error inserting new task", "error: $localResult")
@@ -58,10 +58,10 @@ class OfflineFirstTaskRepository @Inject constructor(
                     remoteResult.toString()
                 )
             }
-            kotlin.Result.success(Unit)
+            Result.success(Unit)
         } catch (e: Exception) {
             Log.e("Task Repo:", e.message.toString())
-            kotlin.Result.failure(e)
+            Result.failure(e)
         }
     }
 
@@ -74,7 +74,7 @@ class OfflineFirstTaskRepository @Inject constructor(
             localDataSource.upsertDeletedTaskId(DeletedTaskIdEntity(taskId))
             Log.e("Task Repository", "error deleting task: $remoteResult")
         }
-        return kotlin.Result.success(Unit)
+        return Result.success(Unit)
     }
 
     override suspend fun getTaskById(taskId: String): TaskEntity? {
