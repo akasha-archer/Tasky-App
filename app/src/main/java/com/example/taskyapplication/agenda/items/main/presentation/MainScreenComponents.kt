@@ -190,7 +190,6 @@ fun AgendaScreenScrollableDates(
                     .selectedDateColor(isSelectedDate),
                 dayOfWeekInitial = item.dayOfWeek[0],
                 dateOfMonth = item.dayOfMonth,
-                isSelected = false
             )
         }
     }
@@ -213,7 +212,6 @@ fun AgendaScreenCalendarDateItem(
     modifier: Modifier = Modifier,
     dayOfWeekInitial: Char,
     dateOfMonth: String,
-    isSelected: Boolean = false
 ) {
     Column(
         modifier = modifier
@@ -472,7 +470,6 @@ fun CalendarItemPreview() {
     AgendaScreenCalendarDateItem(
         dayOfWeekInitial = 'M',
         dateOfMonth = "15",
-        isSelected = true,
     )
 }
 

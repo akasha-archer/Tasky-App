@@ -22,7 +22,7 @@ class OfflineFirstTaskRepository @Inject constructor(
 
     override suspend fun createNewTask(request: TaskNetworkModel): Result<Unit> {
         val localResult = localDataSource.upsertTask(request.asTaskEntity())
-        if (localResult != kotlin.Result.success(Unit)) {
+        if (localResult != Result.success(Unit)) {
             Log.e("Task Repository: Error inserting new task", "error: $localResult")
         }
         Log.i("Task Repository: Finished posting to database", "local storage success")
@@ -36,16 +36,16 @@ class OfflineFirstTaskRepository @Inject constructor(
                     remoteResult.message()
                 )
             }
-            kotlin.Result.success(Unit)
+            Result.success(Unit)
         } catch (e: Exception) {
             Log.e("Task Repo:", e.message.toString())
-            kotlin.Result.failure(e)
+            Result.failure(e)
         }
     }
 
-    override suspend fun updateTask(request: UpdateTaskBody): kotlin.Result<Unit> {
+    override suspend fun updateTask(request: UpdateTaskBody): Result<Unit> {
         val localResult = localDataSource.upsertTask(request.asTaskEntity())
-        if (localResult != kotlin.Result.success(Unit)) {
+        if (localResult != Result.success(Unit)) {
             Log.e("Task Repository: Error updating task", "error: $localResult")
         }
         return try {
@@ -65,7 +65,7 @@ class OfflineFirstTaskRepository @Inject constructor(
         }
     }
 
-    override suspend fun deleteTask(taskId: String): kotlin.Result<Unit> {
+    override suspend fun deleteTask(taskId: String): Result<Unit> {
        localDataSource.deleteTask(taskId)
         val remoteResult = applicationScope.async {
             remoteDataSource.deleteTask(taskId)
