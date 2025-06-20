@@ -50,6 +50,7 @@ import com.example.taskyapplication.agenda.presentation.components.ReminderTimeR
 import com.example.taskyapplication.agenda.presentation.components.TaskyDatePicker
 import com.example.taskyapplication.agenda.presentation.components.TaskyTimePicker
 import com.example.taskyapplication.domain.utils.ObserveAsEvents
+import com.example.taskyapplication.domain.utils.SystemTimeProvider
 import com.example.taskyapplication.main.presentation.components.TaskyScaffold
 import com.example.taskyapplication.ui.theme.TaskyDesignSystem.Companion.taskyColors
 import com.example.taskyapplication.ui.theme.TaskyTypography
@@ -225,8 +226,8 @@ fun TaskEditDateTimeScreen(
                             },
                             agendaItemStartTime = {
                                 AgendaItemDateTimeRow(
-                                    dateText = state.date.toDateAsString().ifEmpty { LocalDate.now().toDateAsString() },
-                                    timeText = state.time.toTimeAsString().ifEmpty { LocalTime.now().toTimeAsString() },
+                                    dateText = state.date.toDateAsString().ifEmpty { SystemTimeProvider.now.toLocalDate().toDateAsString() },
+                                    timeText = state.time.toTimeAsString().ifEmpty { SystemTimeProvider.now.toLocalTime().toTimeAsString() },
                                     onClickTime = {
                                         onAction(AgendaItemAction.ShowTimePicker)
                                     },

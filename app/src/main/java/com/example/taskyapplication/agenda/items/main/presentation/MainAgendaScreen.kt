@@ -108,6 +108,10 @@ fun AgendaMainRoot(
                             editSelectedItem(action.itemId, action.type)
                         }
 
+                        is MainScreenAction.SelectAgendaDate -> {
+                            viewModel.executeAgendaActions(action)
+                        }
+
                         else -> {
                             Unit
                         }
@@ -135,7 +139,6 @@ fun AgendaMainScreen(
     var showLogoutDropDown by rememberSaveable { mutableStateOf(false) }
     val datePickerState = rememberDatePickerState()
     var expandedItemId by rememberSaveable { mutableStateOf<String?>(null) }
-//    val userInitials = agendaViewState.userFullName?.toInitials()?.ifEmpty { "zz" }
 
     TaskyBaseScreen(
         modifier = modifier,
@@ -149,7 +152,7 @@ fun AgendaMainScreen(
                 onLogoutClick = { onAction(MainScreenAction.LogoutUser) },
                 onDismissRequest = { showLogoutDropDown = false },
                 showLogoutDropDown = showLogoutDropDown,
-                userInitials =  agendaViewState.userFullName?.toInitials()?.ifEmpty { "zz" } ?: "gg"
+                userInitials = agendaViewState.userFullName?.toInitials()?.ifEmpty { "zz" } ?: "gg"
             )
         },
         mainContent = {
@@ -160,7 +163,17 @@ fun AgendaMainScreen(
                 Column(
                     modifier = Modifier
                 ) {
-                    AgendaScreenScrollableDates()
+                    val date = LocalDate.now()
+                    val month = date.month
+                    val year = date.year
+                    AgendaScreenScrollableDates(
+                        onSelectDate = { dayOfMonth ->
+                            onAction(MainScreenAction.SelectAgendaDate(
+                                    LocalDate.of(year, month, dayOfMonth.toInt())
+                                )
+                            )
+                        }
+                    )
                     AgendaSummary(
                         modifier = Modifier,
                         dailySummary = agendaViewState.combinedSummaryList,

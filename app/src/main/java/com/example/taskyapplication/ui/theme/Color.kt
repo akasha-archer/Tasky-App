@@ -15,6 +15,7 @@ val InputText = Color(0xFF3A4045)
 val InputSuccess = Color(0xFF279F70)
 val TextFieldFocusBorder = Color(0xFFB7C6DE)
 val SurfaceHigher = Color(0xFFF2F3F7)
+val DateHighlight = Color(0xFFFDEFA8)
 
 // Dark values
 val Link_Dark = Color(0xFFB1B8FE)
@@ -29,3 +30,4 @@ val InputText_Dark  = Color(0xFFF2F3F7)
 val InputSuccess_Dark = Color(0xFF3BD699)
 val TextFieldFocusBorder_Dark = Color(0xFF3B3B42)
 val SurfaceHigher_Dark = Color(0xFF242428)
+val DateHighlight_Dark = Color(0xFFFDEFA8)

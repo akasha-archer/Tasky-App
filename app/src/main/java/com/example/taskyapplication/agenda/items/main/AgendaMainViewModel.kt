@@ -11,6 +11,7 @@ import com.example.taskyapplication.agenda.items.main.data.AgendaItemType
 import com.example.taskyapplication.agenda.items.main.data.AgendaReminderSummary
 import com.example.taskyapplication.agenda.items.main.data.AgendaSummary
 import com.example.taskyapplication.agenda.items.main.data.AgendaTaskSummary
+import com.example.taskyapplication.domain.utils.SystemTimeProvider
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -30,14 +31,14 @@ class AgendaMainViewModel @Inject constructor(
     val agendaViewState: StateFlow<AgendaMainViewState> = _agendaViewState.asStateFlow()
 
     init {
-        // Coroutine for fetching initial user name
+        // Fetching user name
         viewModelScope.launch {
             val userName = itemsMainInteractor.getUserName() ?: ""
             Log.d("AgendaVM", "Fetched userName in init: '$userName'")
             _agendaViewState.update { it.copy(userFullName = userName) }
         }
 
-        // Coroutine for observing network status and performing sync operations
+        // Observing network status and performing sync operations
         viewModelScope.launch {
             var initialSyncAttempted = false
             networkObserver.networkStatus.collect { status ->
@@ -58,13 +59,13 @@ class AgendaMainViewModel @Inject constructor(
                 }
             }
         }
-        // Coroutine for building/observing the agenda list for the selected date
         viewModelScope.launch {
             buildAgendaListForDate(_agendaViewState.value.selectedDate)
         }
     }
 
     private fun buildAgendaListForDate(selectedDate: LocalDate) {
+        Log.e("AgendaVM", "Building agenda for date: $selectedDate")
         viewModelScope.launch {
             itemsMainInteractor.buildAgendaForSelectedDate(selectedDate)
                 .collect { (tasks, reminders, events) ->
@@ -82,10 +83,11 @@ class AgendaMainViewModel @Inject constructor(
     }
 
     private fun showSelectedDate(selectedDate: LocalDate): String {
+        Log.e("AgendaVM", "Selected date function: $selectedDate")
         return when (selectedDate) {
-            LocalDate.now() -> "Today"
-            LocalDate.now().plusDays(1) -> "Tomorrow"
-            LocalDate.now().minusDays(1) -> "Yesterday"
+            SystemTimeProvider.now.toOffsetDateTime().toZonedDateTime().toLocalDate() -> "Today"
+            SystemTimeProvider.now.toLocalDate().plusDays(1) -> "Tomorrow"
+            SystemTimeProvider.now.toLocalDate().minusDays(1) -> "Yesterday"
             else -> selectedDate.toDateAsString()
         }
     }
@@ -112,10 +114,11 @@ class AgendaMainViewModel @Inject constructor(
     fun executeAgendaActions(action: MainScreenAction) {
         when (action) {
             is MainScreenAction.SelectAgendaDate -> {
+                val targetAgendaDate = action.selectedDate
                 _agendaViewState.value = _agendaViewState.value.copy(
-                    selectedDate = action.selectedDate
+                    selectedDate = targetAgendaDate
                 )
-                buildAgendaListForDate(_agendaViewState.value.selectedDate)
+                buildAgendaListForDate(targetAgendaDate)
             }
 
             is MainScreenAction.ItemToDelete -> {
