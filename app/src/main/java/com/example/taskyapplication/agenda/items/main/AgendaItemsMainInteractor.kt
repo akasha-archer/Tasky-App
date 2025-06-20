@@ -51,6 +51,7 @@ class AgendaItemsMainInteractor @Inject constructor(
     private val eventApiService: EventApiService,
     private val agendaApiService: AgendaApiService
 ) {
+    suspend fun getUserName(): String? = authRepository.fetchUserName()
 
     suspend fun syncDeletedItemIds(): Result<Unit> {
         return try {
@@ -84,12 +85,12 @@ class AgendaItemsMainInteractor @Inject constructor(
                 val response = taskApiService.createNewTask(taskToSync)
 
                 if (response.code() == SUCCESS_CODE) {
-                    Log.d("CommonDateProvider:", "Successfully synced task")
+                    Log.d("AgendaItemsMainInteractor:", "Successfully synced task")
                 } else {
-                    Log.e("CommonDateProvider:", "Failed to sync task")
+                    Log.e("AgendaItemsMainInteractor:", "Failed to sync task")
                 }
             } catch (e: Exception) {
-                Log.e("CommonDataProvider", e.message.toString())
+                Log.e("AgendaItemsMainInteractor", e.message.toString())
             }
         }
 
@@ -99,12 +100,12 @@ class AgendaItemsMainInteractor @Inject constructor(
                 val response = reminderApiService.createNewReminder(reminderToSync)
 
                 if (response.isSuccessful) {
-                    Log.d("CommonDateProvider:", "Successfully synced reminder")
+                    Log.d("AgendaItemsMainInteractor:", "Successfully synced reminder")
                 } else {
-                    Log.e("CommonDateProvider:", "Failed to sync reminder")
+                    Log.e("AgendaItemsMainInteractor:", "Failed to sync reminder")
                 }
             } catch (e: Exception) {
-                Log.e("CommonDataProvider", e.message.toString())
+                Log.e("AgendaItemsMainInteractor", e.message.toString())
             }
         }
 
@@ -115,12 +116,12 @@ class AgendaItemsMainInteractor @Inject constructor(
                 val response = eventApiService.createEvent(eventRequest, emptyList())
 
                 if (response.isSuccessful) {
-                    Log.d("CommonDateProvider:", "Successfully synced event")
+                    Log.d("AgendaItemsMainInteractor:", "Successfully synced event")
                 } else {
-                    Log.e("CommonDateProvider:", "Failed to sync event")
+                    Log.e("AgendaItemsMainInteractor:", "Failed to sync event")
                 }
             } catch (e: Exception) {
-                Log.e("CommonDataProvider", e.message.toString())
+                Log.e("AgendaItemsMainInteractor", e.message.toString())
             }
         }
 

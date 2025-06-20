@@ -1,6 +1,7 @@
 package com.example.taskyapplication.agenda.items.event.screens
 
 import android.net.Uri
+import android.util.Log
 import android.widget.Toast
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.PickVisualMediaRequest
@@ -148,6 +149,7 @@ fun EventEditDateTimeRoot(
                 modifier = modifier,
                 state = uiState,
                 onAction = { action ->
+                    eventViewModel.executeActions(action)
                     when (action) {
                         EventItemAction.SaveDateTimeEdit -> onClickSave()
                         EventItemAction.CancelEdit -> onClickCancel()
@@ -157,7 +159,6 @@ fun EventEditDateTimeRoot(
                             Unit
                         }
                     }
-                    eventViewModel.executeActions(action)
                 }
             )
         }
@@ -173,6 +174,9 @@ fun EventDateTimeScreen(
     isEditScreen: Boolean = true,
     state: EventUiState
 ) {
+    Log.i("EventEdit screen", "Setting title ${state.title}")
+    Log.i("EventEdit screen", "Setting description ${state.description}")
+
     // persisted photos are stored and displayed as urls
     var selectedImageUris by remember { mutableStateOf<List<Uri>>(emptyList()) }
     val persistedImageUrls: List<String> = state.photos
@@ -347,7 +351,7 @@ fun EventDateTimeScreen(
                             },
                             agendaItemReminderTime = {
                                 ReminderTimeRow(
-//                                    reminderTime = state.remindAt.timeString,
+                                    reminderTime = state.remindAt.timeString,
                                     isEditing = isEditScreen,
                                     onClickDropDown = {
                                         onAction(EventItemAction.ShowReminderDropDown)

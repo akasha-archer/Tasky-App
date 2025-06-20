@@ -1,6 +1,6 @@
 package com.example.taskyapplication.agenda.items.task.data.mappers
 
-import com.example.taskyapplication.agenda.data.model.ReminderOptions
+import com.example.taskyapplication.agenda.data.model.getReminderNotificationFromLong
 import com.example.taskyapplication.agenda.domain.convertToLong
 import com.example.taskyapplication.agenda.domain.toLocalDateAndTime
 import com.example.taskyapplication.agenda.items.task.data.local.entity.TaskEntity
@@ -9,7 +9,6 @@ import com.example.taskyapplication.agenda.items.task.data.network.models.TaskNe
 import com.example.taskyapplication.agenda.items.task.data.network.models.UpdateTaskBody
 import com.example.taskyapplication.agenda.items.task.presentation.TaskUiState
 import java.time.LocalDateTime
-import java.time.ZoneId
 
 fun TaskResponse.asTaskEntity(): TaskEntity {
     return TaskEntity(
@@ -23,17 +22,18 @@ fun TaskResponse.asTaskEntity(): TaskEntity {
     )
 }
 
-fun TaskEntity.toTaskNetworkModel() : TaskNetworkModel {
+fun TaskEntity.toTaskNetworkModel(): TaskNetworkModel {
     val networkModelTime = LocalDateTime.of(date, time).convertToLong()
     return TaskNetworkModel(
         itemId = id,
         title = title,
         description = description,
         startTime = networkModelTime,
-        reminderTime = 0L,
+        reminderTime = remindAt,
         isDone = isDone
     )
 }
+
 fun TaskNetworkModel.asTaskEntity(): TaskEntity {
     return TaskEntity(
         id = itemId,
@@ -64,14 +64,15 @@ fun TaskEntity.asTaskUi() = TaskUiState(
     description = description,
     time = time,
     date = date,
-    remindAt = ReminderOptions.THIRTY_MINUTES_BEFORE,
+    remindAt = getReminderNotificationFromLong(time, date, remindAt),
     isDone = isDone
 )
 
 fun TaskUiState.asTaskNetworkModel(): TaskNetworkModel {
     val combinedStartTime = LocalDateTime.of(date, time)
-    val startTimeAsLong = combinedStartTime.atZone(ZoneId.systemDefault()).toInstant().toEpochMilli()
-    val reminderTimeMillis = startTimeAsLong - remindAt.asLong
+    val startTimeAsLong =
+        combinedStartTime.convertToLong()
+    val reminderTimeMillis = startTimeAsLong.minus(remindAt.minutesAsInt.toLong())
 
     return TaskNetworkModel(
         itemId = id,
@@ -85,8 +86,9 @@ fun TaskUiState.asTaskNetworkModel(): TaskNetworkModel {
 
 fun TaskUiState.asUpdateTaskNetworkModel(): UpdateTaskBody {
     val combinedStartTime = LocalDateTime.of(date, time)
-    val startTimeAsLong = combinedStartTime.atZone(ZoneId.systemDefault()).toInstant().toEpochMilli()
-    val reminderTimeMillis = startTimeAsLong - remindAt.asLong
+    val startTimeAsLong =
+        combinedStartTime.convertToLong()
+    val reminderTimeMillis = startTimeAsLong.minus(remindAt.minutesAsInt.toLong())
     return UpdateTaskBody(
         itemId = id,
         title = title,

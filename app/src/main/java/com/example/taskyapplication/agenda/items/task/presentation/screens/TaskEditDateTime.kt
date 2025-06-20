@@ -30,8 +30,8 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.example.taskyapplication.TaskyBaseScreen
 import com.example.taskyapplication.agenda.AgendaItemAction
 import com.example.taskyapplication.agenda.common.AgendaItemEvent
-import com.example.taskyapplication.agenda.data.model.ReminderOptions
-import com.example.taskyapplication.agenda.domain.getReminderOption
+import com.example.taskyapplication.agenda.data.model.ReminderNotificationOption
+import com.example.taskyapplication.agenda.data.model.getReminderNotificationFromString
 import com.example.taskyapplication.agenda.domain.toDateAsString
 import com.example.taskyapplication.agenda.domain.toLocalDateAndTime
 import com.example.taskyapplication.agenda.domain.toTimeAsString
@@ -50,6 +50,7 @@ import com.example.taskyapplication.agenda.presentation.components.ReminderTimeR
 import com.example.taskyapplication.agenda.presentation.components.TaskyDatePicker
 import com.example.taskyapplication.agenda.presentation.components.TaskyTimePicker
 import com.example.taskyapplication.domain.utils.ObserveAsEvents
+import com.example.taskyapplication.domain.utils.SystemTimeProvider
 import com.example.taskyapplication.main.presentation.components.TaskyScaffold
 import com.example.taskyapplication.ui.theme.TaskyDesignSystem.Companion.taskyColors
 import com.example.taskyapplication.ui.theme.TaskyTypography
@@ -225,8 +226,8 @@ fun TaskEditDateTimeScreen(
                             },
                             agendaItemStartTime = {
                                 AgendaItemDateTimeRow(
-                                    dateText = state.date.toDateAsString().ifEmpty { LocalDate.now().toDateAsString() },
-                                    timeText = state.time.toTimeAsString().ifEmpty { LocalTime.now().toTimeAsString() },
+                                    dateText = state.date.toDateAsString().ifEmpty { SystemTimeProvider.now.toLocalDate().toDateAsString() },
+                                    timeText = state.time.toTimeAsString().ifEmpty { SystemTimeProvider.now.toLocalTime().toTimeAsString() },
                                     onClickTime = {
                                         onAction(AgendaItemAction.ShowTimePicker)
                                     },
@@ -241,7 +242,7 @@ fun TaskEditDateTimeScreen(
                                     contentAlignment = Alignment.CenterEnd
                                 ) {
                                     ReminderTimeRow(
-                                        reminderTime = state.remindAt.timeString.ifEmpty { ReminderOptions.THIRTY_MINUTES_BEFORE.timeString },
+                                        reminderTime = state.remindAt.timeString.ifEmpty { ReminderNotificationOption.THIRTY_MINUTES_BEFORE.timeString },
                                         isEditing = isEditScreen,
                                         onClickDropDown = {
                                             onAction(AgendaItemAction.ShowReminderDropDown)
@@ -256,7 +257,9 @@ fun TaskEditDateTimeScreen(
                                             },
                                             isExpanded = true,
                                             onTimeSelected = { time ->
-                                                onAction(AgendaItemAction.SetReminderTime(getReminderOption(time)))
+                                                onAction(AgendaItemAction.SetReminderTime(
+                                                    getReminderNotificationFromString(time)
+                                                ))
                                             },
                                         )
                                     }

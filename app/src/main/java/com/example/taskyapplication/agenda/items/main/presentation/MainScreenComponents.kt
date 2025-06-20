@@ -16,7 +16,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.LazyHorizontalGrid
-import androidx.compose.foundation.lazy.grid.items
+import androidx.compose.foundation.lazy.grid.itemsIndexed
 import androidx.compose.foundation.lazy.grid.rememberLazyGridState
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.rememberLazyListState
@@ -32,6 +32,10 @@ import androidx.compose.material3.FloatingActionButtonDefaults
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableIntStateOf
+import androidx.compose.runtime.saveable.rememberSaveable
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.drawBehind
@@ -46,7 +50,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.taskyapplication.R
-import com.example.taskyapplication.agenda.domain.AgendaScreenCalendarList
+import com.example.taskyapplication.agenda.domain.AgendaScreenCalendarData
 import com.example.taskyapplication.agenda.domain.buildAgendaScreenCalendar
 import com.example.taskyapplication.agenda.domain.toDateAsString
 import com.example.taskyapplication.agenda.domain.toTimeAsString
@@ -67,7 +71,7 @@ fun MainScreenPreview() {
 @Composable
 fun MainScreenEmptyState(
     modifier: Modifier
-){
+) {
     Column(
         modifier = modifier
             .fillMaxSize()
@@ -153,32 +157,53 @@ fun AgendaSummary(
     }
 }
 
+const val DEFAULT_CAROUSEL_INDEX = 15
+
 @Composable
 fun AgendaScreenScrollableDates(
     modifier: Modifier = Modifier,
-    dateList: List<AgendaScreenCalendarList> = buildAgendaScreenCalendar(),
-    onSelectDate: (String) -> Unit = {},
+    dateList: List<AgendaScreenCalendarData> = buildAgendaScreenCalendar(),
+    onSelectDate: (String) -> Unit,
 ) {
-    val initialIndex = 15
+    var selectedDateIndex by rememberSaveable { mutableIntStateOf(DEFAULT_CAROUSEL_INDEX) }
+
     val lazyGridState = rememberLazyGridState(
-        initialFirstVisibleItemIndex = initialIndex
+        initialFirstVisibleItemIndex = DEFAULT_CAROUSEL_INDEX,
+        initialFirstVisibleItemScrollOffset = DEFAULT_CAROUSEL_INDEX,
     )
 
     LazyHorizontalGrid(
         modifier = modifier.height(130.dp),
         state = lazyGridState,
         rows = GridCells.Fixed(1),
-//        horizontalArrangement = Arrangement.spacedBy(16.dp),
-//        verticalArrangement = Arrangement.spacedBy(8.dp),
+        userScrollEnabled = true,
         contentPadding = PaddingValues(16.dp)
     ) {
-        items(dateList) { item ->
+        itemsIndexed(dateList) { index, item ->
+            val isSelectedDate = index == selectedDateIndex
             AgendaScreenCalendarDateItem(
+                modifier = modifier
+                    .clickable {
+                        selectedDateIndex = index
+                        onSelectDate(item.dayOfMonth)
+                    }
+                    .selectedDateColor(isSelectedDate),
                 dayOfWeekInitial = item.dayOfWeek[0],
                 dateOfMonth = item.dayOfMonth,
-                isSelected = false
             )
         }
+    }
+}
+
+@Composable
+fun Modifier.selectedDateColor(isSelected: Boolean): Modifier {
+    return if (isSelected) {
+        this.background(
+            color = taskyColors.dateHighlight,
+            shape = RoundedCornerShape(32.dp)
+        )
+    } else {
+        this
     }
 }
 
@@ -187,15 +212,10 @@ fun AgendaScreenCalendarDateItem(
     modifier: Modifier = Modifier,
     dayOfWeekInitial: Char,
     dateOfMonth: String,
-    isSelected: Boolean = false
 ) {
     Column(
         modifier = modifier
             .padding(horizontal = 8.dp, vertical = 8.dp)
-            .background(
-                color = taskyColors.onPrimary,
-                shape = RoundedCornerShape(32.dp)
-            )
             .padding(12.dp),
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.Center
@@ -450,12 +470,13 @@ fun CalendarItemPreview() {
     AgendaScreenCalendarDateItem(
         dayOfWeekInitial = 'M',
         dateOfMonth = "15",
-        isSelected = true,
     )
 }
 
 @Preview(showBackground = true)
 @Composable
 fun CalendarPreview() {
-    AgendaScreenScrollableDates()
+    AgendaScreenScrollableDates(
+        onSelectDate = { _ -> }
+    )
 }

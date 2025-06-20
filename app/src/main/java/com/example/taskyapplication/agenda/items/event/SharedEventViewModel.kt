@@ -1,6 +1,7 @@
 package com.example.taskyapplication.agenda.items.event
 
 import android.net.Uri
+import android.util.Log
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
@@ -15,11 +16,8 @@ import com.example.taskyapplication.agenda.items.event.presentation.EventUiState
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.asStateFlow
-import kotlinx.coroutines.flow.onStart
 import kotlinx.coroutines.flow.receiveAsFlow
-import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import java.util.UUID
@@ -37,21 +35,26 @@ class SharedEventViewModel @Inject constructor(
     val agendaEvents = agendaEventChannel.receiveAsFlow()
 
     private val _eventUiState = MutableStateFlow(EventUiState())
-    val eventUiState = _eventUiState
-        .onStart {
+    val eventUiState = _eventUiState.asStateFlow()
+
+    init {
+        Log.i("SharedEventViewModel", "SharedEventViewModel created. EventId from SavedStateHandle: $eventId")
+        viewModelScope.launch {
             networkObserver.networkStatus.collect { status ->
                 val isOnline = status == NetworkStatus.Available
                 _eventUiState.update { it.copy(isUserOnline = isOnline) }
             }
-            if (eventId != null) {
-                loadExistingEvent(eventId)
+        }
+
+        eventId?.let { currentEventId ->
+            if (_eventUiState.value.id != currentEventId || _eventUiState.value.id.isEmpty()) {
+                Log.d("SharedEventViewModel", "EventId ($currentEventId) present, loading existing event in init.")
+                loadExistingEvent(currentEventId) // This launches its own coroutine
+            } else {
+                Log.d("SharedEventViewModel", "EventId ($currentEventId) present, but state ID matches. Assuming already loaded. Current title: '${_eventUiState.value.title}'")
             }
         }
-        .stateIn(
-        scope = viewModelScope,
-        started = SharingStarted.WhileSubscribed(5000L),
-        initialValue = EventUiState()
-    )
+    }
 
     private val _uploadedPhotos = MutableStateFlow<List<Uri>>(emptyList())
     val uploadedPhotos = _uploadedPhotos.asStateFlow()
@@ -102,12 +105,12 @@ class SharedEventViewModel @Inject constructor(
             val result = if (isNewEvent(currentId)) {
                 eventRepository.createNewEvent(
                     request = eventToCreateOrUpdate.toCreateEventNetworkModel(),
-                    photos = eventRepository.createMultiPartImages( photosToUpload)
+                    photos = eventRepository.createMultiPartImages(photosToUpload)
                 )
             } else {
                 eventRepository.updateEvent(
                     request = eventToCreateOrUpdate.toUpdateEventNetworkModel(),
-                    photos = eventRepository.createMultiPartImages( photosToUpload)
+                    photos = eventRepository.createMultiPartImages(photosToUpload)
                 )
             }
             _eventUiState.update { it.copy(isEditingItem = false) }
@@ -136,7 +139,8 @@ class SharedEventViewModel @Inject constructor(
             validationResult.fold(
                 onSuccess = { attendeeResponse ->
                     _eventUiState.update { currentState ->
-                        val updatedAttendeeList = currentState.attendeeNames + attendeeResponse.attendee.fullName
+                        val updatedAttendeeList =
+                            currentState.attendeeNames + attendeeResponse.attendee.fullName
                         currentState.copy(
                             isValidatingAttendee = false,
                             isValidUser = true,
@@ -151,7 +155,7 @@ class SharedEventViewModel @Inject constructor(
                             isValidUser = false
                         )
                     }
-                     agendaEventChannel.send(AgendaItemEvent.AttendeeValidationError(exception.message))
+                    agendaEventChannel.send(AgendaItemEvent.AttendeeValidationError(exception.message))
                 }
             )
         }
@@ -200,15 +204,35 @@ class SharedEventViewModel @Inject constructor(
             }
 
             is EventItemAction.SetTitle -> {
-                viewModelScope.launch {
-                    _eventUiState.update { it.copy(title = action.title) }
+                val newTitle = action.title
+                Log.d("SharedEventViewModel", "Executing SetTitle action. New title: '$newTitle'")
+                _eventUiState.update { currentState ->
+                    Log.d(
+                        "SharedEventViewModel",
+                        "Updating title in state from '${currentState.title}' to '$newTitle'"
+                    )
+                    currentState.copy(title = newTitle)
                 }
+                Log.d(
+                    "SharedEventViewModel",
+                    "Title in _eventUiState after update: '${_eventUiState.value.title}'"
+                )
             }
 
             is EventItemAction.SetDescription -> {
-//                viewModelScope.launch {
-                    _eventUiState.update { it.copy(description = action.description) }
-//                }
+                val newDescription = action.description
+                Log.d("SharedEventViewModel", "Executing SetDescription action. New description: '$newDescription'")
+                _eventUiState.update { currentState ->
+                    Log.d(
+                        "SharedEventViewModel",
+                        "Updating description in state from '${currentState.description}' to '$newDescription'"
+                    )
+                    currentState.copy(title = newDescription)
+                }
+                Log.d(
+                    "SharedEventViewModel",
+                    "Description in _eventUiState after update: '${_eventUiState.value.description}'"
+                )
             }
 
             is EventItemAction.SetReminderTime -> {
@@ -370,7 +394,7 @@ class SharedEventViewModel @Inject constructor(
 
             EventItemAction.LaunchDateTimeEditScreen -> {
                 viewModelScope.launch {
-                _eventUiState.update {
+                    _eventUiState.update {
                         it.copy(isEditingItem = true)
                     }
                 }

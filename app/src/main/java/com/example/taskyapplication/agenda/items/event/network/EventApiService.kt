@@ -1,6 +1,5 @@
 package com.example.taskyapplication.agenda.items.event.network
 
-import com.example.taskyapplication.agenda.items.event.data.CreateEventNetworkModel
 import com.example.taskyapplication.agenda.items.event.data.CreatedEventResponse
 import com.example.taskyapplication.agenda.items.event.data.GetAttendeeResponse
 import com.example.taskyapplication.agenda.items.event.data.FetchedEventResponse

@@ -1,7 +1,7 @@
 package com.example.taskyapplication.agenda.items.event
 
 import android.net.Uri
-import com.example.taskyapplication.agenda.data.model.ReminderOptions
+import com.example.taskyapplication.agenda.data.model.ReminderNotificationOption
 import java.time.LocalDate
 import java.time.LocalTime
 
@@ -14,7 +14,7 @@ sealed interface EventItemAction {
     data class SetEndTime(val endTime: LocalTime): EventItemAction
     data class SetStartDate(val startDate: LocalDate): EventItemAction
     data class SetEndDate(val endDate: LocalDate): EventItemAction
-    data class SetReminderTime(val reminder: ReminderOptions): EventItemAction
+    data class SetReminderTime(val reminder: ReminderNotificationOption): EventItemAction
     data class SaveSelectedPhotos(val eventPhotos: List<Uri>): EventItemAction
     data class DeleteEvent(val eventId: String): EventItemAction
     data class AddNewVisitor(val visitorEmail: String): EventItemAction
